@@ -336,13 +336,13 @@
     let postedDays = [], lockedDates = [], adjustments = [];
     let purchases = [], nocPayments = [], nocOpeningBal = 0, stockOpenPetrol = 0, stockOpenDiesel = 0;
 
-    const nozzles = [
-        { id: "Petrol I", type: "petrol", open: 1328664, close: 1328664 },
-        { id: "Petrol II", type: "petrol", open: 1780996, close: 1780996 },
-        { id: "Diesel I", type: "diesel", open: 925719, close: 925719 },
-        { id: "Diesel II", type: "diesel", open: 6901885, close: 6901885 },
-        { id: "Diesel III", type: "diesel", open: 4932858, close: 4932858 }
-    ];
+  const nozzles = [
+    { id: "Petrol I",   type: "petrol",  open: 1328664, close: 1328664 },
+    { id: "Petrol II",  type: "petrol",  open: 1780996, close: 1780996 },
+    { id: "Diesel I",   type: "diesel",  open: 925719,  close: 925719 },
+    { id: "Diesel II",  type: "diesel",  open: 6901885, close: 6901885 },
+    { id: "Diesel III", type: "diesel",  open: 4932858, close: 4932858 }
+];
 
     // ---------- FORMATTING / UTILS ----------
     function formatNepaliNumber(num) {
