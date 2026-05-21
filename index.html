@@ -45,6 +45,7 @@
         .recon-box { background: #f0fdf4; border: 1px solid #86efac; border-radius: 12px; padding: 10px 14px; margin-top: 8px; }
         .sync-indicator { font-size: 0.7rem; margin-left: 10px; padding: 2px 8px; border-radius: 10px; background: rgba(255,255,255,0.2); }
         .save-btn { background: #16a34a; color: white; padding: 2px 6px; font-size: 0.65rem; border-radius: 7px; margin-right: 3px; }
+        .section-total { font-size:0.7rem; font-weight:bold; margin-left:6px; }
         @media print { body * { visibility: hidden; } .print-only, .print-only * { visibility: visible; } .print-only { position: absolute; left: 0; top: 0; width: 100%; } }
     </style>
 </head>
@@ -73,7 +74,6 @@
         </div>
     </div>
 
-    <!-- Main daily view (identical to previous stable version, with totals fix) -->
     <div id="mainView">
         <div class="card">
             <div style="display:flex; gap:12px; align-items:center; flex-wrap:wrap;">
@@ -82,7 +82,6 @@
                 <div style="flex:1"><label>Opening Bank <input type="number" id="openingBank" step="any" value="1513259.44"></label></div>
             </div>
             <div id="lockedInfo" style="margin-top:8px; font-weight:bold; color:#dc2626; display:none;">🔒 This day is locked – edits will be marked with ✎</div>
-            
         </div>
 
         <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
@@ -103,17 +102,12 @@
                     <div style="margin-top:6px;">
                         <div style="margin-bottom:4px;"><strong>Petrol Total:</strong> <span id="petrolSalesTotal">0</span></div>
                         <div style="margin-bottom:4px;"><strong>Diesel Total:</strong> <span id="dieselSalesTotal">0</span></div>
-                        <div style="margin-top:6px; font-size:1.1rem; font-weight:700; color:#0b5e2e;">
-                            ⛽ Grand Total: <span id="totalSalesDisplay">0</span>
-                        </div>
+                        <div style="margin-top:6px; font-size:1.1rem; font-weight:700; color:#0b5e2e;">⛽ Grand Total: <span id="totalSalesDisplay">0</span></div>
                     </div>
                 </div>
                 <div class="card">
                     <div class="flex-between"><strong>💰 Cash Collections <span class="section-total" id="collectionCardTotal">(Rs 0)</span></strong><button id="addCollectionDebtorBtn" class="btn-outline btn-sm">+ Debtor</button></div>
-                    <div class="search-dropdown">
-                        <input type="text" id="collectionDebtorSearch" placeholder="Search debtor..." autocomplete="off">
-                        <div class="search-dropdown-list" id="collectionDebtorList"></div>
-                    </div>
+                    <div class="search-dropdown"><input type="text" id="collectionDebtorSearch" placeholder="Search debtor..." autocomplete="off"><div class="search-dropdown-list" id="collectionDebtorList"></div></div>
                     <input type="number" id="collectionAmount" placeholder="Amount" step="any"><button id="recordCollectionBtn" style="width:100%">Record Collection</button>
                     <table id="todayCollectionTable"><thead><tr><th>Debtor</th><th>Amount</th><th></th></tr></thead><tbody></tbody></table>
                     <div style="font-weight:bold; margin-top:4px;">Total Collections: <span id="collectionTotal">0</span></div>
@@ -122,20 +116,14 @@
             <div>
                 <div class="card">
                     <div class="flex-between"><strong>📋 Credit Sales <span class="section-total" id="creditCardTotal">(Rs 0)</span></strong><button id="addDebtorBtn" class="btn-outline btn-sm">+ Debtor</button></div>
-                    <div class="search-dropdown">
-                        <input type="text" id="creditDebtorSearch" placeholder="Search debtor..." autocomplete="off">
-                        <div class="search-dropdown-list" id="creditDebtorList"></div>
-                    </div>
+                    <div class="search-dropdown"><input type="text" id="creditDebtorSearch" placeholder="Search debtor..." autocomplete="off"><div class="search-dropdown-list" id="creditDebtorList"></div></div>
                     <input type="number" id="creditAmount" placeholder="Amount" step="any"><button id="recordCreditBtn" style="width:100%">Record Credit Sale</button>
                     <table id="todayCreditTable"><thead><tr><th>Debtor</th><th>Amount</th><th></th></tr></thead><tbody></tbody></table>
                     <div style="font-weight:bold; margin-top:4px;">Total Credit Sales: <span id="creditTotal">0</span></div>
                 </div>
                 <div class="card">
                     <div class="flex-between"><strong>🧾 Daily Expenses <span class="section-total" id="expenseCardTotal">(Rs 0)</span></strong><button id="addExpenseCatBtn" class="btn-outline btn-sm">+ Cat</button></div>
-                    <div class="search-dropdown">
-                        <input type="text" id="expenseSearch" placeholder="Search expense..." autocomplete="off">
-                        <div class="search-dropdown-list" id="expenseList"></div>
-                    </div>
+                    <div class="search-dropdown"><input type="text" id="expenseSearch" placeholder="Search expense..." autocomplete="off"><div class="search-dropdown-list" id="expenseList"></div></div>
                     <input type="number" id="expenseAmount" placeholder="Amount (negative = income)" step="any"><button id="recordExpenseBtn" style="width:100%">Record Expense</button>
                     <table id="todayExpenseTable"><thead><tr><th>Category</th><th>Amount</th><th></th></tr></thead><tbody></tbody></table>
                     <div style="font-weight:bold; margin-top:4px;">Total Expenses: <span id="expenseTotal">0</span></div>
@@ -150,34 +138,19 @@
                 <span style="font-weight:bold;">Closing Bank: <span id="bankClosing">0</span></span>
             </div>
             <div class="grid-2col">
-                <div>
-                    <strong>Deposits (Cash → Bank)</strong>
-                    <div style="display:flex; gap:4px; margin:4px 0;">
-                        <input type="text" id="bankDepDesc" placeholder="Description" style="width:120px;">
-                        <input type="number" id="bankDepAmt" placeholder="Amount" step="any" style="width:100px;">
-                        <button id="addBankDepBtn">+ Add</button>
-                    </div>
+                <div><strong>Deposits (Cash → Bank)</strong>
+                    <div style="display:flex; gap:4px; margin:4px 0;"><input type="text" id="bankDepDesc" placeholder="Description" style="width:120px;"><input type="number" id="bankDepAmt" placeholder="Amount" step="any" style="width:100px;"><button id="addBankDepBtn">+ Add</button></div>
                     <table id="bankDepTable"><thead><tr><th>Desc</th><th>Amount</th><th></th></tr></thead><tbody></tbody></table>
                     <div>Total Deposits: <span id="bankDepTotal">0</span></div>
                 </div>
-                <div>
-                    <strong>Withdrawals (Bank → Cash)</strong>
-                    <div style="display:flex; gap:4px; margin:4px 0;">
-                        <input type="text" id="bankWitDesc" placeholder="Description" style="width:120px;">
-                        <input type="number" id="bankWitAmt" placeholder="Amount" step="any" style="width:100px;">
-                        <button id="addBankWitBtn">+ Add</button>
-                    </div>
+                <div><strong>Withdrawals (Bank → Cash)</strong>
+                    <div style="display:flex; gap:4px; margin:4px 0;"><input type="text" id="bankWitDesc" placeholder="Description" style="width:120px;"><input type="number" id="bankWitAmt" placeholder="Amount" step="any" style="width:100px;"><button id="addBankWitBtn">+ Add</button></div>
                     <table id="bankWitTable"><thead><tr><th>Desc</th><th>Amount</th><th></th></tr></thead><tbody></tbody></table>
                     <div>Total Withdrawals: <span id="bankWitTotal">0</span></div>
                 </div>
             </div>
-            <div style="margin-top:10px;">
-                <strong>🏧 Bank Charges</strong>
-                <div style="display:flex; gap:4px; margin:4px 0;">
-                    <input type="text" id="bankChgDesc" placeholder="Description" style="width:150px;">
-                    <input type="number" id="bankChgAmt" placeholder="Amount" step="any" style="width:120px;">
-                    <button id="addBankChgBtn">+ Add</button>
-                </div>
+            <div style="margin-top:10px;"><strong>🏧 Bank Charges</strong>
+                <div style="display:flex; gap:4px; margin:4px 0;"><input type="text" id="bankChgDesc" placeholder="Description" style="width:150px;"><input type="number" id="bankChgAmt" placeholder="Amount" step="any" style="width:120px;"><button id="addBankChgBtn">+ Add</button></div>
                 <table id="bankChgTable"><thead><tr><th>Desc</th><th>Amount</th><th></th></tr></thead><tbody></tbody></table>
                 <div>Total Bank Charges: <span id="bankChgTotal">0</span></div>
             </div>
@@ -197,52 +170,33 @@
         </div>
     </div>
 
-    <!-- Stock & NOC View with date range -->
     <div id="stockView">
         <div class="card" style="background:#f0f4ff; border-left:5px solid #3b82f6;">
             <div class="card-title" style="border-left:4px solid #3b82f6;">📦 Stock Management & NOC Supplier Ledger</div>
-            <!-- Date Range Selector -->
             <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap; margin-bottom:10px;">
                 <label>From <input type="date" id="stockStartDate" style="width:140px;"></label>
                 <label>To <input type="date" id="stockEndDate" style="width:140px;"></label>
                 <button id="stockRefreshBtn" class="btn-sm">🔄 Refresh</button>
             </div>
             <div class="grid-2col">
-                <div>
-                    <strong>Fuel Stock</strong>
-                    <table style="margin-bottom:6px;">
-                        <tr><th></th><th>Petrol (Ltr)</th><th>Diesel (Ltr)</th></tr>
+                <div><strong>Fuel Stock</strong>
+                    <table style="margin-bottom:6px;"><tr><th></th><th>Petrol (Ltr)</th><th>Diesel (Ltr)</th></tr>
                         <tr><td>Opening</td><td><input type="number" id="stockOpenPetrolInput" step="any" value="0" style="width:100px;"></td><td><input type="number" id="stockOpenDieselInput" step="any" value="0" style="width:100px;"></td></tr>
                         <tr><td>Purchases (NOC)</td><td id="stockPurchPetrol">0</td><td id="stockPurchDiesel">0</td></tr>
                         <tr><td>Sales</td><td id="stockSalesPetrol">0</td><td id="stockSalesDiesel">0</td></tr>
                         <tr><td><strong>Closing</strong></td><td><strong id="stockClosePetrol">0</strong></td><td><strong id="stockCloseDiesel">0</strong></td></tr>
                     </table>
-                    <div style="margin:4px 0;">
-                        <button id="addPurchaseBtn" class="btn-sm">+ Add Purchase (NOC)</button>
-                        <button id="pasteNocBtn" class="btn-sm" style="margin-left:4px;">📋 Paste NOC Data</button>
-                    </div>
-                    <!-- Purchase table with editable fields -->
-                    <table id="purchaseTable" style="margin-top:4px;">
-                        <thead><tr><th>Date</th><th>Petrol Ltr</th><th>Diesel Ltr</th><th>Amount (Rs)</th><th style="width:80px;"></th></tr></thead>
-                        <tbody></tbody>
-                    </table>
+                    <div style="margin:4px 0;"><button id="addPurchaseBtn" class="btn-sm">+ Add Purchase (NOC)</button><button id="pasteNocBtn" class="btn-sm" style="margin-left:4px;">📋 Paste NOC Data</button></div>
+                    <table id="purchaseTable" style="margin-top:4px;"><thead><tr><th>Date</th><th>Petrol Ltr</th><th>Diesel Ltr</th><th>Amount (Rs)</th><th style="width:80px;"></th></tr></thead><tbody></tbody></table>
                 </div>
-                <div>
-                    <strong>NOC Ledger</strong>
+                <div><strong>NOC Ledger</strong>
                     <div>Opening Balance: <span id="nocOpenBal">0</span></div>
                     <button id="addNocPaymentBtn" class="btn-sm" style="margin:4px 0;">+ Record Payment to NOC</button>
-                    <!-- NOC Ledger table with editable fields -->
-                    <table id="nocLedgerTable">
-                        <thead><tr><th>Date</th><th>Particulars</th><th>Debit (Purchase)</th><th>Credit (Payment)</th><th style="width:80px;"></th></tr></thead>
-                        <tbody></tbody>
-                    </table>
+                    <table id="nocLedgerTable"><thead><tr><th>Date</th><th>Particulars</th><th>Debit (Purchase)</th><th>Credit (Payment)</th><th style="width:80px;"></th></tr></thead><tbody></tbody></table>
                     <div>Closing Balance: <span id="nocCloseBal">0</span></div>
                 </div>
             </div>
-            <div style="margin-top:10px; text-align:right;">
-                <button id="exportStockExcelBtn" class="btn-sm">📥 Excel (Stock)</button>
-                <button id="printStockBtn" class="btn-sm">🖨️ Print (Stock)</button>
-            </div>
+            <div style="margin-top:10px; text-align:right;"><button id="exportStockExcelBtn" class="btn-sm">📥 Excel (Stock)</button><button id="printStockBtn" class="btn-sm">🖨️ Print (Stock)</button></div>
         </div>
     </div>
 </div>
@@ -250,10 +204,8 @@
 
 <script>
 (function() {
-    // ---------- SUPABASE CONFIG ----------
     const SUPABASE_URL = 'https://pdmhpbddfvbonsaclgvw.supabase.co';
     const SUPABASE_ANON_KEY = 'sb_publishable_q4kliTASjCYC4xk5TnwFDQ_H0FYNSiR';
-
     const { createClient } = supabase;
     const supa = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
     const syncStatus = document.getElementById('syncStatus');
@@ -308,16 +260,9 @@
         try {
             const { data, error } = await supa.from('ledger_data').select('data').eq('id', 1).single();
             if (error) throw error;
-            if (data && data.data && Object.keys(data.data).length > 0) {
-                applyCloudData(data.data);
-                setSyncStatus('🟢 Synced');
-            } else {
-                await saveToCloud();
-            }
-        } catch (err) {
-            console.error('Cloud load error', err);
-            loadLocalFallback();
-        }
+            if (data && data.data && Object.keys(data.data).length > 0) { applyCloudData(data.data); setSyncStatus('🟢 Synced'); }
+            else { await saveToCloud(); }
+        } catch (err) { console.error('Cloud load error', err); loadLocalFallback(); }
     }
 
     async function saveToCloud() {
@@ -327,25 +272,16 @@
             if (error) throw error;
             setSyncStatus('🟢 Synced');
             localStorage.setItem('phatkeshwari_local_backup', JSON.stringify(payload));
-        } catch (err) {
-            console.error('Cloud save error', err);
-            setSyncStatus('⚠️ Save failed');
-        }
+        } catch (err) { console.error('Cloud save error', err); setSyncStatus('⚠️ Save failed'); }
     }
 
     function loadLocalFallback() {
         const local = localStorage.getItem('phatkeshwari_local_backup');
-        if (local) {
-            try { applyCloudData(JSON.parse(local)); setSyncStatus('⚠️ Offline (cached)'); } catch(e) {}
-        } else {
-            setSyncStatus('🔴 No data');
-        }
+        if (local) { try { applyCloudData(JSON.parse(local)); setSyncStatus('⚠️ Offline (cached)'); } catch(e) {} }
+        else { setSyncStatus('🔴 No data'); }
     }
 
-    let saveAll = function() {
-        localStorage.setItem('phatkeshwari_local_backup', JSON.stringify(gatherAllData()));
-        saveToCloud();
-    };
+    let saveAll = function() { localStorage.setItem('phatkeshwari_local_backup', JSON.stringify(gatherAllData())); saveToCloud(); };
 
     // ---------- DATA ARRAYS ----------
     let debtorsList = ["Basu Lamsal  (Nava Jyoti Crusher)","Bhanja(8307)","Bikram","Dev Singh","Haldetar Shyam","Hari Tamang","Koshipari (6143)","Mel Kancha","Ramesh(7353)","Rs Nirman","Samakoshi Depo","Shera Construction","Tara Dai","Tara Dai Dm","Tilak Lama(4303)","Unique","Moving Debtor","3G Crusher","6838 Saila","Bijaya Hokshe","Bijay Parajuli(4294)","Bindabasini Suppliers","Binod(2807)","Birash 796","Bir B","Bishal Dolalghat","Daduwa Kancha","Dakshinkali Itta Udhyog Pvt. Ltd.","Dek Bd Kunwar","Dhandhoj Lama","Dhawa Lama","Dipen Thapa","Doleshwor Nirman","Durga Chaulagain","Gauri Kaji","Gaurishankar Khanij Udhyog Pvt. Ltd","Hanuman Construction","Hari Krishna Parajuli","Indrawati Baluwa","Indreni School","Joglal Shrestha","Kamakhya Oil Stores","Krishna Lama","Krishna Pakhrin","Kumar Parajuli","Mandan Deupur Nagarpalika","Melamchi Indrawati Hume Pipe Udhyog","Min Bahadur Basnet","Nepal Nirman Crusher Udhyog Pvt. Ltd.","Nidhi Shakti Pvt.Ltd","Palanchwok Samiti","Pepsi","Prem  Lama","Rajkumar","Ram Hari","R&R Samay JV","Sahil Srivastava","Salik Ram (2510)","Sandip Awale","Sange Lama","Sanup (3805)","Sher Construction","Shiv Chaulagain","Siri Dai","Sudarsan Giri","Topten Lama","Tribeni Infra International Pvt. Ltd.","Tuk Prasad Cash","Tuk Prasad - Three Dimensional Builders","Valley School Panchkhal","Worldlink Net","Non Moving Debtor","Akela JV","Arun Maharjan","Ashok Tamang","Babu Krishna","Bajra Guru- Dawa Construction Pvt Ltd","Balkrishna","Bhagwati Mine","Bhim Lama","Bhumlu Gaupalika","Bramayani  Eta Udhyod","Champeshwori Nirman Sewa Pvt Ltd","Chin Bahadur","Dhiraj Gc","Dulaleshwor Club","Ganesh Karki - Staff","Ganga Indrawti Crusher Udhyog Pvt Ltd","Govinda Giri","Helambu Gaupalika","Jaldevi","Kalika - Pacific Engineering Co. Pvt. Ltd.","Kumar Bhattrai","Lama Crusher- Melamchi A Cone Crusher Aggregate Pvt","Lama Nirman Suppliers Pvt. Ltd.","Lami Dada Bikki","Madan Nepal","Madhab Neupane","Man Dhoj","Melamchi A Cone Crusher","Nilgiri","Nima Lama","Palanchowk Itta Bhatta","Palanchowk Pitch","Palchowkimai Roda Dhunga Pvt Ltd","Rajan Shiwakoti","Rajesh Neupane","Ramesh Giri","Ram Prasad Sapkota","Ravi Lama","Rio Bari","Salik","Samir Hamal","Samir Lama","Saroj Lama","Saroj Melamchi","Shree AV and N Construction","Shrestha Construction- Shrestha Raman Lumbini JV","Silame","Sukbir Tamang","Suman Karki","Suvida Sewa","Tinkune","Tribeni Brahamyani","Tribeni Trading & Suppliers","Udab Gautam","Yadav Thakuri","Partner A/C","Basu Dev Dahal- Debtor","Hari Lama- Debtor"];
@@ -353,24 +289,19 @@
     let creditSales = [], collections = [], expensesList = [], deposits = [], withdrawals = [], bankCharges = [];
     let postedDays = [], lockedDates = [], adjustments = [];
     let purchases = [], nocPayments = [], nocOpeningBal = 0, stockOpenPetrol = 0, stockOpenDiesel = 0;
-
     const nozzles = [
-        { id: "Petrol I",   type: "petrol",  open: 1328664, close: 1328664 },
-        { id: "Petrol II",  type: "petrol",  open: 1780996, close: 1780996 },
-        { id: "Diesel I",   type: "diesel",  open: 925719,  close: 925719 },
-        { id: "Diesel II",  type: "diesel",  open: 6901885, close: 6901885 },
-        { id: "Diesel III", type: "diesel",  open: 4932858, close: 4932858 }
+        { id: "Petrol I", type: "petrol", open: 1328664, close: 1328664 },
+        { id: "Petrol II", type: "petrol", open: 1780996, close: 1780996 },
+        { id: "Diesel I", type: "diesel", open: 925719, close: 925719 },
+        { id: "Diesel II", type: "diesel", open: 6901885, close: 6901885 },
+        { id: "Diesel III", type: "diesel", open: 4932858, close: 4932858 }
     ];
 
-    // ---------- FORMATTING / UTILS ----------
+    // ---------- FORMATTING ----------
     function formatNepaliNumber(num) {
         if (isNaN(num)) return '0.00';
         let x = num.toFixed(2), ap = x.slice(-3), bp = x.slice(0, x.length-3);
-        if (bp.length > 3) {
-            let lt = bp.slice(-3), ot = bp.slice(0, -3);
-            if (ot) lt = ',' + lt;
-            return ot.replace(/\B(?=(\d{2})+(?!\d))/g, ",") + lt + ap;
-        }
+        if (bp.length > 3) { let lt = bp.slice(-3), ot = bp.slice(0, -3); if (ot) lt = ',' + lt; return ot.replace(/\B(?=(\d{2})+(?!\d))/g, ",") + lt + ap; }
         return bp + ap;
     }
     function formatRs(amt) { return 'Rs ' + formatNepaliNumber(amt); }
@@ -389,12 +320,10 @@
     }
     function isDateLocked(date) { return lockedDates.includes(date); }
     function updateUIForLocked() {
-    const locked = isDateLocked(getTodayDate());
-    const info = document.getElementById('lockedInfo');
-    if (info) info.style.display = locked ? 'block' : 'none';
-    // No longer referencing addAdjustmentBtn – editing is always allowed
-}
-
+        const locked = isDateLocked(getTodayDate());
+        const info = document.getElementById('lockedInfo');
+        if (info) info.style.display = locked ? 'block' : 'none';
+    }
     function handleDateChange() {
         const today = getTodayDate();
         updateDateInfo(postedDays.length ? postedDays.reduce((latest,d)=>d.date>latest?d.date:latest,postedDays[0].date) : null, today);
@@ -417,7 +346,6 @@
         updateUIForLocked();
         updateAll();
     }
-
     function initSearchableDropdown(inputId, listId, dataArray) {
         const input = document.getElementById(inputId), list = document.getElementById(listId);
         const sorted = [...dataArray].sort((a,b) => a.localeCompare(b, undefined, {sensitivity:'base'}));
@@ -426,8 +354,7 @@
             const filtered = sorted.filter(item => item.toLowerCase().includes(query));
             if (filtered.length > 0 && query.length > 0) { list.style.display = 'block';
                 filtered.forEach(item => { const div = document.createElement('div'); div.textContent = item;
-                    div.addEventListener('mousedown', (e) => { e.preventDefault(); input.value = item; list.style.display = 'none'; });
-                    list.appendChild(div);
+                    div.addEventListener('mousedown', (e) => { e.preventDefault(); input.value = item; list.style.display = 'none'; }); list.appendChild(div);
                 });
             } else list.style.display = 'none';
         }
@@ -435,169 +362,107 @@
         input.addEventListener('blur', () => setTimeout(() => list.style.display = 'none', 200));
         input.addEventListener('keydown', (e) => { if (e.key === 'Enter') { const first = list.querySelector('div'); if (first && list.style.display !== 'none') { input.value = first.textContent; list.style.display = 'none'; e.preventDefault(); } } });
     }
-
     function getAllCreditSalesForDate(date) { return [...creditSales.filter(t=>t.date===date), ...adjustments.filter(a=>a.date===date&&a.type==='credit').map(a=>({date:a.date, debtor:a.debtor, amount:a.amount}))]; }
     function getAllCollectionsForDate(date) { return [...collections.filter(t=>t.date===date), ...adjustments.filter(a=>a.date===date&&a.type==='collection').map(a=>({date:a.date, debtor:a.debtor, amount:a.amount}))]; }
     function getAllExpensesForDate(date) { return [...expensesList.filter(t=>t.date===date), ...adjustments.filter(a=>a.date===date&&a.type==='expense').map(a=>({date:a.date, category:a.category, amount:a.amount}))]; }
 
-   function displayTodayEntries() {
-    const today = getTodayDate(), locked = isDateLocked(today);
-    const tCredits = getAllCreditSalesForDate(today);
-    const tColls = getAllCollectionsForDate(today);
-    const tExp = getAllExpensesForDate(today);
+    function updateCardTotals() {
+        const today = getTodayDate();
+        const totalCredits = getAllCreditSalesForDate(today).reduce((s, t) => s + t.amount, 0);
+        const totalCashColls = getAllCollectionsForDate(today).reduce((s, t) => s + t.amount, 0);
+        const totalExp = getAllExpensesForDate(today).reduce((s, t) => s + t.amount, 0);
+        const totalDep = deposits.reduce((s, d) => s + d.amount, 0);
+        const totalWith = withdrawals.reduce((s, w) => s + w.amount, 0);
+        const crSpan = document.getElementById('creditCardTotal'); if (crSpan) crSpan.innerText = '(Rs ' + formatNepaliNumber(totalCredits) + ')';
+        const colSpan = document.getElementById('collectionCardTotal'); if (colSpan) colSpan.innerText = '(Rs ' + formatNepaliNumber(totalCashColls) + ')';
+        const expSpan = document.getElementById('expenseCardTotal'); if (expSpan) expSpan.innerText = totalExp < 0 ? '(Net Income Rs ' + formatNepaliNumber(-totalExp) + ')' : '(Rs ' + formatNepaliNumber(totalExp) + ')';
+        const depSpan = document.getElementById('depositCardTotal'); if (depSpan) depSpan.innerText = '(Rs ' + formatNepaliNumber(totalDep) + ')';
+        const witSpan = document.getElementById('withdrawalCardTotal'); if (witSpan) witSpan.innerText = '(Rs ' + formatNepaliNumber(totalWith) + ')';
+    }
 
-    // ---------- Credit Sales Table ----------
-    const crTbody = document.querySelector('#todayCreditTable tbody');
-    crTbody.innerHTML = '';
-    tCredits.forEach(c => {
-        const row = crTbody.insertRow();
-        row.insertCell(0).innerText = c.debtor;
-        // Show amount + edit tag if the record was edited on a locked day
-        let amtText = formatRs(c.amount);
-        if (locked && c.lastEdited) {
-            amtText += ` <span style="color:red; font-size:0.65rem;" title="Edited on ${c.lastEdited.date}">✎ ${c.lastEdited.date?.slice(0,10)}</span>`;
-        }
-        row.insertCell(1).innerHTML = amtText;
-        if (!locked) {
-            const del = row.insertCell(2);
-            const btn = document.createElement('button'); btn.className='delete-btn btn-sm'; btn.innerText='✖';
+    function displayTodayEntries() {
+        const today = getTodayDate(), locked = isDateLocked(today);
+        const tCredits = getAllCreditSalesForDate(today), tColls = getAllCollectionsForDate(today), tExp = getAllExpensesForDate(today);
+
+        const crTbody = document.querySelector('#todayCreditTable tbody'); crTbody.innerHTML = '';
+        tCredits.forEach(c => {
+            const row = crTbody.insertRow(); row.insertCell(0).innerText = c.debtor;
+            let amtText = formatRs(c.amount);
+            if (locked && c.lastEdited) { amtText += ` <span style="color:red; font-size:0.65rem;" title="Edited on ${c.lastEdited.date}">✎ ${c.lastEdited.date?.slice(0,10)}</span>`; }
+            row.insertCell(1).innerHTML = amtText;
+            const del = row.insertCell(2); const btn = document.createElement('button'); btn.className='delete-btn btn-sm'; btn.innerText='✖';
             btn.onclick = () => {
                 const idx = creditSales.findIndex(t => t.date===today && t.debtor===c.debtor && t.amount===c.amount);
-                if (idx > -1) {
-                    // Mark as edited if the day is locked
-                    if (locked) {
-                        creditSales[idx].lastEdited = { date: new Date().toISOString(), user: 'edited' };
-                    } else {
-                        creditSales.splice(idx, 1);
-                    }
-                } else {
-                    adjustments = adjustments.filter(a => !(a.date===today && a.type==='credit' && a.debtor===c.debtor && a.amount===c.amount));
-                }
+                if (idx > -1) { if (locked) { creditSales[idx].lastEdited = { date: new Date().toISOString(), user: 'edited' }; } else { creditSales.splice(idx, 1); } }
+                else { adjustments = adjustments.filter(a => !(a.date===today && a.type==='credit' && a.debtor===c.debtor && a.amount===c.amount)); }
                 saveAll(); displayTodayEntries(); updateAll();
             };
             del.appendChild(btn);
-        }
-    });
+        });
 
-    // ---------- Cash Collections Table ----------
-    const colTbody = document.querySelector('#todayCollectionTable tbody');
-    colTbody.innerHTML = '';
-    tColls.forEach(c => {
-        const row = colTbody.insertRow();
-        row.insertCell(0).innerText = c.debtor;
-        let amtText = formatRs(c.amount);
-        if (locked && c.lastEdited) {
-            amtText += ` <span style="color:red; font-size:0.65rem;" title="Edited on ${c.lastEdited.date}">✎ ${c.lastEdited.date?.slice(0,10)}</span>`;
-        }
-        row.insertCell(1).innerHTML = amtText;
-        if (!locked) {
-            const del = row.insertCell(2);
-            const btn = document.createElement('button'); btn.className='delete-btn btn-sm'; btn.innerText='✖';
+        const colTbody = document.querySelector('#todayCollectionTable tbody'); colTbody.innerHTML = '';
+        tColls.forEach(c => {
+            const row = colTbody.insertRow(); row.insertCell(0).innerText = c.debtor;
+            let amtText = formatRs(c.amount);
+            if (locked && c.lastEdited) { amtText += ` <span style="color:red; font-size:0.65rem;" title="Edited on ${c.lastEdited.date}">✎ ${c.lastEdited.date?.slice(0,10)}</span>`; }
+            row.insertCell(1).innerHTML = amtText;
+            const del = row.insertCell(2); const btn = document.createElement('button'); btn.className='delete-btn btn-sm'; btn.innerText='✖';
             btn.onclick = () => {
                 const idx = collections.findIndex(t => t.date===today && t.debtor===c.debtor && t.amount===c.amount);
-                if (idx > -1) {
-                    if (locked) {
-                        collections[idx].lastEdited = { date: new Date().toISOString(), user: 'edited' };
-                    } else {
-                        collections.splice(idx, 1);
-                    }
-                } else {
-                    adjustments = adjustments.filter(a => !(a.date===today && a.type==='collection' && a.debtor===c.debtor && a.amount===c.amount));
-                }
+                if (idx > -1) { if (locked) { collections[idx].lastEdited = { date: new Date().toISOString(), user: 'edited' }; } else { collections.splice(idx, 1); } }
+                else { adjustments = adjustments.filter(a => !(a.date===today && a.type==='collection' && a.debtor===c.debtor && a.amount===c.amount)); }
                 saveAll(); displayTodayEntries(); updateAll();
             };
             del.appendChild(btn);
-        }
-    });
+        });
 
-    // ---------- Expenses Table ----------
-    const expTbody = document.querySelector('#todayExpenseTable tbody');
-    expTbody.innerHTML = '';
-    tExp.forEach(e => {
-        const row = expTbody.insertRow();
-        row.insertCell(0).innerText = e.category;
-        let amtText = formatRs(e.amount);
-        if (locked && e.lastEdited) {
-            amtText += ` <span style="color:red; font-size:0.65rem;" title="Edited on ${e.lastEdited.date}">✎ ${e.lastEdited.date?.slice(0,10)}</span>`;
-        }
-        row.insertCell(1).innerHTML = amtText;
-        if (!locked) {
-            const del = row.insertCell(2);
-            const btn = document.createElement('button'); btn.className='delete-btn btn-sm'; btn.innerText='✖';
+        const expTbody = document.querySelector('#todayExpenseTable tbody'); expTbody.innerHTML = '';
+        tExp.forEach(e => {
+            const row = expTbody.insertRow(); row.insertCell(0).innerText = e.category;
+            let amtText = formatRs(e.amount);
+            if (locked && e.lastEdited) { amtText += ` <span style="color:red; font-size:0.65rem;" title="Edited on ${e.lastEdited.date}">✎ ${e.lastEdited.date?.slice(0,10)}</span>`; }
+            row.insertCell(1).innerHTML = amtText;
+            const del = row.insertCell(2); const btn = document.createElement('button'); btn.className='delete-btn btn-sm'; btn.innerText='✖';
             btn.onclick = () => {
                 const idx = expensesList.findIndex(t => t.date===today && t.category===e.category && t.amount===e.amount);
-                if (idx > -1) {
-                    if (locked) {
-                        expensesList[idx].lastEdited = { date: new Date().toISOString(), user: 'edited' };
-                    } else {
-                        expensesList.splice(idx, 1);
-                    }
-                } else {
-                    adjustments = adjustments.filter(a => !(a.date===today && a.type==='expense' && a.category===e.category && a.amount===e.amount));
-                }
+                if (idx > -1) { if (locked) { expensesList[idx].lastEdited = { date: new Date().toISOString(), user: 'edited' }; } else { expensesList.splice(idx, 1); } }
+                else { adjustments = adjustments.filter(a => !(a.date===today && a.type==='expense' && a.category===e.category && a.amount===e.amount)); }
                 saveAll(); displayTodayEntries(); updateAll();
             };
             del.appendChild(btn);
-        }
-    });
+        });
 
-    function updateCardTotals() {
-    const today = getTodayDate();
-    const totalCredits = getAllCreditSalesForDate(today).reduce((s, t) => s + t.amount, 0);
-    const totalCashColls = getAllCollectionsForDate(today).reduce((s, t) => s + t.amount, 0);
-    const totalExp = getAllExpensesForDate(today).reduce((s, t) => s + t.amount, 0);
-    const totalDep = deposits.reduce((s, d) => s + d.amount, 0);
-    const totalWith = withdrawals.reduce((s, w) => s + w.amount, 0);
-
-    // Update the card‑title totals (ensure these span IDs exist in HTML)
-    const crSpan = document.getElementById('creditCardTotal');
-    if (crSpan) crSpan.innerText = '(Rs ' + formatNepaliNumber(totalCredits) + ')';
-    const colSpan = document.getElementById('collectionCardTotal');
-    if (colSpan) colSpan.innerText = '(Rs ' + formatNepaliNumber(totalCashColls) + ')';
-    const expSpan = document.getElementById('expenseCardTotal');
-    if (expSpan) expSpan.innerText = totalExp < 0 ? '(Net Income Rs ' + formatNepaliNumber(-totalExp) + ')' : '(Rs ' + formatNepaliNumber(totalExp) + ')';
-    const depSpan = document.getElementById('depositCardTotal');
-    if (depSpan) depSpan.innerText = '(Rs ' + formatNepaliNumber(totalDep) + ')';
-    const witSpan = document.getElementById('withdrawalCardTotal');
-    if (witSpan) witSpan.innerText = '(Rs ' + formatNepaliNumber(totalWith) + ')';
-}      
-}
+        renderBankTables();
+        updateCardTotals();
+    }
 
     function renderBankTables() {
         const today = getTodayDate(), locked = isDateLocked(today);
         const depTbody = document.querySelector('#bankDepTable tbody'); depTbody.innerHTML = '';
         deposits.forEach((d, idx) => {
             const row = depTbody.insertRow();
-            row.insertCell(0).innerHTML = `<input value="${d.desc||''}" style="width:100px" ${locked?'readonly':''}>`;
-            row.cells[0].firstChild.onchange = e => { deposits[idx].desc = e.target.value; saveAll(); };
-            row.insertCell(1).innerHTML = `<input type="number" value="${d.amount}" step="any" style="width:80px" ${locked?'readonly':''}>`;
-            row.cells[1].firstChild.onchange = e => { deposits[idx].amount = parseFloat(e.target.value)||0; saveAll(); updateAll(); };
-            if (!locked) { const del = row.insertCell(2); const btn = document.createElement('button'); btn.className='delete-btn btn-sm'; btn.innerText='✖'; btn.onclick = () => { deposits.splice(idx,1); saveAll(); updateAll(); }; del.appendChild(btn); }
+            row.insertCell(0).innerHTML = `<input value="${d.desc||''}" style="width:100px" ${locked?'readonly':''}>`; row.cells[0].firstChild.onchange = e => { deposits[idx].desc = e.target.value; saveAll(); };
+            row.insertCell(1).innerHTML = `<input type="number" value="${d.amount}" step="any" style="width:80px" ${locked?'readonly':''}>`; row.cells[1].firstChild.onchange = e => { deposits[idx].amount = parseFloat(e.target.value)||0; saveAll(); updateAll(); };
+            const del = row.insertCell(2); const btn = document.createElement('button'); btn.className='delete-btn btn-sm'; btn.innerText='✖'; btn.onclick = () => { deposits.splice(idx,1); saveAll(); updateAll(); }; del.appendChild(btn);
         });
         const witTbody = document.querySelector('#bankWitTable tbody'); witTbody.innerHTML = '';
         withdrawals.forEach((w, idx) => {
             const row = witTbody.insertRow();
-            row.insertCell(0).innerHTML = `<input value="${w.desc||''}" style="width:100px" ${locked?'readonly':''}>`;
-            row.cells[0].firstChild.onchange = e => { withdrawals[idx].desc = e.target.value; saveAll(); };
-            row.insertCell(1).innerHTML = `<input type="number" value="${w.amount}" step="any" style="width:80px" ${locked?'readonly':''}>`;
-            row.cells[1].firstChild.onchange = e => { withdrawals[idx].amount = parseFloat(e.target.value)||0; saveAll(); updateAll(); };
-            if (!locked) { const del = row.insertCell(2); const btn = document.createElement('button'); btn.className='delete-btn btn-sm'; btn.innerText='✖'; btn.onclick = () => { withdrawals.splice(idx,1); saveAll(); updateAll(); }; del.appendChild(btn); }
+            row.insertCell(0).innerHTML = `<input value="${w.desc||''}" style="width:100px" ${locked?'readonly':''}>`; row.cells[0].firstChild.onchange = e => { withdrawals[idx].desc = e.target.value; saveAll(); };
+            row.insertCell(1).innerHTML = `<input type="number" value="${w.amount}" step="any" style="width:80px" ${locked?'readonly':''}>`; row.cells[1].firstChild.onchange = e => { withdrawals[idx].amount = parseFloat(e.target.value)||0; saveAll(); updateAll(); };
+            const del = row.insertCell(2); const btn = document.createElement('button'); btn.className='delete-btn btn-sm'; btn.innerText='✖'; btn.onclick = () => { withdrawals.splice(idx,1); saveAll(); updateAll(); }; del.appendChild(btn);
         });
         const chgTbody = document.querySelector('#bankChgTable tbody'); chgTbody.innerHTML = '';
         bankCharges.forEach((c, idx) => {
             const row = chgTbody.insertRow();
-            row.insertCell(0).innerHTML = `<input value="${c.desc||''}" style="width:120px" ${locked?'readonly':''}>`;
-            row.cells[0].firstChild.onchange = e => { bankCharges[idx].desc = e.target.value; saveAll(); };
-            row.insertCell(1).innerHTML = `<input type="number" value="${c.amount}" step="any" style="width:80px" ${locked?'readonly':''}>`;
-            row.cells[1].firstChild.onchange = e => { bankCharges[idx].amount = parseFloat(e.target.value)||0; saveAll(); updateAll(); };
-            if (!locked) { const del = row.insertCell(2); const btn = document.createElement('button'); btn.className='delete-btn btn-sm'; btn.innerText='✖'; btn.onclick = () => { bankCharges.splice(idx,1); saveAll(); updateAll(); }; del.appendChild(btn); }
+            row.insertCell(0).innerHTML = `<input value="${c.desc||''}" style="width:120px" ${locked?'readonly':''}>`; row.cells[0].firstChild.onchange = e => { bankCharges[idx].desc = e.target.value; saveAll(); };
+            row.insertCell(1).innerHTML = `<input type="number" value="${c.amount}" step="any" style="width:80px" ${locked?'readonly':''}>`; row.cells[1].firstChild.onchange = e => { bankCharges[idx].amount = parseFloat(e.target.value)||0; saveAll(); updateAll(); };
+            const del = row.insertCell(2); const btn = document.createElement('button'); btn.className='delete-btn btn-sm'; btn.innerText='✖'; btn.onclick = () => { bankCharges.splice(idx,1); saveAll(); updateAll(); }; del.appendChild(btn);
         });
     }
 
     function updateBankDisplay() {
-        const totalDep = deposits.reduce((s,d)=>s+d.amount,0);
-        const totalWit = withdrawals.reduce((s,w)=>s+w.amount,0);
-        const totalChg = bankCharges.reduce((s,c)=>s+c.amount,0);
+        const totalDep = deposits.reduce((s,d)=>s+d.amount,0), totalWit = withdrawals.reduce((s,w)=>s+w.amount,0), totalChg = bankCharges.reduce((s,c)=>s+c.amount,0);
         const opening = parseFloat(document.getElementById('prabhuOpeningBal').value) || 0;
         const closing = opening + totalDep - totalWit - totalChg;
         document.getElementById('bankClosing').innerText = formatRs(closing);
@@ -609,20 +474,13 @@
     function updateReconciliation() {
         const openingCash = parseFloat(document.getElementById('openingCash').value)||0;
         const sales = getNozzleSales();
-        // Update fuel totals in the daily view
         document.getElementById('petrolSalesTotal').innerText = formatRs(sales.petrolAmt) + ' (' + sales.petrolLtr.toFixed(2) + ' Ltr)';
         document.getElementById('dieselSalesTotal').innerText = formatRs(sales.dieselAmt) + ' (' + sales.dieselLtr.toFixed(2) + ' Ltr)';
         document.getElementById('totalSalesDisplay').innerText = formatRs(sales.total);
-
         const today = getTodayDate();
-        const totalCredits = getAllCreditSalesForDate(today).reduce((s,t)=>s+t.amount,0);
-        const totalColls = getAllCollectionsForDate(today).reduce((s,t)=>s+t.amount,0);
-        const totalExp = getAllExpensesForDate(today).reduce((s,t)=>s+t.amount,0);
-        const totalDep = deposits.reduce((s,d)=>s+d.amount,0);
-        const inflows = sales.total + totalColls;
-        const outflows = totalCredits + totalExp + totalDep;
-        const net = inflows - outflows;
-        const closing = openingCash + net;
+        const totalCredits = getAllCreditSalesForDate(today).reduce((s,t)=>s+t.amount,0), totalColls = getAllCollectionsForDate(today).reduce((s,t)=>s+t.amount,0);
+        const totalExp = getAllExpensesForDate(today).reduce((s,t)=>s+t.amount,0), totalDep = deposits.reduce((s,d)=>s+d.amount,0);
+        const inflows = sales.total + totalColls, outflows = totalCredits + totalExp + totalDep, net = inflows - outflows, closing = openingCash + net;
         document.getElementById('recOpenCash').innerText = formatRs(openingCash);
         document.getElementById('recInflows').innerText = formatRs(inflows);
         document.getElementById('recOutflows').innerText = formatRs(outflows);
@@ -631,675 +489,139 @@
         document.getElementById('recStatus').innerHTML = closing < 0 ? '⚠️ Negative' : '✅ Balanced';
     }
 
-    function updateAll() {
-    displayTodayEntries();   // this now calls updateCardTotals internally
-    updateReconciliation();
-    updateBankDisplay();
-    // updateStockAndNOC is called separately when the stock view is shown
-}
+    function updateAll() { displayTodayEntries(); updateReconciliation(); updateBankDisplay(); }
 
-    // Fuel nozzles (unchanged)
     function renderFuelTable() {
         const tbody = document.getElementById('fuelBody'); tbody.innerHTML = '';
         nozzles.forEach((noz, idx) => {
-            const row = tbody.insertRow();
-            row.insertCell(0).innerText = noz.id;
-            const op = row.insertCell(1), cl = row.insertCell(2);
-            const so = row.insertCell(3), ra = row.insertCell(4), am = row.insertCell(5);
-            const opInp = document.createElement('input'); opInp.type='number'; opInp.value=noz.open;
-            opInp.readOnly = true;
-            opInp.style.background = '#f1f5f9';
+            const row = tbody.insertRow(); row.insertCell(0).innerText = noz.id;
+            const op = row.insertCell(1), cl = row.insertCell(2); row.insertCell(3); row.insertCell(4); row.insertCell(5);
+            const opInp = document.createElement('input'); opInp.type='number'; opInp.value=noz.open; opInp.readOnly = true; opInp.style.background = '#f1f5f9';
             opInp.onchange = e => { nozzles[idx].open = parseFloat(e.target.value)||0; updateFuelCells(); updateAll(); };
             const clInp = document.createElement('input'); clInp.type='number'; clInp.value=noz.close;
-            clInp.addEventListener('input', function() {
-                nozzles[idx].close = parseFloat(this.value) || 0;
-                updateFuelCells();
-                updateAll();
-            });
+            clInp.addEventListener('input', function() { nozzles[idx].close = parseFloat(this.value) || 0; updateFuelCells(); updateAll(); });
             clInp.addEventListener('focus', () => clInp.select());
             clInp.addEventListener('keydown', function(e) {
-                if (e.key === 'Enter') {
-                    e.preventDefault();
+                if (e.key === 'Enter') { e.preventDefault();
                     const nextRow = this.closest('tr').nextElementSibling;
-                    if (nextRow && nextRow.querySelectorAll('input')[1]) {
-                        const nextInput = nextRow.querySelectorAll('input')[1];
-                        nextInput.focus();
-                        nextInput.select();
-                    } else {
-                        const outPetrol = document.getElementById('outPetrolLtr');
-                        outPetrol.focus();
-                        outPetrol.select();
-                    }
+                    if (nextRow && nextRow.querySelectorAll('input')[1]) { const ni = nextRow.querySelectorAll('input')[1]; ni.focus(); ni.select(); }
+                    else { const opf = document.getElementById('outPetrolLtr'); opf.focus(); opf.select(); }
                 }
             });
-            op.appendChild(opInp); cl.appendChild(clInp);
-            updateFuelRow(row, noz);
+            op.appendChild(opInp); cl.appendChild(clInp); updateFuelRow(row, noz);
         });
     }
     function updateFuelRow(row, noz) {
-        const pRate = parseFloat(document.getElementById('petrolRate').value)||0;
-        const dRate = parseFloat(document.getElementById('dieselRate').value)||0;
-        const rate = noz.type === 'petrol' ? pRate : dRate;
-        const litres = Math.max(0, noz.close - noz.open);
-        row.cells[3].innerText = litres.toFixed(3);
-        row.cells[4].innerText = formatRs(rate);
-        row.cells[5].innerText = formatRs(litres * rate);
+        const pRate = parseFloat(document.getElementById('petrolRate').value)||0, dRate = parseFloat(document.getElementById('dieselRate').value)||0;
+        const rate = noz.type === 'petrol' ? pRate : dRate; const litres = Math.max(0, noz.close - noz.open);
+        row.cells[3].innerText = litres.toFixed(3); row.cells[4].innerText = formatRs(rate); row.cells[5].innerText = formatRs(litres * rate);
     }
-    function updateFuelCells() {
-        document.querySelectorAll('#fuelBody tr').forEach((row, i) => { if (nozzles[i]) updateFuelRow(row, nozzles[i]); });
-    }
+    function updateFuelCells() { document.querySelectorAll('#fuelBody tr').forEach((row, i) => { if (nozzles[i]) updateFuelRow(row, nozzles[i]); }); }
     function getNozzleSales() {
-        const pRate = parseFloat(document.getElementById('petrolRate').value)||0;
-        const dRate = parseFloat(document.getElementById('dieselRate').value)||0;
+        const pRate = parseFloat(document.getElementById('petrolRate').value)||0, dRate = parseFloat(document.getElementById('dieselRate').value)||0;
         let petrolLtr = 0, dieselLtr = 0;
-        nozzles.forEach(n => {
-            const litres = Math.max(0, n.close - n.open);
-            if (n.type === 'petrol') petrolLtr += litres;
-            else dieselLtr += litres;
-        });
-        const outP = parseFloat(document.getElementById('outPetrolLtr').value)||0;
-        const outD = parseFloat(document.getElementById('outDieselLtr').value)||0;
+        nozzles.forEach(n => { const litres = Math.max(0, n.close - n.open); if (n.type === 'petrol') petrolLtr += litres; else dieselLtr += litres; });
+        const outP = parseFloat(document.getElementById('outPetrolLtr').value)||0, outD = parseFloat(document.getElementById('outDieselLtr').value)||0;
         petrolLtr += outP; dieselLtr += outD;
         return { petrolLtr, dieselLtr, petrolAmt: petrolLtr*pRate, dieselAmt: dieselLtr*dRate, total: (petrolLtr*pRate)+(dieselLtr*dRate) };
     }
 
     // ---------- STOCK & NOC WITH DATE RANGE ----------
     function updateStockAndNOC(startDate, endDate) {
-        // Default to today if no range provided
-        if (!startDate) startDate = getTodayDate();
-        if (!endDate) endDate = getTodayDate();
-
-        // Sales from posted days only (historical accuracy)
+        if (!startDate) startDate = getTodayDate(); if (!endDate) endDate = getTodayDate();
         let petrolSalesLtr = 0, dieselSalesLtr = 0;
-        postedDays.forEach(day => {
-            if (day.date >= startDate && day.date <= endDate) {
-                petrolSalesLtr += (day.sales?.petrolLtr || 0);
-                dieselSalesLtr += (day.sales?.dieselLtr || 0);
-            }
-        });
-
-        // Purchases and payments in the range
+        postedDays.forEach(day => { if (day.date >= startDate && day.date <= endDate) { petrolSalesLtr += (day.sales?.petrolLtr || 0); dieselSalesLtr += (day.sales?.dieselLtr || 0); } });
         const rangePurchases = purchases.filter(p => p.date >= startDate && p.date <= endDate);
         const rangePayments = nocPayments.filter(p => p.date >= startDate && p.date <= endDate);
-        const purchPetrol = rangePurchases.reduce((s,p)=>s+p.petrolLitres,0);
-        const purchDiesel = rangePurchases.reduce((s,p)=>s+p.dieselLitres,0);
-        const purchAmount = rangePurchases.reduce((s,p)=>s+p.amount,0);
-        const totalPayments = rangePayments.reduce((s,p)=>s+p.amount,0);
-
-        // Opening stock and NOC balance are user-controlled (the input fields)
+        const purchPetrol = rangePurchases.reduce((s,p)=>s+p.petrolLitres,0), purchDiesel = rangePurchases.reduce((s,p)=>s+p.dieselLitres,0);
+        const purchAmount = rangePurchases.reduce((s,p)=>s+p.amount,0), totalPayments = rangePayments.reduce((s,p)=>s+p.amount,0);
         const openPetrol = parseFloat(document.getElementById('stockOpenPetrolInput').value)||0;
         const openDiesel = parseFloat(document.getElementById('stockOpenDieselInput').value)||0;
-        document.getElementById('stockOpenPetrolInput').value = openPetrol;
-        document.getElementById('stockOpenDieselInput').value = openDiesel;
-        document.getElementById('stockPurchPetrol').innerText = purchPetrol.toFixed(2);
-        document.getElementById('stockPurchDiesel').innerText = purchDiesel.toFixed(2);
-        document.getElementById('stockSalesPetrol').innerText = petrolSalesLtr.toFixed(2);
-        document.getElementById('stockSalesDiesel').innerText = dieselSalesLtr.toFixed(2);
-        const closePetrol = openPetrol + purchPetrol - petrolSalesLtr;
-        const closeDiesel = openDiesel + purchDiesel - dieselSalesLtr;
-        document.getElementById('stockClosePetrol').innerText = closePetrol.toFixed(2);
-        document.getElementById('stockCloseDiesel').innerText = closeDiesel.toFixed(2);
-
-        // NOC Ledger
+        document.getElementById('stockOpenPetrolInput').value = openPetrol; document.getElementById('stockOpenDieselInput').value = openDiesel;
+        document.getElementById('stockPurchPetrol').innerText = purchPetrol.toFixed(2); document.getElementById('stockPurchDiesel').innerText = purchDiesel.toFixed(2);
+        document.getElementById('stockSalesPetrol').innerText = petrolSalesLtr.toFixed(2); document.getElementById('stockSalesDiesel').innerText = dieselSalesLtr.toFixed(2);
+        document.getElementById('stockClosePetrol').innerText = (openPetrol + purchPetrol - petrolSalesLtr).toFixed(2);
+        document.getElementById('stockCloseDiesel').innerText = (openDiesel + purchDiesel - dieselSalesLtr).toFixed(2);
         document.getElementById('nocOpenBal').innerText = formatRs(nocOpeningBal);
-        const closingNOC = nocOpeningBal + purchAmount - totalPayments;
-        document.getElementById('nocCloseBal').innerText = formatRs(closingNOC);
+        document.getElementById('nocCloseBal').innerText = formatRs(nocOpeningBal + purchAmount - totalPayments);
 
-        // Render purchase table (editable, respecting locked dates)
-        const purchTbody = document.querySelector('#purchaseTable tbody');
-        purchTbody.innerHTML = '';
+        const purchTbody = document.querySelector('#purchaseTable tbody'); purchTbody.innerHTML = '';
         rangePurchases.forEach(p => {
-            const globalIdx = purchases.indexOf(p);
-            const row = purchTbody.insertRow();
-            const locked = isDateLocked(p.date);
-            // Date cell
-            const dateCell = row.insertCell(0);
-            const dateInput = document.createElement('input');
-            dateInput.type = 'date'; dateInput.value = p.date;
-            dateInput.style.width = '120px';
-            dateInput.disabled = locked;
-            if (!locked) {
-                dateInput.addEventListener('change', () => {
-                    purchases[globalIdx].date = dateInput.value;
-                    saveAll(); updateStockAndNOC(startDate, endDate); updateAll();
-                });
-            }
-            dateCell.appendChild(dateInput);
-            // Petrol litres
-            const petrolCell = row.insertCell(1);
-            const petrolInput = document.createElement('input');
-            petrolInput.type = 'number'; petrolInput.step = 'any';
-            petrolInput.value = p.petrolLitres; petrolInput.style.width = '80px';
-            petrolInput.disabled = locked;
-            if (!locked) {
-                petrolInput.addEventListener('change', () => {
-                    purchases[globalIdx].petrolLitres = parseFloat(petrolInput.value)||0;
-                    saveAll(); updateStockAndNOC(startDate, endDate); updateAll();
-                });
-            }
-            petrolCell.appendChild(petrolInput);
-            // Diesel litres
-            const dieselCell = row.insertCell(2);
-            const dieselInput = document.createElement('input');
-            dieselInput.type = 'number'; dieselInput.step = 'any';
-            dieselInput.value = p.dieselLitres; dieselInput.style.width = '80px';
-            dieselInput.disabled = locked;
-            if (!locked) {
-                dieselInput.addEventListener('change', () => {
-                    purchases[globalIdx].dieselLitres = parseFloat(dieselInput.value)||0;
-                    saveAll(); updateStockAndNOC(startDate, endDate); updateAll();
-                });
-            }
-            dieselCell.appendChild(dieselInput);
-            // Amount
-            const amtCell = row.insertCell(3);
-            const amtInput = document.createElement('input');
-            amtInput.type = 'number'; amtInput.step = 'any';
-            amtInput.value = p.amount; amtInput.style.width = '100px';
-            amtInput.disabled = locked;
-            if (!locked) {
-                amtInput.addEventListener('change', () => {
-                    purchases[globalIdx].amount = parseFloat(amtInput.value)||0;
-                    saveAll(); updateStockAndNOC(startDate, endDate); updateAll();
-                });
-            }
-            amtCell.appendChild(amtInput);
-            // Actions
-            const actCell = row.insertCell(4);
-            actCell.style.whiteSpace = 'nowrap';
-            if (!locked) {
-                const saveBtn = document.createElement('button');
-                saveBtn.className = 'save-btn'; saveBtn.innerText = '💾';
-                saveBtn.addEventListener('click', () => { saveAll(); updateStockAndNOC(startDate, endDate); updateAll(); });
-                const delBtn = document.createElement('button');
-                delBtn.className = 'delete-btn btn-sm'; delBtn.innerText = '✖';
-                delBtn.addEventListener('click', () => {
-                    purchases.splice(globalIdx, 1);
-                    saveAll(); updateStockAndNOC(startDate, endDate); updateAll();
-                });
-                actCell.appendChild(saveBtn);
-                actCell.appendChild(delBtn);
-            }
+            const globalIdx = purchases.indexOf(p); const row = purchTbody.insertRow(); const locked = isDateLocked(p.date);
+            const dateCell = row.insertCell(0); const dateInput = document.createElement('input'); dateInput.type = 'date'; dateInput.value = p.date; dateInput.style.width = '120px'; dateInput.disabled = locked;
+            if (!locked) { dateInput.addEventListener('change', () => { purchases[globalIdx].date = dateInput.value; saveAll(); updateStockAndNOC(startDate, endDate); updateAll(); }); } dateCell.appendChild(dateInput);
+            const petrolCell = row.insertCell(1); const petrolInput = document.createElement('input'); petrolInput.type = 'number'; petrolInput.step = 'any'; petrolInput.value = p.petrolLitres; petrolInput.style.width = '80px'; petrolInput.disabled = locked;
+            if (!locked) { petrolInput.addEventListener('change', () => { purchases[globalIdx].petrolLitres = parseFloat(petrolInput.value)||0; saveAll(); updateStockAndNOC(startDate, endDate); updateAll(); }); } petrolCell.appendChild(petrolInput);
+            const dieselCell = row.insertCell(2); const dieselInput = document.createElement('input'); dieselInput.type = 'number'; dieselInput.step = 'any'; dieselInput.value = p.dieselLitres; dieselInput.style.width = '80px'; dieselInput.disabled = locked;
+            if (!locked) { dieselInput.addEventListener('change', () => { purchases[globalIdx].dieselLitres = parseFloat(dieselInput.value)||0; saveAll(); updateStockAndNOC(startDate, endDate); updateAll(); }); } dieselCell.appendChild(dieselInput);
+            const amtCell = row.insertCell(3); const amtInput = document.createElement('input'); amtInput.type = 'number'; amtInput.step = 'any'; amtInput.value = p.amount; amtInput.style.width = '100px'; amtInput.disabled = locked;
+            if (!locked) { amtInput.addEventListener('change', () => { purchases[globalIdx].amount = parseFloat(amtInput.value)||0; saveAll(); updateStockAndNOC(startDate, endDate); updateAll(); }); } amtCell.appendChild(amtInput);
+            const actCell = row.insertCell(4); actCell.style.whiteSpace = 'nowrap';
+            if (!locked) { const saveBtn = document.createElement('button'); saveBtn.className = 'save-btn'; saveBtn.innerText = '💾'; saveBtn.addEventListener('click', () => { saveAll(); updateStockAndNOC(startDate, endDate); updateAll(); });
+                const delBtn = document.createElement('button'); delBtn.className = 'delete-btn btn-sm'; delBtn.innerText = '✖'; delBtn.addEventListener('click', () => { purchases.splice(globalIdx, 1); saveAll(); updateStockAndNOC(startDate, endDate); updateAll(); });
+                actCell.appendChild(saveBtn); actCell.appendChild(delBtn); }
         });
 
-        // Render NOC Ledger table (debit/credit)
-        const nocTbody = document.querySelector('#nocLedgerTable tbody');
-        nocTbody.innerHTML = '';
-        // Purchases as debit
+        const nocTbody = document.querySelector('#nocLedgerTable tbody'); nocTbody.innerHTML = '';
         rangePurchases.forEach(p => {
-            const globalIdx = purchases.indexOf(p);
-            const row = nocTbody.insertRow();
-            const locked = isDateLocked(p.date);
-            // Date
-            const dateCell = row.insertCell(0);
-            const dateInput = document.createElement('input');
-            dateInput.type = 'date'; dateInput.value = p.date;
-            dateInput.style.width = '120px';
-            dateInput.disabled = locked;
-            if (!locked) {
-                dateInput.addEventListener('change', () => {
-                    purchases[globalIdx].date = dateInput.value;
-                    saveAll(); updateStockAndNOC(startDate, endDate); updateAll();
-                });
-            }
-            dateCell.appendChild(dateInput);
-            // Particulars
+            const globalIdx = purchases.indexOf(p); const row = nocTbody.insertRow(); const locked = isDateLocked(p.date);
+            const dateCell = row.insertCell(0); const dateInput = document.createElement('input'); dateInput.type = 'date'; dateInput.value = p.date; dateInput.style.width = '120px'; dateInput.disabled = locked;
+            if (!locked) { dateInput.addEventListener('change', () => { purchases[globalIdx].date = dateInput.value; saveAll(); updateStockAndNOC(startDate, endDate); updateAll(); }); } dateCell.appendChild(dateInput);
             row.insertCell(1).innerText = 'Purchase';
-            // Debit
-            const debitCell = row.insertCell(2);
-            const debitInput = document.createElement('input');
-            debitInput.type = 'number'; debitInput.step = 'any';
-            debitInput.value = p.amount; debitInput.style.width = '100px';
-            debitInput.disabled = locked;
-            if (!locked) {
-                debitInput.addEventListener('change', () => {
-                    purchases[globalIdx].amount = parseFloat(debitInput.value)||0;
-                    saveAll(); updateStockAndNOC(startDate, endDate); updateAll();
-                });
-            }
-            debitCell.appendChild(debitInput);
-            // Credit empty
+            const debitCell = row.insertCell(2); const debitInput = document.createElement('input'); debitInput.type = 'number'; debitInput.step = 'any'; debitInput.value = p.amount; debitInput.style.width = '100px'; debitInput.disabled = locked;
+            if (!locked) { debitInput.addEventListener('change', () => { purchases[globalIdx].amount = parseFloat(debitInput.value)||0; saveAll(); updateStockAndNOC(startDate, endDate); updateAll(); }); } debitCell.appendChild(debitInput);
             row.insertCell(3).innerText = '';
-            // Actions
             const actCell = row.insertCell(4);
-            if (!locked) {
-                const saveBtn = document.createElement('button');
-                saveBtn.className = 'save-btn'; saveBtn.innerText = '💾';
-                saveBtn.addEventListener('click', () => { saveAll(); updateStockAndNOC(startDate, endDate); updateAll(); });
-                const delBtn = document.createElement('button');
-                delBtn.className = 'delete-btn btn-sm'; delBtn.innerText = '✖';
-                delBtn.addEventListener('click', () => {
-                    purchases.splice(globalIdx, 1);
-                    saveAll(); updateStockAndNOC(startDate, endDate); updateAll();
-                });
-                actCell.appendChild(saveBtn);
-                actCell.appendChild(delBtn);
-            }
+            if (!locked) { const saveBtn = document.createElement('button'); saveBtn.className = 'save-btn'; saveBtn.innerText = '💾'; saveBtn.addEventListener('click', () => { saveAll(); updateStockAndNOC(startDate, endDate); updateAll(); });
+                const delBtn = document.createElement('button'); delBtn.className = 'delete-btn btn-sm'; delBtn.innerText = '✖'; delBtn.addEventListener('click', () => { purchases.splice(globalIdx, 1); saveAll(); updateStockAndNOC(startDate, endDate); updateAll(); });
+                actCell.appendChild(saveBtn); actCell.appendChild(delBtn); }
         });
-        // Payments as credit
         rangePayments.forEach(pmt => {
-            const globalIdx = nocPayments.indexOf(pmt);
-            const row = nocTbody.insertRow();
-            const locked = isDateLocked(pmt.date);
-            // Date
-            const dateCell = row.insertCell(0);
-            const dateInput = document.createElement('input');
-            dateInput.type = 'date'; dateInput.value = pmt.date;
-            dateInput.style.width = '120px';
-            dateInput.disabled = locked;
-            if (!locked) {
-                dateInput.addEventListener('change', () => {
-                    nocPayments[globalIdx].date = dateInput.value;
-                    saveAll(); updateStockAndNOC(startDate, endDate); updateAll();
-                });
-            }
-            dateCell.appendChild(dateInput);
-            // Particulars
-            const partCell = row.insertCell(1);
-            const partInput = document.createElement('input');
-            partInput.type = 'text'; partInput.value = pmt.desc || 'NOC Payment';
-            partInput.style.width = '120px';
-            partInput.disabled = locked;
-            if (!locked) {
-                partInput.addEventListener('change', () => {
-                    nocPayments[globalIdx].desc = partInput.value;
-                    saveAll(); updateStockAndNOC(startDate, endDate); updateAll();
-                });
-            }
-            partCell.appendChild(partInput);
-            // Debit empty
+            const globalIdx = nocPayments.indexOf(pmt); const row = nocTbody.insertRow(); const locked = isDateLocked(pmt.date);
+            const dateCell = row.insertCell(0); const dateInput = document.createElement('input'); dateInput.type = 'date'; dateInput.value = pmt.date; dateInput.style.width = '120px'; dateInput.disabled = locked;
+            if (!locked) { dateInput.addEventListener('change', () => { nocPayments[globalIdx].date = dateInput.value; saveAll(); updateStockAndNOC(startDate, endDate); updateAll(); }); } dateCell.appendChild(dateInput);
+            const partCell = row.insertCell(1); const partInput = document.createElement('input'); partInput.type = 'text'; partInput.value = pmt.desc || 'NOC Payment'; partInput.style.width = '120px'; partInput.disabled = locked;
+            if (!locked) { partInput.addEventListener('change', () => { nocPayments[globalIdx].desc = partInput.value; saveAll(); updateStockAndNOC(startDate, endDate); updateAll(); }); } partCell.appendChild(partInput);
             row.insertCell(2).innerText = '';
-            // Credit amount
-            const creditCell = row.insertCell(3);
-            const creditInput = document.createElement('input');
-            creditInput.type = 'number'; creditInput.step = 'any';
-            creditInput.value = pmt.amount; creditInput.style.width = '100px';
-            creditInput.disabled = locked;
-            if (!locked) {
-                creditInput.addEventListener('change', () => {
-                    nocPayments[globalIdx].amount = parseFloat(creditInput.value)||0;
-                    saveAll(); updateStockAndNOC(startDate, endDate); updateAll();
-                });
-            }
-            creditCell.appendChild(creditInput);
-            // Actions
+            const creditCell = row.insertCell(3); const creditInput = document.createElement('input'); creditInput.type = 'number'; creditInput.step = 'any'; creditInput.value = pmt.amount; creditInput.style.width = '100px'; creditInput.disabled = locked;
+            if (!locked) { creditInput.addEventListener('change', () => { nocPayments[globalIdx].amount = parseFloat(creditInput.value)||0; saveAll(); updateStockAndNOC(startDate, endDate); updateAll(); }); } creditCell.appendChild(creditInput);
             const actCell = row.insertCell(4);
-            if (!locked) {
-                const saveBtn = document.createElement('button');
-                saveBtn.className = 'save-btn'; saveBtn.innerText = '💾';
-                saveBtn.addEventListener('click', () => { saveAll(); updateStockAndNOC(startDate, endDate); updateAll(); });
-                const delBtn = document.createElement('button');
-                delBtn.className = 'delete-btn btn-sm'; delBtn.innerText = '✖';
-                delBtn.addEventListener('click', () => {
-                    nocPayments.splice(globalIdx, 1);
-                    saveAll(); updateStockAndNOC(startDate, endDate); updateAll();
-                });
-                actCell.appendChild(saveBtn);
-                actCell.appendChild(delBtn);
-            }
+            if (!locked) { const saveBtn = document.createElement('button'); saveBtn.className = 'save-btn'; saveBtn.innerText = '💾'; saveBtn.addEventListener('click', () => { saveAll(); updateStockAndNOC(startDate, endDate); updateAll(); });
+                const delBtn = document.createElement('button'); delBtn.className = 'delete-btn btn-sm'; delBtn.innerText = '✖'; delBtn.addEventListener('click', () => { nocPayments.splice(globalIdx, 1); saveAll(); updateStockAndNOC(startDate, endDate); updateAll(); });
+                actCell.appendChild(saveBtn); actCell.appendChild(delBtn); }
         });
     }
 
-    // Purchase & NOC add functions
-    function addPurchase() {
-        const today = getTodayDate();
-        if (isDateLocked(today)) return;
-        const petrolL = parseFloat(prompt('Petrol litres:'));
-        const dieselL = parseFloat(prompt('Diesel litres:'));
-        const amt = parseFloat(prompt('Total amount (Rs):'));
-        if (isNaN(petrolL)||isNaN(dieselL)||isNaN(amt)||amt<=0) return;
-        purchases.push({ date: today, petrolLitres: petrolL, dieselLitres: dieselL, amount: amt });
-        saveAll();
-        // Refresh stock view with current range
-        const sDate = document.getElementById('stockStartDate').value || getTodayDate();
-        const eDate = document.getElementById('stockEndDate').value || getTodayDate();
-        updateStockAndNOC(sDate, eDate);
-        updateAll();
-    }
-    function addNocPayment() {
-        const today = getTodayDate();
-        if (isDateLocked(today)) return;
-        const amt = parseFloat(prompt('Payment amount (Rs):'));
-        if (isNaN(amt)||amt<=0) return;
-        nocPayments.push({ date: today, amount: amt, desc: 'NOC Payment' });
-        withdrawals.push({ desc: 'NOC Payment', amount: amt });
-        saveAll();
-        const sDate = document.getElementById('stockStartDate').value || getTodayDate();
-        const eDate = document.getElementById('stockEndDate').value || getTodayDate();
-        updateStockAndNOC(sDate, eDate);
-        updateAll();
-    }
-    function pasteNOCData() {
-        const today = getTodayDate();
-        if (isDateLocked(today)) return;
-        const raw = prompt('Paste NOC purchase data:\n\nExpected format per line:\nBagmati Provincial Office  5/15/2026  HSD - Diesel - BS VI  193.67  9,000  1,743,029.82  226,593.88  1,969,623.7');
-        if (!raw) return;
-        const lines = raw.split('\n').filter(l=>l.trim());
-        let added = 0;
-        lines.forEach(line => {
-            const parts = line.split(/\t|\s{2,}/);
-            if (parts.length < 8) return;
-            const dateStr = parts[1].trim();
-            const product = parts[2].trim();
-            const qty = parseFloat(parts[4].replace(/,/g,''));
-            const total = parseFloat(parts[7].replace(/,/g,''));
-            if (isNaN(qty)||isNaN(total)) return;
-            const dateParts = dateStr.split('/');
-            if (dateParts.length!==3) return;
-            const isoDate = `${dateParts[2]}-${dateParts[0].padStart(2,'0')}-${dateParts[1].padStart(2,'0')}`;
-            let petrol=0, diesel=0;
-            if (product.toLowerCase().includes('petrol')) petrol=qty;
-            else if (product.toLowerCase().includes('diesel')||product.toLowerCase().includes('hsd')) diesel=qty;
-            else return;
-            purchases.push({ date: isoDate, petrolLitres: petrol, dieselLitres: diesel, amount: total });
-            added++;
-        });
-        saveAll();
-        const sDate = document.getElementById('stockStartDate').value || getTodayDate();
-        const eDate = document.getElementById('stockEndDate').value || getTodayDate();
-        updateStockAndNOC(sDate, eDate);
-        updateAll();
-        if (added) alert(`Added ${added} purchase(s).`);
-    }
+    function addPurchase() { const today = getTodayDate(); if (isDateLocked(today)) return; const petrolL = parseFloat(prompt('Petrol litres:')); const dieselL = parseFloat(prompt('Diesel litres:')); const amt = parseFloat(prompt('Total amount (Rs):')); if (isNaN(petrolL)||isNaN(dieselL)||isNaN(amt)||amt<=0) return; purchases.push({ date: today, petrolLitres: petrolL, dieselLitres: dieselL, amount: amt }); saveAll(); const sDate = document.getElementById('stockStartDate').value || getTodayDate(); const eDate = document.getElementById('stockEndDate').value || getTodayDate(); updateStockAndNOC(sDate, eDate); updateAll(); }
+    function addNocPayment() { const today = getTodayDate(); if (isDateLocked(today)) return; const amt = parseFloat(prompt('Payment amount (Rs):')); if (isNaN(amt)||amt<=0) return; nocPayments.push({ date: today, amount: amt, desc: 'NOC Payment' }); withdrawals.push({ desc: 'NOC Payment', amount: amt }); saveAll(); const sDate = document.getElementById('stockStartDate').value || getTodayDate(); const eDate = document.getElementById('stockEndDate').value || getTodayDate(); updateStockAndNOC(sDate, eDate); updateAll(); }
+    function pasteNOCData() { const today = getTodayDate(); if (isDateLocked(today)) return; const raw = prompt('Paste NOC purchase data:\n\nExpected format per line:\nBagmati Provincial Office  5/15/2026  HSD - Diesel - BS VI  193.67  9,000  1,743,029.82  226,593.88  1,969,623.7'); if (!raw) return; const lines = raw.split('\n').filter(l=>l.trim()); let added = 0; lines.forEach(line => { const parts = line.split(/\t|\s{2,}/); if (parts.length<8) return; const dateStr = parts[1].trim(); const product = parts[2].trim(); const qty = parseFloat(parts[4].replace(/,/g,'')); const total = parseFloat(parts[7].replace(/,/g,'')); if (isNaN(qty)||isNaN(total)) return; const dateParts = dateStr.split('/'); if (dateParts.length!==3) return; const isoDate = `${dateParts[2]}-${dateParts[0].padStart(2,'0')}-${dateParts[1].padStart(2,'0')}`; let petrol=0, diesel=0; if (product.toLowerCase().includes('petrol')) petrol=qty; else if (product.toLowerCase().includes('diesel')||product.toLowerCase().includes('hsd')) diesel=qty; else return; purchases.push({ date: isoDate, petrolLitres: petrol, dieselLitres: diesel, amount: total }); added++; }); saveAll(); const sDate = document.getElementById('stockStartDate').value || getTodayDate(); const eDate = document.getElementById('stockEndDate').value || getTodayDate(); updateStockAndNOC(sDate, eDate); updateAll(); if (added) alert(`Added ${added} purchase(s).`); }
 
-    function postToday() {
-        const today = getTodayDate(); if (!today) return alert('Select a date');
-        if (isDateLocked(today)) return alert('Already locked.');
-        if (postedDays.some(p => p.date === today)) return alert('Already posted.');
-        if (!confirm('Post today? Editing will be locked for this date.')) return;
+    function postStock() { const today = getTodayDate(); if (!today) return alert('Select a date'); const sales = (typeof getNozzleSales === 'function') ? getNozzleSales() : { petrolLtr: 0, dieselLtr: 0 }; const todayPurchases = purchases.filter(p => p.date === today); const todayPayments = nocPayments.filter(p => p.date === today); const closePetrol = stockOpenPetrol + todayPurchases.reduce((s, p) => s + p.petrolLitres, 0) - sales.petrolLtr; const closeDiesel = stockOpenDiesel + todayPurchases.reduce((s, p) => s + p.dieselLitres, 0) - sales.dieselLtr; const nocCloseBal = nocOpeningBal + todayPurchases.reduce((s, p) => s + p.amount, 0) - todayPayments.reduce((s, p) => s + p.amount, 0); const stockSnapshot = { date: today, stockOpenPetrol, stockOpenDiesel, stockClosePetrol: closePetrol, stockCloseDiesel: closeDiesel, purchases: [...todayPurchases], nocPayments: [...todayPayments], nocOpenBal: nocOpeningBal, nocCloseBal }; if (!window.stockPostedDays) window.stockPostedDays = []; window.stockPostedDays.push(stockSnapshot); stockOpenPetrol = closePetrol; stockOpenDiesel = closeDiesel; nocOpeningBal = nocCloseBal; purchases = purchases.filter(p => p.date !== today); nocPayments = nocPayments.filter(p => p.date !== today); withdrawals = withdrawals.filter(w => w.date !== today || w.desc !== 'NOC Payment'); saveAll(); updateStockAndNOC(today, today); updateAll(); alert('Stock/NOC posted and carried forward.'); }
 
-        const sales = getNozzleSales();
-        const openingCash = parseFloat(document.getElementById('openingCash').value)||0, openingBank = parseFloat(document.getElementById('openingBank').value)||0;
-        const totalCredits = getAllCreditSalesForDate(today).reduce((s,t)=>s+t.amount,0), totalColls = getAllCollectionsForDate(today).reduce((s,t)=>s+t.amount,0);
-        const totalExp = getAllExpensesForDate(today).reduce((s,t)=>s+t.amount,0);
-        const totalDep = deposits.reduce((s,d)=>s+d.amount,0), totalWit = withdrawals.reduce((s,w)=>s+w.amount,0), totalChg = bankCharges.reduce((s,c)=>s+c.amount,0);
-        const totalCashInflows = sales.total + totalColls, totalCashOutflows = totalCredits + totalExp + totalDep;
-        const netCashChange = totalCashInflows - totalCashOutflows, closingCash = openingCash + netCashChange;
-        const closingBank = openingBank + totalDep - totalWit - totalChg;
-        const closePetrol = stockOpenPetrol + purchases.filter(p=>p.date===today).reduce((s,p)=>s+p.petrolLitres,0) - sales.petrolLtr;
-        const closeDiesel = stockOpenDiesel + purchases.filter(p=>p.date===today).reduce((s,p)=>s+p.dieselLitres,0) - sales.dieselLtr;
-        const nocCloseBal = nocOpeningBal + purchases.filter(p=>p.date===today).reduce((s,p)=>s+p.amount,0) - nocPayments.filter(p=>p.date===today).reduce((s,p)=>s+p.amount,0);
+    function postToday() { const today = getTodayDate(); if (!today) return alert('Select a date'); if (isDateLocked(today)) return alert('Already locked.'); if (postedDays.some(p => p.date === today)) return alert('Already posted.'); if (!confirm('Post today? Editing will be locked for this date.')) return; const sales = getNozzleSales(); const openingCash = parseFloat(document.getElementById('openingCash').value)||0, openingBank = parseFloat(document.getElementById('openingBank').value)||0; const totalCredits = getAllCreditSalesForDate(today).reduce((s,t)=>s+t.amount,0), totalColls = getAllCollectionsForDate(today).reduce((s,t)=>s+t.amount,0); const totalExp = getAllExpensesForDate(today).reduce((s,t)=>s+t.amount,0); const totalDep = deposits.reduce((s,d)=>s+d.amount,0), totalWit = withdrawals.reduce((s,w)=>s+w.amount,0), totalChg = bankCharges.reduce((s,c)=>s+c.amount,0); const totalCashInflows = sales.total + totalColls, totalCashOutflows = totalCredits + totalExp + totalDep; const netCashChange = totalCashInflows - totalCashOutflows, closingCash = openingCash + netCashChange; const closingBank = openingBank + totalDep - totalWit - totalChg; const closePetrol = stockOpenPetrol + purchases.filter(p=>p.date===today).reduce((s,p)=>s+p.petrolLitres,0) - sales.petrolLtr; const closeDiesel = stockOpenDiesel + purchases.filter(p=>p.date===today).reduce((s,p)=>s+p.dieselLitres,0) - sales.dieselLtr; const nocCloseBal = nocOpeningBal + purchases.filter(p=>p.date===today).reduce((s,p)=>s+p.amount,0) - nocPayments.filter(p=>p.date===today).reduce((s,p)=>s+p.amount,0); const snapshot = { date: today, openingCash, openingBank, closingCash, closingBank, petrolRate: parseFloat(document.getElementById('petrolRate').value)||0, dieselRate: parseFloat(document.getElementById('dieselRate').value)||0, nozzles: nozzles.map(n => ({ id: n.id, open: n.open, close: n.close })), outPetrolLtr: parseFloat(document.getElementById('outPetrolLtr').value)||0, outDieselLtr: parseFloat(document.getElementById('outDieselLtr').value)||0, creditSales: [...getAllCreditSalesForDate(today)], collections: [...getAllCollectionsForDate(today)], expenses: [...getAllExpensesForDate(today)], deposits: [...deposits], withdrawals: [...withdrawals], charges: [...bankCharges], sales: sales, stockOpenPetrol, stockOpenDiesel, stockClosePetrol: closePetrol, stockCloseDiesel: closeDiesel, purchases: [...purchases.filter(p=>p.date===today)], nocPayments: [...nocPayments.filter(p=>p.date===today)], nocOpenBal: nocOpeningBal, nocCloseBal }; postedDays.push(snapshot); lockedDates.push(today); adjustments = adjustments.filter(a => a.date !== today); saveAll(); updateUIForLocked(); updateAll(); alert('Day posted and locked. Nozzle readings & balances will carry forward to next day automatically.'); setDefaultDate(); handleDateChange(); }
 
-        const snapshot = {
-            date: today, openingCash, openingBank, closingCash, closingBank,
-            petrolRate: parseFloat(document.getElementById('petrolRate').value)||0, dieselRate: parseFloat(document.getElementById('dieselRate').value)||0,
-            nozzles: nozzles.map(n => ({ id: n.id, open: n.open, close: n.close })),
-            outPetrolLtr: parseFloat(document.getElementById('outPetrolLtr').value)||0, outDieselLtr: parseFloat(document.getElementById('outDieselLtr').value)||0,
-            creditSales: [...getAllCreditSalesForDate(today)], collections: [...getAllCollectionsForDate(today)],
-            expenses: [...getAllExpensesForDate(today)], deposits: [...deposits], withdrawals: [...withdrawals], charges: [...bankCharges],
-            sales: sales,
-            stockOpenPetrol, stockOpenDiesel, stockClosePetrol: closePetrol, stockCloseDiesel: closeDiesel,
-            purchases: [...purchases.filter(p=>p.date===today)], nocPayments: [...nocPayments.filter(p=>p.date===today)],
-            nocOpenBal: nocOpeningBal, nocCloseBal
-        };
-        postedDays.push(snapshot); lockedDates.push(today); adjustments = adjustments.filter(a => a.date !== today);
-        saveAll(); updateUIForLocked(); updateAll();
-        alert('Day posted and locked. Nozzle readings & balances will carry forward to next day automatically.');
-        setDefaultDate(); handleDateChange();
-    }
+    function openCombinedLedger() { const combined = [...debtorsList, ...expenseCategories].sort((a,b)=>a.localeCompare(b,undefined,{sensitivity:'base'})); let modalHtml = `<h3>📒 Ledgers</h3><div class="search-dropdown"><input type="text" id="ledgerSearchInput" placeholder="Search debtor or expense..." autocomplete="off" style="width:100%;margin-bottom:6px;"><div class="search-dropdown-list" id="ledgerSearchList"></div></div><div id="ledgerResult"></div>`; showModal(modalHtml); const input = document.getElementById('ledgerSearchInput'), list = document.getElementById('ledgerSearchList'), resultDiv = document.getElementById('ledgerResult'); function filter() { const q = input.value.toLowerCase(); list.innerHTML = ''; const f = combined.filter(i=>i.toLowerCase().includes(q)); if (f.length&&q.length) { list.style.display='block'; f.forEach(i=>{ const d=document.createElement('div'); d.textContent=i; d.addEventListener('mousedown',(e)=>{e.preventDefault(); input.value=i; list.style.display='none'; showLedgerForItem(i);}); list.appendChild(d); }); } else list.style.display='none'; } input.addEventListener('input',filter); input.addEventListener('focus',filter); input.addEventListener('blur',()=>setTimeout(()=>list.style.display='none',200)); input.addEventListener('keydown',(e)=>{ if(e.key==='Enter'){ const first=list.querySelector('div'); if(first&&list.style.display!=='none'){ input.value=first.textContent; list.style.display='none'; showLedgerForItem(first.textContent); e.preventDefault(); } } }); function showLedgerForItem(item) { if (debtorsList.includes(item)) { const credits = creditSales.filter(t=>t.debtor===item), collects = collections.filter(t=>t.debtor===item); let h=`<h4>Debtor: ${item}</h4><table><tr><th>Date</th><th>Credit</th><th>Collection</th></tr>`; let all=[...credits.map(c=>({date:c.date,credit:c.amount,col:0})),...collects.map(c=>({date:c.date,credit:0,col:c.amount}))]; all.sort((a,b)=>a.date.localeCompare(b.date)); all.forEach(t=>h+=`<tr><td>${t.date}</td><td>${t.credit?formatRs(t.credit):''}</td><td>${t.col?formatRs(t.col):''}</td></tr>`); const tCr=credits.reduce((s,t)=>s+t.amount,0), tCo=collects.reduce((s,t)=>s+t.amount,0); h+=`<tr><td><b>Total</b></td><td><b>${formatRs(tCr)}</b></td><td><b>${formatRs(tCo)}</b></td></tr><p>Outstanding: ${formatRs(tCr-tCo)}</p>`; resultDiv.innerHTML=h; } else if (expenseCategories.includes(item)) { const exp = expensesList.filter(e=>e.category===item); let h=`<h4>Expense: ${item}</h4><table><tr><th>Date</th><th>Amount</th></tr>`; exp.sort((a,b)=>a.date.localeCompare(b.date)); exp.forEach(e=>h+=`<tr><td>${e.date}</td><td>${formatRs(e.amount)}</td></tr>`); const tot=exp.reduce((s,e)=>s+e.amount,0); h+=`<tr><td><b>Total</b></td><td><b>${formatRs(tot)}</b></td></tr>`; resultDiv.innerHTML=h; } } }
 
-    // Combined Ledger
-    function openCombinedLedger() {
-        const combined = [...debtorsList, ...expenseCategories].sort((a,b)=>a.localeCompare(b,undefined,{sensitivity:'base'}));
-        let modalHtml = `<h3>📒 Ledgers</h3><div class="search-dropdown"><input type="text" id="ledgerSearchInput" placeholder="Search debtor or expense..." autocomplete="off" style="width:100%;margin-bottom:6px;"><div class="search-dropdown-list" id="ledgerSearchList"></div></div><div id="ledgerResult"></div>`;
-        showModal(modalHtml);
-        const input = document.getElementById('ledgerSearchInput'), list = document.getElementById('ledgerSearchList'), resultDiv = document.getElementById('ledgerResult');
-        function filter() { const q = input.value.toLowerCase(); list.innerHTML = ''; const f = combined.filter(i=>i.toLowerCase().includes(q)); if (f.length&&q.length) { list.style.display='block'; f.forEach(i=>{ const d=document.createElement('div'); d.textContent=i; d.addEventListener('mousedown',(e)=>{e.preventDefault(); input.value=i; list.style.display='none'; showLedgerForItem(i);}); list.appendChild(d); }); } else list.style.display='none'; }
-        input.addEventListener('input',filter); input.addEventListener('focus',filter); input.addEventListener('blur',()=>setTimeout(()=>list.style.display='none',200));
-        input.addEventListener('keydown',(e)=>{ if(e.key==='Enter'){ const first=list.querySelector('div'); if(first&&list.style.display!=='none'){ input.value=first.textContent; list.style.display='none'; showLedgerForItem(first.textContent); e.preventDefault(); } } });
-        function showLedgerForItem(item) {
-            if (debtorsList.includes(item)) { const credits = creditSales.filter(t=>t.debtor===item), collects = collections.filter(t=>t.debtor===item); let h=`<h4>Debtor: ${item}</h4><table><tr><th>Date</th><th>Credit</th><th>Collection</th></tr>`; let all=[...credits.map(c=>({date:c.date,credit:c.amount,col:0})),...collects.map(c=>({date:c.date,credit:0,col:c.amount}))]; all.sort((a,b)=>a.date.localeCompare(b.date)); all.forEach(t=>h+=`<tr><td>${t.date}</td><td>${t.credit?formatRs(t.credit):''}</td><td>${t.col?formatRs(t.col):''}</td></tr>`); const tCr=credits.reduce((s,t)=>s+t.amount,0), tCo=collects.reduce((s,t)=>s+t.amount,0); h+=`<tr><td><b>Total</b></td><td><b>${formatRs(tCr)}</b></td><td><b>${formatRs(tCo)}</b></td></tr><p>Outstanding: ${formatRs(tCr-tCo)}</p>`; resultDiv.innerHTML=h; }
-            else if (expenseCategories.includes(item)) { const exp = expensesList.filter(e=>e.category===item); let h=`<h4>Expense: ${item}</h4><table><tr><th>Date</th><th>Amount</th></tr>`; exp.sort((a,b)=>a.date.localeCompare(b.date)); exp.forEach(e=>h+=`<tr><td>${e.date}</td><td>${formatRs(e.amount)}</td></tr>`); const tot=exp.reduce((s,e)=>s+e.amount,0); h+=`<tr><td><b>Total</b></td><td><b>${formatRs(tot)}</b></td></tr>`; resultDiv.innerHTML=h; }
-        }
-    }
+    function showDayBook() { const startDate = prompt('Start date (YYYY-MM-DD):', ''); if (!startDate) return; const endDate = prompt('End date (YYYY-MM-DD):', startDate); if (!endDate) return; const days = postedDays.filter(d => d.date >= startDate && d.date <= endDate).sort((a,b)=>a.date.localeCompare(b.date)); if (!days.length) { alert('No data in range.'); return; } const reportHTML = `<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><title>Day Book</title><script src="https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js"><\/script><style>body{font-family:sans-serif;margin:20px} table{width:100%;border-collapse:collapse} th,td{padding:6px;border:1px solid #ccc}</style></head><body><h2>📖 Day Book: ${startDate} to ${endDate}</h2><button id="exportExcelBtn">📥 Download Excel</button><button onclick="window.print()">🖨️ Print</button>${days.map(day => { const totalSales = day.sales?.total||0; const totalCredits = (day.creditSales||[]).reduce((s,t)=>s+t.amount,0); const totalColls = (day.collections||[]).reduce((s,t)=>s+t.amount,0); const totalExp = (day.expenses||[]).reduce((s,t)=>s+t.amount,0); const totalDep = (day.deposits||[]).reduce((s,t)=>s+t.amount,0); const totalWit = (day.withdrawals||[]).reduce((s,t)=>s+t.amount,0); const totalChg = (day.charges||[]).reduce((s,t)=>s+t.amount,0); const netCash = totalSales + totalColls - totalCredits - totalExp - totalDep; const closingCash = (day.openingCash||0) + netCash; const closingBank = (day.openingBank||0) + totalDep - totalWit - totalChg; return `<div style="border:1px solid #ccc; margin:10px 0; padding:10px;"><h3>${day.date}</h3><table><tr><th>Nozzle</th><th>Opening</th><th>Closing</th><th>Sold</th><th>Amount</th></tr>${(day.nozzles||[]).map(n => { const rate = n.id.startsWith('Petrol')?day.petrolRate:day.dieselRate; const litres = Math.max(0,n.close-n.open); return `<tr><td>${n.id}</td><td>${n.open}</td><td>${n.close}</td><td>${litres.toFixed(2)}</td><td>Rs ${(litres*rate).toFixed(2)}</td></tr>`; }).join('')}</table><p>Total Sales: Rs ${totalSales.toFixed(2)}</p><p>Opening Cash: Rs ${(day.openingCash||0).toFixed(2)} → Closing Cash: Rs ${closingCash.toFixed(2)} (Net: Rs ${netCash.toFixed(2)})</p><p>Opening Bank: Rs ${(day.openingBank||0).toFixed(2)} → Closing Bank: Rs ${closingBank.toFixed(2)}</p></div>`; }).join('')}<script>const postedData=${JSON.stringify(days)}; document.getElementById('exportExcelBtn').addEventListener('click',function(){ const wb=XLSX.utils.book_new(); const ws=XLSX.utils.aoa_to_sheet([['Date','Total Sales','Net Cash','Closing Cash','Closing Bank']].concat(postedData.map(d=>[d.date,d.sales?.total||0,((d.sales?.total||0)+(d.collections||[]).reduce((s,c)=>s+c.amount,0)-((d.creditSales||[]).reduce((s,c)=>s+c.amount,0)+(d.expenses||[]).reduce((s,e)=>s+e.amount,0)+(d.deposits||[]).reduce((s,d)=>s+d.amount,0))),(d.openingCash||0)+((d.sales?.total||0)+(d.collections||[]).reduce((s,c)=>s+c.amount,0)-((d.creditSales||[]).reduce((s,c)=>s+c.amount,0)+(d.expenses||[]).reduce((s,e)=>s+e.amount,0)+(d.deposits||[]).reduce((s,d)=>s+d.amount,0))),(d.openingBank||0)+(d.deposits||[]).reduce((s,d)=>s+d.amount,0)-(d.withdrawals||[]).reduce((s,w)=>s+w.amount,0)-(d.charges||[]).reduce((s,c)=>s+c.amount,0)]))); XLSX.utils.book_append_sheet(wb,ws,'Summary'); XLSX.writeFile(wb,'DayBook_${startDate}_${endDate}.xlsx');});<\/script></body></html>`; const blob = new Blob([reportHTML], {type:'text/html'}); const url = URL.createObjectURL(blob); const a = document.createElement('a'); a.href = url; a.target = '_blank'; a.style.display='none'; document.body.appendChild(a); a.click(); document.body.removeChild(a); }
+    function exportCsv() { const today = getTodayDate(); const rows = [['Type','Name/Cat','Amount']]; getAllCreditSalesForDate(today).forEach(c => rows.push(['Credit Sale', c.debtor, c.amount])); getAllCollectionsForDate(today).forEach(c => rows.push(['Cash Collection', c.debtor, c.amount])); getAllExpensesForDate(today).forEach(e => rows.push(['Expense', e.category, e.amount])); deposits.forEach(d => rows.push(['Bank Deposit', d.desc, d.amount])); withdrawals.forEach(w => rows.push(['Bank Withdrawal', w.desc, w.amount])); bankCharges.forEach(c => rows.push(['Bank Charge', c.desc, c.amount])); let csv = '\uFEFF' + rows.map(r => r.join(',')).join('\n'); const blob = new Blob([csv], {type:'text/csv;charset=utf-8;'}); const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = `DaySheet_${today}.csv`; a.click(); }
+    function showAdjustmentModal() { const today = getTodayDate(); let html = `<h3>Adjustment Sheet for ${today}</h3><h4>Add Credit Sale</h4><input type="text" id="adjCreditDebtor" placeholder="Debtor"><input type="number" id="adjCreditAmt" placeholder="Amount"><button id="addAdjCreditBtn">Add</button><h4>Add Collection</h4><input type="text" id="adjCollDebtor" placeholder="Debtor"><input type="number" id="adjCollAmt" placeholder="Amount"><button id="addAdjCollBtn">Add</button><h4>Add Expense</h4><input type="text" id="adjExpCat" placeholder="Category"><input type="number" id="adjExpAmt" placeholder="Amount"><button id="addAdjExpBtn">Add</button>`; showModal(html); document.getElementById('addAdjCreditBtn').onclick = () => { const debtor = document.getElementById('adjCreditDebtor').value; const amt = parseFloat(document.getElementById('adjCreditAmt').value); if (debtor && amt>0) { adjustments.push({date:today, type:'credit', debtor, amount:amt}); saveAll(); showModal(''); updateAll(); } }; document.getElementById('addAdjCollBtn').onclick = () => { const debtor = document.getElementById('adjCollDebtor').value; const amt = parseFloat(document.getElementById('adjCollAmt').value); if (debtor && amt>0) { adjustments.push({date:today, type:'collection', debtor, amount:amt}); saveAll(); showModal(''); updateAll(); } }; document.getElementById('addAdjExpBtn').onclick = () => { const cat = document.getElementById('adjExpCat').value; const amt = parseFloat(document.getElementById('adjExpAmt').value); if (cat && amt !== 0) { adjustments.push({date:today, type:'expense', category:cat, amount:amt}); saveAll(); showModal(''); updateAll(); } }; }
+    function exportStockExcel() { const sDate = document.getElementById('stockStartDate').value || getTodayDate(); const eDate = document.getElementById('stockEndDate').value || getTodayDate(); const rows = [['Date','Type','Petrol Ltr','Diesel Ltr','Amount']]; purchases.filter(p => p.date >= sDate && p.date <= eDate).forEach(p => rows.push([p.date,'Purchase',p.petrolLitres,p.dieselLitres,p.amount])); nocPayments.filter(p => p.date >= sDate && p.date <= eDate).forEach(p => rows.push([p.date,'Payment','','',p.amount])); const csv = '\uFEFF' + rows.map(r => r.join(',')).join('\n'); const blob = new Blob([csv],{type:'text/csv'}); const a = document.createElement('a'); a.href=URL.createObjectURL(blob); a.download = `Stock_NOC_${sDate}_${eDate}.csv`; a.click(); }
+    function printStock() { const printDiv = document.createElement('div'); printDiv.className = 'print-only'; printDiv.innerHTML = `<h2>Stock & NOC Report ${document.getElementById('stockStartDate').value} - ${document.getElementById('stockEndDate').value}</h2><table><tr><th>Opening Petrol</th><td>${stockOpenPetrol.toFixed(2)}</td><th>Opening Diesel</th><td>${stockOpenDiesel.toFixed(2)}</td></tr></table><h3>Purchases</h3>${document.getElementById('purchaseTable').outerHTML}<h3>NOC Ledger</h3>${document.getElementById('nocLedgerTable').outerHTML}`; document.body.appendChild(printDiv); window.print(); document.body.removeChild(printDiv); }
+    function exportDatabase() { const backup = { debtors: debtorsList, expenseCategories, creditSales, collections, expensesList, deposits, withdrawals, bankCharges, postedDays, lockedDates, adjustments, purchases, nocPayments, nocOpeningBal, stockOpenPetrol, stockOpenDiesel, nozzles: nozzles.map(n=>({open:n.open,close:n.close})), openingCash: document.getElementById('openingCash').value, openingBank: document.getElementById('openingBank').value, petrolRate: document.getElementById('petrolRate').value, dieselRate: document.getElementById('dieselRate').value, currentDate: document.getElementById('currentDate').value, outPetrolLtr: document.getElementById('outPetrolLtr').value, outDieselLtr: document.getElementById('outDieselLtr').value }; const blob = new Blob([JSON.stringify(backup,null,2)],{type:'application/json'}); const a = document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='Phatkeshwari_Backup.json'; a.click(); }
+    function importDatabase() { const input = document.createElement('input'); input.type='file'; input.accept='.json'; input.onchange = e => { const file = e.target.files[0]; if(!file) return; const reader = new FileReader(); reader.onload = function(e) { try { const backup = JSON.parse(e.target.result); if(!backup.debtors) throw new Error('Invalid'); debtorsList = backup.debtors; expenseCategories = backup.expenseCategories; creditSales = backup.creditSales; collections = backup.collections; expensesList = backup.expensesList; deposits = backup.deposits; withdrawals = backup.withdrawals; bankCharges = backup.bankCharges; postedDays = backup.postedDays; lockedDates = backup.lockedDates; adjustments = backup.adjustments; purchases = backup.purchases||[]; nocPayments = backup.nocPayments||[]; nocOpeningBal = backup.nocOpeningBal||0; stockOpenPetrol = backup.stockOpenPetrol||0; stockOpenDiesel = backup.stockOpenDiesel||0; if(backup.nozzles) backup.nozzles.forEach((n,i)=>{ if(nozzles[i]){nozzles[i].open=n.open;nozzles[i].close=n.close;} }); document.getElementById('openingCash').value = backup.openingCash||0; document.getElementById('openingBank').value = backup.openingBank||0; document.getElementById('prabhuOpeningBal').value = backup.openingBank||0; document.getElementById('petrolRate').value = backup.petrolRate||0; document.getElementById('dieselRate').value = backup.dieselRate||0; document.getElementById('outPetrolLtr').value = backup.outPetrolLtr||0; document.getElementById('outDieselLtr').value = backup.outDieselLtr||0; if(backup.currentDate) document.getElementById('currentDate').value = backup.currentDate; saveAll(); refreshDropdowns(); renderFuelTable(); updateAll(); alert('Database restored successfully!'); } catch(err) { alert('Error: Invalid backup file.'); console.error(err); } }; reader.readAsText(file); }; input.click(); }
 
-    // Day Book, Export CSV, etc.
-    function showDayBook() {
-        const startDate = prompt('Start date (YYYY-MM-DD):', ''); if (!startDate) return;
-        const endDate = prompt('End date (YYYY-MM-DD):', startDate); if (!endDate) return;
-        const days = postedDays.filter(d => d.date >= startDate && d.date <= endDate).sort((a,b)=>a.date.localeCompare(b.date));
-        if (!days.length) { alert('No data in range.'); return; }
-        const reportHTML = `<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><title>Day Book</title><script src="https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js"><\/script><style>body{font-family:sans-serif;margin:20px} table{width:100%;border-collapse:collapse} th,td{padding:6px;border:1px solid #ccc}</style></head><body><h2>📖 Day Book: ${startDate} to ${endDate}</h2><button id="exportExcelBtn">📥 Download Excel</button><button onclick="window.print()">🖨️ Print</button>${days.map(day => { const totalSales = day.sales?.total||0; const totalCredits = (day.creditSales||[]).reduce((s,t)=>s+t.amount,0); const totalColls = (day.collections||[]).reduce((s,t)=>s+t.amount,0); const totalExp = (day.expenses||[]).reduce((s,t)=>s+t.amount,0); const totalDep = (day.deposits||[]).reduce((s,t)=>s+t.amount,0); const totalWit = (day.withdrawals||[]).reduce((s,t)=>s+t.amount,0); const totalChg = (day.charges||[]).reduce((s,t)=>s+t.amount,0); const netCash = totalSales + totalColls - totalCredits - totalExp - totalDep; const closingCash = (day.openingCash||0) + netCash; const closingBank = (day.openingBank||0) + totalDep - totalWit - totalChg; return `<div style="border:1px solid #ccc; margin:10px 0; padding:10px;"><h3>${day.date}</h3><table><tr><th>Nozzle</th><th>Opening</th><th>Closing</th><th>Sold</th><th>Amount</th></tr>${(day.nozzles||[]).map(n => { const rate = n.id.startsWith('Petrol')?day.petrolRate:day.dieselRate; const litres = Math.max(0,n.close-n.open); return `<tr><td>${n.id}</td><td>${n.open}</td><td>${n.close}</td><td>${litres.toFixed(2)}</td><td>Rs ${(litres*rate).toFixed(2)}</td></tr>`; }).join('')}</table><p>Total Sales: Rs ${totalSales.toFixed(2)}</p><p>Opening Cash: Rs ${(day.openingCash||0).toFixed(2)} → Closing Cash: Rs ${closingCash.toFixed(2)} (Net: Rs ${netCash.toFixed(2)})</p><p>Opening Bank: Rs ${(day.openingBank||0).toFixed(2)} → Closing Bank: Rs ${closingBank.toFixed(2)}</p></div>`; }).join('')}<script>const postedData=${JSON.stringify(days)}; document.getElementById('exportExcelBtn').addEventListener('click',function(){ const wb=XLSX.utils.book_new(); const ws=XLSX.utils.aoa_to_sheet([['Date','Total Sales','Net Cash','Closing Cash','Closing Bank']].concat(postedData.map(d=>[d.date,d.sales?.total||0,((d.sales?.total||0)+(d.collections||[]).reduce((s,c)=>s+c.amount,0)-((d.creditSales||[]).reduce((s,c)=>s+c.amount,0)+(d.expenses||[]).reduce((s,e)=>s+e.amount,0)+(d.deposits||[]).reduce((s,d)=>s+d.amount,0))),(d.openingCash||0)+((d.sales?.total||0)+(d.collections||[]).reduce((s,c)=>s+c.amount,0)-((d.creditSales||[]).reduce((s,c)=>s+c.amount,0)+(d.expenses||[]).reduce((s,e)=>s+e.amount,0)+(d.deposits||[]).reduce((s,d)=>s+d.amount,0))),(d.openingBank||0)+(d.deposits||[]).reduce((s,d)=>s+d.amount,0)-(d.withdrawals||[]).reduce((s,w)=>s+w.amount,0)-(d.charges||[]).reduce((s,c)=>s+c.amount,0)]))); XLSX.utils.book_append_sheet(wb,ws,'Summary'); XLSX.writeFile(wb,'DayBook_${startDate}_${endDate}.xlsx');});<\/script></body></html>`;
-        const blob = new Blob([reportHTML], {type:'text/html'}); const url = URL.createObjectURL(blob);
-        const a = document.createElement('a'); a.href = url; a.target = '_blank'; a.style.display='none'; document.body.appendChild(a); a.click(); document.body.removeChild(a);
-    }
+    function setupKeyboard() { document.getElementById('creditAmount').addEventListener('keypress', e => { if(e.key==='Enter') recordCredit(); }); document.getElementById('collectionAmount').addEventListener('keypress', e => { if(e.key==='Enter') recordCollection(); }); document.getElementById('expenseAmount').addEventListener('keypress', e => { if(e.key==='Enter') recordExpense(); }); }
+    function preventScroll() { document.addEventListener('wheel', e => { if (e.target.tagName==='INPUT'&&e.target.type==='number'&&!e.ctrlKey) e.preventDefault(); }, {passive:false}); }
 
-    function exportCsv() {
-        const today = getTodayDate();
-        const rows = [['Type','Name/Cat','Amount']];
-        getAllCreditSalesForDate(today).forEach(c => rows.push(['Credit Sale', c.debtor, c.amount]));
-        getAllCollectionsForDate(today).forEach(c => rows.push(['Cash Collection', c.debtor, c.amount]));
-        getAllExpensesForDate(today).forEach(e => rows.push(['Expense', e.category, e.amount]));
-        deposits.forEach(d => rows.push(['Bank Deposit', d.desc, d.amount]));
-        withdrawals.forEach(w => rows.push(['Bank Withdrawal', w.desc, w.amount]));
-        bankCharges.forEach(c => rows.push(['Bank Charge', c.desc, c.amount]));
-        let csv = '\uFEFF' + rows.map(r => r.join(',')).join('\n');
-        const blob = new Blob([csv], {type:'text/csv;charset=utf-8;'}); const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = `DaySheet_${today}.csv`; a.click();
-    }
-
-    function showAdjustmentModal() {
-        const today = getTodayDate();
-        let html = `<h3>Adjustment Sheet for ${today}</h3><h4>Add Credit Sale</h4><input type="text" id="adjCreditDebtor" placeholder="Debtor"><input type="number" id="adjCreditAmt" placeholder="Amount"><button id="addAdjCreditBtn">Add</button><h4>Add Collection</h4><input type="text" id="adjCollDebtor" placeholder="Debtor"><input type="number" id="adjCollAmt" placeholder="Amount"><button id="addAdjCollBtn">Add</button><h4>Add Expense</h4><input type="text" id="adjExpCat" placeholder="Category"><input type="number" id="adjExpAmt" placeholder="Amount"><button id="addAdjExpBtn">Add</button>`;
-        showModal(html);
-        document.getElementById('addAdjCreditBtn').onclick = () => { const debtor = document.getElementById('adjCreditDebtor').value; const amt = parseFloat(document.getElementById('adjCreditAmt').value); if (debtor && amt>0) { adjustments.push({date:today, type:'credit', debtor, amount:amt}); saveAll(); showModal(''); updateAll(); } };
-        document.getElementById('addAdjCollBtn').onclick = () => { const debtor = document.getElementById('adjCollDebtor').value; const amt = parseFloat(document.getElementById('adjCollAmt').value); if (debtor && amt>0) { adjustments.push({date:today, type:'collection', debtor, amount:amt}); saveAll(); showModal(''); updateAll(); } };
-        document.getElementById('addAdjExpBtn').onclick = () => { const cat = document.getElementById('adjExpCat').value; const amt = parseFloat(document.getElementById('adjExpAmt').value); if (cat && amt !== 0) { adjustments.push({date:today, type:'expense', category:cat, amount:amt}); saveAll(); showModal(''); updateAll(); } };
-    }
-    function exportStockExcel() {
-        const sDate = document.getElementById('stockStartDate').value || getTodayDate();
-        const eDate = document.getElementById('stockEndDate').value || getTodayDate();
-        const rows = [['Date','Type','Petrol Ltr','Diesel Ltr','Amount']];
-        purchases.filter(p => p.date >= sDate && p.date <= eDate)
-                 .forEach(p => rows.push([p.date,'Purchase',p.petrolLitres,p.dieselLitres,p.amount]));
-        nocPayments.filter(p => p.date >= sDate && p.date <= eDate)
-                    .forEach(p => rows.push([p.date,'Payment','','',p.amount]));
-        const csv = '\uFEFF' + rows.map(r => r.join(',')).join('\n');
-        const blob = new Blob([csv],{type:'text/csv'});
-        const a = document.createElement('a'); a.href=URL.createObjectURL(blob);
-        a.download = `Stock_NOC_${sDate}_${eDate}.csv`; a.click();
-    }
-    function printStock() {
-        const printDiv = document.createElement('div'); printDiv.className = 'print-only';
-        printDiv.innerHTML = `<h2>Stock & NOC Report ${document.getElementById('stockStartDate').value} - ${document.getElementById('stockEndDate').value}</h2>
-            <table><tr><th>Opening Petrol</th><td>${stockOpenPetrol.toFixed(2)}</td><th>Opening Diesel</th><td>${stockOpenDiesel.toFixed(2)}</td></tr></table>
-            <h3>Purchases</h3>${document.getElementById('purchaseTable').outerHTML}
-            <h3>NOC Ledger</h3>${document.getElementById('nocLedgerTable').outerHTML}`;
-        document.body.appendChild(printDiv); window.print(); document.body.removeChild(printDiv);
-    }
-    function exportDatabase() {
-        const backup = { debtors: debtorsList, expenseCategories, creditSales, collections, expensesList, deposits, withdrawals, bankCharges, postedDays, lockedDates, adjustments, purchases, nocPayments, nocOpeningBal, stockOpenPetrol, stockOpenDiesel, nozzles: nozzles.map(n=>({open:n.open,close:n.close})), openingCash: document.getElementById('openingCash').value, openingBank: document.getElementById('openingBank').value, petrolRate: document.getElementById('petrolRate').value, dieselRate: document.getElementById('dieselRate').value, currentDate: document.getElementById('currentDate').value, outPetrolLtr: document.getElementById('outPetrolLtr').value, outDieselLtr: document.getElementById('outDieselLtr').value };
-        const blob = new Blob([JSON.stringify(backup,null,2)],{type:'application/json'}); const a = document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='Phatkeshwari_Backup.json'; a.click();
-    }
-    function importDatabase() {
-        const input = document.createElement('input'); input.type='file'; input.accept='.json';
-        input.onchange = e => {
-            const file = e.target.files[0]; if(!file) return;
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                try {
-                    const backup = JSON.parse(e.target.result);
-                    if(!backup.debtors) throw new Error('Invalid');
-                    debtorsList = backup.debtors; expenseCategories = backup.expenseCategories;
-                    creditSales = backup.creditSales; collections = backup.collections; expensesList = backup.expensesList;
-                    deposits = backup.deposits; withdrawals = backup.withdrawals; bankCharges = backup.bankCharges;
-                    postedDays = backup.postedDays; lockedDates = backup.lockedDates; adjustments = backup.adjustments;
-                    purchases = backup.purchases||[]; nocPayments = backup.nocPayments||[]; nocOpeningBal = backup.nocOpeningBal||0;
-                    stockOpenPetrol = backup.stockOpenPetrol||0; stockOpenDiesel = backup.stockOpenDiesel||0;
-                    if(backup.nozzles) backup.nozzles.forEach((n,i)=>{ if(nozzles[i]){nozzles[i].open=n.open;nozzles[i].close=n.close;} });
-                    document.getElementById('openingCash').value = backup.openingCash||0; document.getElementById('openingBank').value = backup.openingBank||0;
-                    document.getElementById('prabhuOpeningBal').value = backup.openingBank||0;
-                    document.getElementById('petrolRate').value = backup.petrolRate||0; document.getElementById('dieselRate').value = backup.dieselRate||0;
-                    document.getElementById('outPetrolLtr').value = backup.outPetrolLtr||0; document.getElementById('outDieselLtr').value = backup.outDieselLtr||0;
-                    if(backup.currentDate) document.getElementById('currentDate').value = backup.currentDate;
-                    saveAll(); refreshDropdowns(); renderFuelTable(); updateAll();
-                    alert('Database restored successfully!');
-                } catch(err) { alert('Error: Invalid backup file.'); console.error(err); }
-            };
-            reader.readAsText(file);
-        };
-        input.click();
-    }
-
-    // Keyboard & scroll
-    function setupKeyboard() {
-        document.getElementById('creditAmount').addEventListener('keypress', e => { if(e.key==='Enter') recordCredit(); });
-        document.getElementById('collectionAmount').addEventListener('keypress', e => { if(e.key==='Enter') recordCollection(); });
-        document.getElementById('expenseAmount').addEventListener('keypress', e => { if(e.key==='Enter') recordExpense(); });
-    }
-    function preventScroll() {
-        document.addEventListener('wheel', e => { if (e.target.tagName==='INPUT'&&e.target.type==='number'&&!e.ctrlKey) e.preventDefault(); }, {passive:false});
-    }
-
-    // Record handlers
-function recordCredit() {
-    if (isDateLocked(getTodayDate())) {
-        alert('This day is locked. The entry will be marked as edited.');
-        // still allow, but add edit tag
-        const d = document.getElementById('creditDebtorSearch').value.trim();
-        const a = parseFloat(document.getElementById('creditAmount').value);
-        if (d && a > 0) {
-            creditSales.push({
-                date: getTodayDate(),
-                debtor: d,
-                amount: a,
-                lastEdited: { date: new Date().toISOString(), user: 'edited' }
-            });
-            saveAll();
-            document.getElementById('creditAmount').value = '';
-            updateAll();
-        }
-        return;
-    }
-    const d = document.getElementById('creditDebtorSearch').value.trim();
-    const a = parseFloat(document.getElementById('creditAmount').value);
-    if (d && a > 0) {
-        creditSales.push({ date: getTodayDate(), debtor: d, amount: a });
-        saveAll();
-        document.getElementById('creditAmount').value = '';
-        updateAll();
-    }
-}    function recordCollection() { if(isDateLocked(getTodayDate())) return; const d=document.getElementById('collectionDebtorSearch').value.trim(); const a=parseFloat(document.getElementById('collectionAmount').value); if(d&&a>0){ collections.push({date:getTodayDate(), debtor:d, amount:a}); saveAll(); document.getElementById('collectionAmount').value=''; updateAll(); } }
-    function recordExpense() { if(isDateLocked(getTodayDate())) return; const c=document.getElementById('expenseSearch').value.trim(); const a=parseFloat(document.getElementById('expenseAmount').value); if(c&&!isNaN(a)&&a!==0){ expensesList.push({date:getTodayDate(), category:c, amount:a}); saveAll(); document.getElementById('expenseAmount').value=''; updateAll(); } }
+    function recordCredit() { if (isDateLocked(getTodayDate())) { const d = document.getElementById('creditDebtorSearch').value.trim(); const a = parseFloat(document.getElementById('creditAmount').value); if (d && a > 0) { creditSales.push({ date: getTodayDate(), debtor: d, amount: a, lastEdited: { date: new Date().toISOString(), user: 'edited' } }); saveAll(); document.getElementById('creditAmount').value = ''; updateAll(); } return; } const d = document.getElementById('creditDebtorSearch').value.trim(); const a = parseFloat(document.getElementById('creditAmount').value); if (d && a > 0) { creditSales.push({ date: getTodayDate(), debtor: d, amount: a }); saveAll(); document.getElementById('creditAmount').value = ''; updateAll(); } }
+    function recordCollection() { if (isDateLocked(getTodayDate())) { const d = document.getElementById('collectionDebtorSearch').value.trim(); const a = parseFloat(document.getElementById('collectionAmount').value); if (d && a > 0) { collections.push({ date: getTodayDate(), debtor: d, amount: a, lastEdited: { date: new Date().toISOString(), user: 'edited' } }); saveAll(); document.getElementById('collectionAmount').value = ''; updateAll(); } return; } const d = document.getElementById('collectionDebtorSearch').value.trim(); const a = parseFloat(document.getElementById('collectionAmount').value); if (d && a > 0) { collections.push({ date: getTodayDate(), debtor: d, amount: a }); saveAll(); document.getElementById('collectionAmount').value = ''; updateAll(); } }
+    function recordExpense() { if (isDateLocked(getTodayDate())) { const c = document.getElementById('expenseSearch').value.trim(); const a = parseFloat(document.getElementById('expenseAmount').value); if (c && !isNaN(a) && a !== 0) { expensesList.push({ date: getTodayDate(), category: c, amount: a, lastEdited: { date: new Date().toISOString(), user: 'edited' } }); saveAll(); document.getElementById('expenseAmount').value = ''; updateAll(); } return; } const c = document.getElementById('expenseSearch').value.trim(); const a = parseFloat(document.getElementById('expenseAmount').value); if (c && !isNaN(a) && a !== 0) { expensesList.push({ date: getTodayDate(), category: c, amount: a }); saveAll(); document.getElementById('expenseAmount').value = ''; updateAll(); } }
     function addNewDebtor() { const name = prompt('Enter new debtor name:'); if(name&&!debtorsList.includes(name)){ debtorsList.push(name); saveAll(); refreshDropdowns(); updateAll(); } }
     function addNewExpenseCat() { const cat = prompt('Enter new expense category:'); if(cat&&!expenseCategories.includes(cat)){ expenseCategories.push(cat); saveAll(); refreshDropdowns(); updateAll(); } }
+    function addBankDeposit() { const desc = document.getElementById('bankDepDesc').value.trim() || 'Deposit'; const amt = parseFloat(document.getElementById('bankDepAmt').value); if (isNaN(amt) || amt <= 0) return; deposits.push({ type: 'Manual', desc, amount: amt }); saveAll(); document.getElementById('bankDepDesc').value = ''; document.getElementById('bankDepAmt').value = ''; updateAll(); }
+    function addBankWithdrawal() { const desc = document.getElementById('bankWitDesc').value.trim() || 'Withdrawal'; const amt = parseFloat(document.getElementById('bankWitAmt').value); if (isNaN(amt) || amt <= 0) return; withdrawals.push({ desc, amount: amt }); saveAll(); document.getElementById('bankWitDesc').value = ''; document.getElementById('bankWitAmt').value = ''; updateAll(); }
+    function addBankCharge() { const desc = document.getElementById('bankChgDesc').value.trim() || 'Bank Charge'; const amt = parseFloat(document.getElementById('bankChgAmt').value); if (isNaN(amt) || amt <= 0) return; bankCharges.push({ desc, amount: amt }); saveAll(); document.getElementById('bankChgDesc').value = ''; document.getElementById('bankChgAmt').value = ''; updateAll(); }
 
-    function addBankDeposit() {
-        const desc = document.getElementById('bankDepDesc').value.trim() || 'Deposit';
-        const amt = parseFloat(document.getElementById('bankDepAmt').value);
-        if (isNaN(amt) || amt <= 0) return;
-        deposits.push({ type: 'Manual', desc, amount: amt });
-        saveAll();
-        document.getElementById('bankDepDesc').value = ''; document.getElementById('bankDepAmt').value = '';
-        updateAll();
-    }
-    function addBankWithdrawal() {
-        const desc = document.getElementById('bankWitDesc').value.trim() || 'Withdrawal';
-        const amt = parseFloat(document.getElementById('bankWitAmt').value);
-        if (isNaN(amt) || amt <= 0) return;
-        withdrawals.push({ desc, amount: amt });
-        saveAll();
-        document.getElementById('bankWitDesc').value = ''; document.getElementById('bankWitAmt').value = '';
-        updateAll();
-    }
-    function addBankCharge() {
-        const desc = document.getElementById('bankChgDesc').value.trim() || 'Bank Charge';
-        const amt = parseFloat(document.getElementById('bankChgAmt').value);
-        if (isNaN(amt) || amt <= 0) return;
-        bankCharges.push({ desc, amount: amt });
-        saveAll();
-        document.getElementById('bankChgDesc').value = ''; document.getElementById('bankChgAmt').value = '';
-        updateAll();
-    }
-
-    function addPurchase() {
-    const today = getTodayDate();
-    if (isDateLocked(today)) return;
-    const petrolL = parseFloat(prompt('Petrol litres:'));
-    const dieselL = parseFloat(prompt('Diesel litres:'));
-    const amt = parseFloat(prompt('Total amount (Rs):'));
-    if (isNaN(petrolL) || isNaN(dieselL) || isNaN(amt) || amt <= 0) return;
-    purchases.push({ date: today, petrolLitres: petrolL, dieselLitres: dieselL, amount: amt });
-    saveAll();
-    updateStockAndNOC();
-    updateAll();
-}
-
-function addNocPayment() {
-    const today = getTodayDate();
-    if (isDateLocked(today)) return;
-    const amt = parseFloat(prompt('Payment amount (Rs):'));
-    if (isNaN(amt) || amt <= 0) return;
-    nocPayments.push({ date: today, amount: amt, desc: 'NOC Payment' });
-    withdrawals.push({ desc: 'NOC Payment', amount: amt });
-    saveAll();
-    updateStockAndNOC();
-    updateAll();
-}
-
-function pasteNOCData() {
-    const today = getTodayDate();
-    if (isDateLocked(today)) return;
-    const raw = prompt('Paste NOC purchase data:\n\nExpected format per line:\nBagmati Provincial Office  5/15/2026  HSD - Diesel - BS VI  193.67  9,000  1,743,029.82  226,593.88  1,969,623.7');
-    if (!raw) return;
-    const lines = raw.split('\n').filter(l => l.trim());
-    let added = 0;
-    lines.forEach(line => {
-        const parts = line.split(/\t|\s{2,}/);
-        if (parts.length < 8) return;
-        const dateStr = parts[1].trim();
-        const product = parts[2].trim();
-        const qty = parseFloat(parts[4].replace(/,/g, ''));
-        const total = parseFloat(parts[7].replace(/,/g, ''));
-        if (isNaN(qty) || isNaN(total)) return;
-        const dateParts = dateStr.split('/');
-        if (dateParts.length !== 3) return;
-        const isoDate = `${dateParts[2]}-${dateParts[0].padStart(2, '0')}-${dateParts[1].padStart(2, '0')}`;
-        let petrol = 0, diesel = 0;
-        if (product.toLowerCase().includes('petrol')) petrol = qty;
-        else if (product.toLowerCase().includes('diesel') || product.toLowerCase().includes('hsd')) diesel = qty;
-        else return;
-        purchases.push({ date: isoDate, petrolLitres: petrol, dieselLitres: diesel, amount: total });
-        added++;
-    });
-    saveAll();
-    updateStockAndNOC();
-    updateAll();
-    if (added) alert(`Added ${added} purchase(s).`);
-}
-function postStock() {
-    const today = getTodayDate();
-    if (!today) return alert('Select a date');
-    // For stock posting, we use the current nozzle sales for this specific day
-    const sales = (typeof getNozzleSales === 'function') ? getNozzleSales() : { petrolLtr: 0, dieselLtr: 0 };
-    const todayPurchases = purchases.filter(p => p.date === today);
-    const todayPayments = nocPayments.filter(p => p.date === today);
-    const closePetrol = stockOpenPetrol + todayPurchases.reduce((s, p) => s + p.petrolLitres, 0) - sales.petrolLtr;
-    const closeDiesel = stockOpenDiesel + todayPurchases.reduce((s, p) => s + p.dieselLitres, 0) - sales.dieselLtr;
-    const nocCloseBal = nocOpeningBal + todayPurchases.reduce((s, p) => s + p.amount, 0) - todayPayments.reduce((s, p) => s + p.amount, 0);
-
-    const stockSnapshot = {
-        date: today,
-        stockOpenPetrol, stockOpenDiesel,
-        stockClosePetrol: closePetrol, stockCloseDiesel: closeDiesel,
-        purchases: [...todayPurchases],
-        nocPayments: [...todayPayments],
-        nocOpenBal: nocOpeningBal, nocCloseBal
-    };
-    if (!window.stockPostedDays) window.stockPostedDays = [];
-    window.stockPostedDays.push(stockSnapshot);
-    stockOpenPetrol = closePetrol;
-    stockOpenDiesel = closeDiesel;
-    nocOpeningBal = nocCloseBal;
-    purchases = purchases.filter(p => p.date !== today);
-    nocPayments = nocPayments.filter(p => p.date !== today);
-    withdrawals = withdrawals.filter(w => w.date !== today || w.desc !== 'NOC Payment');
-    saveAll();
-    updateStockAndNOC(today, today);
-    updateAll();
-    alert('Stock/NOC posted and carried forward.');
-}
-
-    // Bind events
     function bindEvents() {
         document.getElementById('toggleViewBtn').onclick = toggleView;
         document.getElementById('exportDbBtn').onclick = exportDatabase;
@@ -1324,11 +646,7 @@ function postStock() {
         document.getElementById('pasteNocBtn').onclick = pasteNOCData;
         document.getElementById('exportStockExcelBtn').onclick = exportStockExcel;
         document.getElementById('printStockBtn').onclick = printStock;
-        document.getElementById('stockRefreshBtn').onclick = () => {
-            const sDate = document.getElementById('stockStartDate').value || getTodayDate();
-            const eDate = document.getElementById('stockEndDate').value || getTodayDate();
-            updateStockAndNOC(sDate, eDate);
-        };
+        document.getElementById('stockRefreshBtn').onclick = () => { const sDate = document.getElementById('stockStartDate').value || getTodayDate(); const eDate = document.getElementById('stockEndDate').value || getTodayDate(); updateStockAndNOC(sDate, eDate); };
         document.getElementById('petrolRate').oninput = () => { updateFuelCells(); updateAll(); };
         document.getElementById('dieselRate').oninput = () => { updateFuelCells(); updateAll(); };
         document.getElementById('outPetrolLtr').oninput = () => updateAll();
@@ -1336,58 +654,17 @@ function postStock() {
         document.getElementById('openingCash').oninput = () => updateAll();
         document.getElementById('openingBank').oninput = () => { document.getElementById('prabhuOpeningBal').value = this.value; updateAll(); };
         document.getElementById('currentDate').onchange = handleDateChange;
-        document.getElementById('stockOpenPetrolInput').oninput = () => {
-            stockOpenPetrol = parseFloat(document.getElementById('stockOpenPetrolInput').value)||0;
-            const sDate = document.getElementById('stockStartDate').value || getTodayDate();
-            const eDate = document.getElementById('stockEndDate').value || getTodayDate();
-            updateStockAndNOC(sDate, eDate);
-        };
-        document.getElementById('stockOpenDieselInput').oninput = () => {
-            stockOpenDiesel = parseFloat(document.getElementById('stockOpenDieselInput').value)||0;
-            const sDate = document.getElementById('stockStartDate').value || getTodayDate();
-            const eDate = document.getElementById('stockEndDate').value || getTodayDate();
-            updateStockAndNOC(sDate, eDate);
-        };
+        document.getElementById('stockOpenPetrolInput').oninput = () => { stockOpenPetrol = parseFloat(document.getElementById('stockOpenPetrolInput').value)||0; const sDate = document.getElementById('stockStartDate').value || getTodayDate(); const eDate = document.getElementById('stockEndDate').value || getTodayDate(); updateStockAndNOC(sDate, eDate); };
+        document.getElementById('stockOpenDieselInput').oninput = () => { stockOpenDiesel = parseFloat(document.getElementById('stockOpenDieselInput').value)||0; const sDate = document.getElementById('stockStartDate').value || getTodayDate(); const eDate = document.getElementById('stockEndDate').value || getTodayDate(); updateStockAndNOC(sDate, eDate); };
     }
 
-    function toggleView() {
-        const main = document.getElementById('mainView'), stock = document.getElementById('stockView'), btn = document.getElementById('toggleViewBtn');
-        const pt = document.getElementById('postTodayBtn'), ps = document.getElementById('postStockBtn');
-        if (stock.style.display==='none'||stock.style.display==='') {
-            stock.style.display='block'; main.style.display='none'; btn.innerText='📋 Daily Ledger';
-            pt.style.display='none'; ps.style.display='inline-block';
-            // Set default range to today and refresh
-            document.getElementById('stockStartDate').value = getTodayDate();
-            document.getElementById('stockEndDate').value = getTodayDate();
-            updateStockAndNOC(getTodayDate(), getTodayDate());
-        } else {
-            stock.style.display='none'; main.style.display='block'; btn.innerText='📦 Stock & NOC';
-            pt.style.display='inline-block'; ps.style.display='none';
-        }
-    }
-
+    function toggleView() { const main = document.getElementById('mainView'), stock = document.getElementById('stockView'), btn = document.getElementById('toggleViewBtn'); const pt = document.getElementById('postTodayBtn'), ps = document.getElementById('postStockBtn'); if (stock.style.display==='none'||stock.style.display==='') { stock.style.display='block'; main.style.display='none'; btn.innerText='📋 Daily Ledger'; pt.style.display='none'; ps.style.display='inline-block'; document.getElementById('stockStartDate').value = getTodayDate(); document.getElementById('stockEndDate').value = getTodayDate(); updateStockAndNOC(getTodayDate(), getTodayDate()); } else { stock.style.display='none'; main.style.display='block'; btn.innerText='📦 Stock & NOC'; pt.style.display='inline-block'; ps.style.display='none'; } }
     function showModal(content) { document.getElementById('modalContent').innerHTML = content||''; document.getElementById('ledgerModal').style.display = content?'block':'none'; }
     document.getElementById('modalClose').onclick = () => showModal('');
     window.onclick = e => { if (e.target === document.getElementById('ledgerModal')) showModal(''); };
+    function refreshDropdowns() { initSearchableDropdown('creditDebtorSearch','creditDebtorList',debtorsList); initSearchableDropdown('collectionDebtorSearch','collectionDebtorList',debtorsList); initSearchableDropdown('expenseSearch','expenseList',expenseCategories); }
 
-    function refreshDropdowns() {
-        initSearchableDropdown('creditDebtorSearch','creditDebtorList',debtorsList);
-        initSearchableDropdown('collectionDebtorSearch','collectionDebtorList',debtorsList);
-        initSearchableDropdown('expenseSearch','expenseList',expenseCategories);
-    }
-
-    function init() {
-        loadFromCloud().then(() => {
-            refreshDropdowns();
-            renderFuelTable();
-            bindEvents();
-            setupKeyboard();
-            preventScroll();
-            setDefaultDate();
-            handleDateChange();
-            updateAll();
-        });
-    }
+    function init() { loadFromCloud().then(() => { refreshDropdowns(); renderFuelTable(); bindEvents(); setupKeyboard(); preventScroll(); setDefaultDate(); handleDateChange(); updateAll(); }); }
     init();
 })();
 </script>
