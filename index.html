@@ -81,8 +81,8 @@
                 <div style="flex:1"><label>Opening Cash <input type="number" id="openingCash" step="any" value="932540"></label></div>
                 <div style="flex:1"><label>Opening Bank <input type="number" id="openingBank" step="any" value="1513259.44"></label></div>
             </div>
-            <div id="lockedInfo" style="margin-top:8px; font-weight:bold; color:#dc2626; display:none;">🔒 This day is locked – editing disabled. Use 'Add Adjustment' if needed.</div>
-            <button id="addAdjustmentBtn" class="btn-sm" style="display:none; margin-top:4px;">➕ Add Adjustment Sheet</button>
+            <div id="lockedInfo" style="margin-top:8px; font-weight:bold; color:#dc2626; display:none;">🔒 This day is locked – edits will be marked with ✎</div>
+            
         </div>
 
         <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
@@ -109,7 +109,7 @@
                     </div>
                 </div>
                 <div class="card">
-                    <div class="flex-between"><strong>💰 Cash Collections</strong><button id="addCollectionDebtorBtn" class="btn-outline btn-sm">+ Debtor</button></div>
+                    <div class="flex-between"><strong>💰 Cash Collections <span class="section-total" id="collectionCardTotal">(Rs 0)</span></strong><button id="addCollectionDebtorBtn" class="btn-outline btn-sm">+ Debtor</button></div>
                     <div class="search-dropdown">
                         <input type="text" id="collectionDebtorSearch" placeholder="Search debtor..." autocomplete="off">
                         <div class="search-dropdown-list" id="collectionDebtorList"></div>
@@ -121,7 +121,7 @@
             </div>
             <div>
                 <div class="card">
-                    <div class="flex-between"><strong>📋 Credit Sales</strong><button id="addDebtorBtn" class="btn-outline btn-sm">+ Debtor</button></div>
+                    <div class="flex-between"><strong>📋 Credit Sales <span class="section-total" id="creditCardTotal">(Rs 0)</span></strong><button id="addDebtorBtn" class="btn-outline btn-sm">+ Debtor</button></div>
                     <div class="search-dropdown">
                         <input type="text" id="creditDebtorSearch" placeholder="Search debtor..." autocomplete="off">
                         <div class="search-dropdown-list" id="creditDebtorList"></div>
@@ -131,7 +131,7 @@
                     <div style="font-weight:bold; margin-top:4px;">Total Credit Sales: <span id="creditTotal">0</span></div>
                 </div>
                 <div class="card">
-                    <div class="flex-between"><strong>🧾 Daily Expenses</strong><button id="addExpenseCatBtn" class="btn-outline btn-sm">+ Cat</button></div>
+                    <div class="flex-between"><strong>🧾 Daily Expenses <span class="section-total" id="expenseCardTotal">(Rs 0)</span></strong><button id="addExpenseCatBtn" class="btn-outline btn-sm">+ Cat</button></div>
                     <div class="search-dropdown">
                         <input type="text" id="expenseSearch" placeholder="Search expense..." autocomplete="off">
                         <div class="search-dropdown-list" id="expenseList"></div>
@@ -389,15 +389,11 @@
     }
     function isDateLocked(date) { return lockedDates.includes(date); }
     function updateUIForLocked() {
-        const locked = isDateLocked(getTodayDate());
-        document.getElementById('lockedInfo').style.display = locked ? 'block' : 'none';
-        document.getElementById('addAdjustmentBtn').style.display = locked ? 'inline-block' : 'none';
-        document.querySelectorAll('.card button:not(.btn-outline)').forEach(btn => {
-            if (btn.id !== 'addAdjustmentBtn' && btn.id !== 'postTodayBtn' && btn.id !== 'postStockBtn' && btn.id !== 'dayBookBtn' && btn.id !== 'exportCsvBtn' && btn.id !== 'ledgerBtn' && btn.id !== 'recalcBtn' && btn.id !== 'toggleViewBtn' && btn.id !== 'exportDbBtn' && btn.id !== 'importDbBtn' && btn.id !== 'addPurchaseBtn' && btn.id !== 'pasteNocBtn' && btn.id !== 'addNocPaymentBtn' && btn.id !== 'exportStockExcelBtn' && btn.id !== 'printStockBtn' && btn.id !== 'stockRefreshBtn') {
-                btn.disabled = locked;
-            }
-        });
-    }
+    const locked = isDateLocked(getTodayDate());
+    document.getElementById('lockedInfo').style.display = locked ? 'block' : 'none';
+    document.getElementById('addAdjustmentBtn').style.display = locked ? 'inline-block' : 'none';
+    // We no longer disable buttons – editing is always allowed.
+}
 
     function handleDateChange() {
         const today = getTodayDate();
@@ -444,29 +440,128 @@
     function getAllCollectionsForDate(date) { return [...collections.filter(t=>t.date===date), ...adjustments.filter(a=>a.date===date&&a.type==='collection').map(a=>({date:a.date, debtor:a.debtor, amount:a.amount}))]; }
     function getAllExpensesForDate(date) { return [...expensesList.filter(t=>t.date===date), ...adjustments.filter(a=>a.date===date&&a.type==='expense').map(a=>({date:a.date, category:a.category, amount:a.amount}))]; }
 
-    function displayTodayEntries() {
-        const today = getTodayDate(), locked = isDateLocked(today);
-        const tCredits = getAllCreditSalesForDate(today), tColls = getAllCollectionsForDate(today), tExp = getAllExpensesForDate(today);
-        const crTbody = document.querySelector('#todayCreditTable tbody'); crTbody.innerHTML = '';
-        tCredits.forEach(c => {
-            const row = crTbody.insertRow(); row.insertCell(0).innerText = c.debtor; row.insertCell(1).innerText = formatRs(c.amount);
-            if (!locked) { const del = row.insertCell(2); const btn = document.createElement('button'); btn.className='delete-btn btn-sm'; btn.innerText='✖';
-                btn.onclick = () => { const idx = creditSales.findIndex(t=>t.date===today&&t.debtor===c.debtor&&t.amount===c.amount); if(idx>-1) creditSales.splice(idx,1); else adjustments=adjustments.filter(a=>!(a.date===today&&a.type==='credit'&&a.debtor===c.debtor&&a.amount===c.amount)); saveAll(); displayTodayEntries(); updateAll(); }; del.appendChild(btn); }
-        });
-        const colTbody = document.querySelector('#todayCollectionTable tbody'); colTbody.innerHTML = '';
-        tColls.forEach(c => {
-            const row = colTbody.insertRow(); row.insertCell(0).innerText = c.debtor; row.insertCell(1).innerText = formatRs(c.amount);
-            if (!locked) { const del = row.insertCell(2); const btn = document.createElement('button'); btn.className='delete-btn btn-sm'; btn.innerText='✖';
-                btn.onclick = () => { const idx = collections.findIndex(t=>t.date===today&&t.debtor===c.debtor&&t.amount===c.amount); if(idx>-1) collections.splice(idx,1); else adjustments=adjustments.filter(a=>!(a.date===today&&a.type==='collection'&&a.debtor===c.debtor&&a.amount===c.amount)); saveAll(); displayTodayEntries(); updateAll(); }; del.appendChild(btn); }
-        });
-        const expTbody = document.querySelector('#todayExpenseTable tbody'); expTbody.innerHTML = '';
-        tExp.forEach(e => {
-            const row = expTbody.insertRow(); row.insertCell(0).innerText = e.category; row.insertCell(1).innerText = formatRs(e.amount);
-            if (!locked) { const del = row.insertCell(2); const btn = document.createElement('button'); btn.className='delete-btn btn-sm'; btn.innerText='✖';
-                btn.onclick = () => { const idx = expensesList.findIndex(t=>t.date===today&&t.category===e.category&&t.amount===e.amount); if(idx>-1) expensesList.splice(idx,1); else adjustments=adjustments.filter(a=>!(a.date===today&&a.type==='expense'&&a.category===e.category&&a.amount===e.amount)); saveAll(); displayTodayEntries(); updateAll(); }; del.appendChild(btn); }
-        });
-        renderBankTables();
-    }
+   function displayTodayEntries() {
+    const today = getTodayDate(), locked = isDateLocked(today);
+    const tCredits = getAllCreditSalesForDate(today);
+    const tColls = getAllCollectionsForDate(today);
+    const tExp = getAllExpensesForDate(today);
+
+    // ---------- Credit Sales Table ----------
+    const crTbody = document.querySelector('#todayCreditTable tbody');
+    crTbody.innerHTML = '';
+    tCredits.forEach(c => {
+        const row = crTbody.insertRow();
+        row.insertCell(0).innerText = c.debtor;
+        // Show amount + edit tag if the record was edited on a locked day
+        let amtText = formatRs(c.amount);
+        if (locked && c.lastEdited) {
+            amtText += ` <span style="color:red; font-size:0.65rem;" title="Edited on ${c.lastEdited.date}">✎ ${c.lastEdited.date?.slice(0,10)}</span>`;
+        }
+        row.insertCell(1).innerHTML = amtText;
+        if (!locked) {
+            const del = row.insertCell(2);
+            const btn = document.createElement('button'); btn.className='delete-btn btn-sm'; btn.innerText='✖';
+            btn.onclick = () => {
+                const idx = creditSales.findIndex(t => t.date===today && t.debtor===c.debtor && t.amount===c.amount);
+                if (idx > -1) {
+                    // Mark as edited if the day is locked
+                    if (locked) {
+                        creditSales[idx].lastEdited = { date: new Date().toISOString(), user: 'edited' };
+                    } else {
+                        creditSales.splice(idx, 1);
+                    }
+                } else {
+                    adjustments = adjustments.filter(a => !(a.date===today && a.type==='credit' && a.debtor===c.debtor && a.amount===c.amount));
+                }
+                saveAll(); displayTodayEntries(); updateAll();
+            };
+            del.appendChild(btn);
+        }
+    });
+
+    // ---------- Cash Collections Table ----------
+    const colTbody = document.querySelector('#todayCollectionTable tbody');
+    colTbody.innerHTML = '';
+    tColls.forEach(c => {
+        const row = colTbody.insertRow();
+        row.insertCell(0).innerText = c.debtor;
+        let amtText = formatRs(c.amount);
+        if (locked && c.lastEdited) {
+            amtText += ` <span style="color:red; font-size:0.65rem;" title="Edited on ${c.lastEdited.date}">✎ ${c.lastEdited.date?.slice(0,10)}</span>`;
+        }
+        row.insertCell(1).innerHTML = amtText;
+        if (!locked) {
+            const del = row.insertCell(2);
+            const btn = document.createElement('button'); btn.className='delete-btn btn-sm'; btn.innerText='✖';
+            btn.onclick = () => {
+                const idx = collections.findIndex(t => t.date===today && t.debtor===c.debtor && t.amount===c.amount);
+                if (idx > -1) {
+                    if (locked) {
+                        collections[idx].lastEdited = { date: new Date().toISOString(), user: 'edited' };
+                    } else {
+                        collections.splice(idx, 1);
+                    }
+                } else {
+                    adjustments = adjustments.filter(a => !(a.date===today && a.type==='collection' && a.debtor===c.debtor && a.amount===c.amount));
+                }
+                saveAll(); displayTodayEntries(); updateAll();
+            };
+            del.appendChild(btn);
+        }
+    });
+
+    // ---------- Expenses Table ----------
+    const expTbody = document.querySelector('#todayExpenseTable tbody');
+    expTbody.innerHTML = '';
+    tExp.forEach(e => {
+        const row = expTbody.insertRow();
+        row.insertCell(0).innerText = e.category;
+        let amtText = formatRs(e.amount);
+        if (locked && e.lastEdited) {
+            amtText += ` <span style="color:red; font-size:0.65rem;" title="Edited on ${e.lastEdited.date}">✎ ${e.lastEdited.date?.slice(0,10)}</span>`;
+        }
+        row.insertCell(1).innerHTML = amtText;
+        if (!locked) {
+            const del = row.insertCell(2);
+            const btn = document.createElement('button'); btn.className='delete-btn btn-sm'; btn.innerText='✖';
+            btn.onclick = () => {
+                const idx = expensesList.findIndex(t => t.date===today && t.category===e.category && t.amount===e.amount);
+                if (idx > -1) {
+                    if (locked) {
+                        expensesList[idx].lastEdited = { date: new Date().toISOString(), user: 'edited' };
+                    } else {
+                        expensesList.splice(idx, 1);
+                    }
+                } else {
+                    adjustments = adjustments.filter(a => !(a.date===today && a.type==='expense' && a.category===e.category && a.amount===e.amount));
+                }
+                saveAll(); displayTodayEntries(); updateAll();
+            };
+            del.appendChild(btn);
+        }
+    });
+
+    function updateCardTotals() {
+    const today = getTodayDate();
+    const totalCredits = getAllCreditSalesForDate(today).reduce((s, t) => s + t.amount, 0);
+    const totalCashColls = getAllCollectionsForDate(today).reduce((s, t) => s + t.amount, 0);
+    const totalExp = getAllExpensesForDate(today).reduce((s, t) => s + t.amount, 0);
+    const totalDep = deposits.reduce((s, d) => s + d.amount, 0);
+    const totalWith = withdrawals.reduce((s, w) => s + w.amount, 0);
+
+    // Update the card‑title totals (ensure these span IDs exist in HTML)
+    const crSpan = document.getElementById('creditCardTotal');
+    if (crSpan) crSpan.innerText = '(Rs ' + formatNepaliNumber(totalCredits) + ')';
+    const colSpan = document.getElementById('collectionCardTotal');
+    if (colSpan) colSpan.innerText = '(Rs ' + formatNepaliNumber(totalCashColls) + ')';
+    const expSpan = document.getElementById('expenseCardTotal');
+    if (expSpan) expSpan.innerText = totalExp < 0 ? '(Net Income Rs ' + formatNepaliNumber(-totalExp) + ')' : '(Rs ' + formatNepaliNumber(totalExp) + ')';
+    const depSpan = document.getElementById('depositCardTotal');
+    if (depSpan) depSpan.innerText = '(Rs ' + formatNepaliNumber(totalDep) + ')';
+    const witSpan = document.getElementById('withdrawalCardTotal');
+    if (witSpan) witSpan.innerText = '(Rs ' + formatNepaliNumber(totalWith) + ')';
+}      
+}
 
     function renderBankTables() {
         const today = getTodayDate(), locked = isDateLocked(today);
@@ -537,11 +632,11 @@
     }
 
     function updateAll() {
-        displayTodayEntries();
-        updateReconciliation();
-        updateBankDisplay();
-        // updateStockAndNOC is called separately with date range when needed
-    }
+    displayTodayEntries();   // this now calls updateCardTotals internally
+    updateReconciliation();
+    updateBankDisplay();
+    // updateStockAndNOC is called separately when the stock view is shown
+}
 
     // Fuel nozzles (unchanged)
     function renderFuelTable() {
@@ -1056,8 +1151,34 @@
     }
 
     // Record handlers
-    function recordCredit() { if(isDateLocked(getTodayDate())) return; const d=document.getElementById('creditDebtorSearch').value.trim(); const a=parseFloat(document.getElementById('creditAmount').value); if(d&&a>0){ creditSales.push({date:getTodayDate(), debtor:d, amount:a}); saveAll(); document.getElementById('creditAmount').value=''; updateAll(); } }
-    function recordCollection() { if(isDateLocked(getTodayDate())) return; const d=document.getElementById('collectionDebtorSearch').value.trim(); const a=parseFloat(document.getElementById('collectionAmount').value); if(d&&a>0){ collections.push({date:getTodayDate(), debtor:d, amount:a}); saveAll(); document.getElementById('collectionAmount').value=''; updateAll(); } }
+function recordCredit() {
+    if (isDateLocked(getTodayDate())) {
+        alert('This day is locked. The entry will be marked as edited.');
+        // still allow, but add edit tag
+        const d = document.getElementById('creditDebtorSearch').value.trim();
+        const a = parseFloat(document.getElementById('creditAmount').value);
+        if (d && a > 0) {
+            creditSales.push({
+                date: getTodayDate(),
+                debtor: d,
+                amount: a,
+                lastEdited: { date: new Date().toISOString(), user: 'edited' }
+            });
+            saveAll();
+            document.getElementById('creditAmount').value = '';
+            updateAll();
+        }
+        return;
+    }
+    const d = document.getElementById('creditDebtorSearch').value.trim();
+    const a = parseFloat(document.getElementById('creditAmount').value);
+    if (d && a > 0) {
+        creditSales.push({ date: getTodayDate(), debtor: d, amount: a });
+        saveAll();
+        document.getElementById('creditAmount').value = '';
+        updateAll();
+    }
+}    function recordCollection() { if(isDateLocked(getTodayDate())) return; const d=document.getElementById('collectionDebtorSearch').value.trim(); const a=parseFloat(document.getElementById('collectionAmount').value); if(d&&a>0){ collections.push({date:getTodayDate(), debtor:d, amount:a}); saveAll(); document.getElementById('collectionAmount').value=''; updateAll(); } }
     function recordExpense() { if(isDateLocked(getTodayDate())) return; const c=document.getElementById('expenseSearch').value.trim(); const a=parseFloat(document.getElementById('expenseAmount').value); if(c&&!isNaN(a)&&a!==0){ expensesList.push({date:getTodayDate(), category:c, amount:a}); saveAll(); document.getElementById('expenseAmount').value=''; updateAll(); } }
     function addNewDebtor() { const name = prompt('Enter new debtor name:'); if(name&&!debtorsList.includes(name)){ debtorsList.push(name); saveAll(); refreshDropdowns(); updateAll(); } }
     function addNewExpenseCat() { const cat = prompt('Enter new expense category:'); if(cat&&!expenseCategories.includes(cat)){ expenseCategories.push(cat); saveAll(); refreshDropdowns(); updateAll(); } }
