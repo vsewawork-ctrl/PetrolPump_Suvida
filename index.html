@@ -1145,7 +1145,97 @@ function pasteNOCData() {
     updateAll();
     if (added) alert(`Added ${added} purchase(s).`);
 }
+function postStock() {
+    const today = getTodayDate();
+    if (!today) return alert('Select a date');
+    // For stock posting, we use the current nozzle sales for this specific day
+    const sales = (typeof getNozzleSales === 'function') ? getNozzleSales() : { petrolLtr: 0, dieselLtr: 0 };
+    const todayPurchases = purchases.filter(p => p.date === today);
+    const todayPayments = nocPayments.filter(p => p.date === today);
+    const closePetrol = stockOpenPetrol + todayPurchases.reduce((s, p) => s + p.petrolLitres, 0) - sales.petrolLtr;
+    const closeDiesel = stockOpenDiesel + todayPurchases.reduce((s, p) => s + p.dieselLitres, 0) - sales.dieselLtr;
+    const nocCloseBal = nocOpeningBal + todayPurchases.reduce((s, p) => s + p.amount, 0) - todayPayments.reduce((s, p) => s + p.amount, 0);
 
+    const stockSnapshot = {
+        date: today,
+        stockOpenPetrol, stockOpenDiesel,
+        stockClosePetrol: closePetrol, stockCloseDiesel: closeDiesel,
+        purchases: [...todayPurchases],
+        nocPayments: [...todayPayments],
+        nocOpenBal: nocOpeningBal, nocCloseBal
+    };
+    if (!window.stockPostedDays) window.stockPostedDays = [];
+    window.stockPostedDays.push(stockSnapshot);
+    stockOpenPetrol = closePetrol;
+    stockOpenDiesel = closeDiesel;
+    nocOpeningBal = nocCloseBal;
+    purchases = purchases.filter(p => p.date !== today);
+    nocPayments = nocPayments.filter(p => p.date !== today);
+    withdrawals = withdrawals.filter(w => w.date !== today || w.desc !== 'NOC Payment');
+    saveAll();
+    updateStockAndNOC(today, today);
+    updateAll();
+    alert('Stock/NOC posted and carried forward.');
+}
+
+function postToday() {
+    const today = getTodayDate();
+    if (!today) return alert('Select a date');
+    if (isDateLocked(today)) return alert('Already locked.');
+    if (postedDays.some(p => p.date === today)) return alert('Already posted.');
+    if (!confirm('Post today? Editing will be locked for this date.')) return;
+
+    const sales = getNozzleSales();
+    const openingCash = parseFloat(document.getElementById('openingCash').value) || 0;
+    const openingBank = parseFloat(document.getElementById('openingBank').value) || 0;
+    const totalCredits = getAllCreditSalesForDate(today).reduce((s, t) => s + t.amount, 0);
+    const totalColls = getAllCollectionsForDate(today).reduce((s, t) => s + t.amount, 0);
+    const totalExp = getAllExpensesForDate(today).reduce((s, t) => s + t.amount, 0);
+    const totalDep = deposits.reduce((s, d) => s + d.amount, 0);
+    const totalWith = withdrawals.reduce((s, w) => s + w.amount, 0);
+    const totalChg = bankCharges.reduce((s, c) => s + c.amount, 0);
+
+    const totalCashInflows = sales.total + totalColls + totalWith;
+    const totalCashOutflows = totalCredits + totalExp + totalDep + totalChg;
+    const netCashChange = totalCashInflows - totalCashOutflows;
+    const closingCash = openingCash + netCashChange;
+    const closingBank = openingBank + totalDep - totalWith - totalChg;
+
+    const closePetrol = stockOpenPetrol + purchases.filter(p => p.date === today).reduce((s, p) => s + p.petrolLitres, 0) - sales.petrolLtr;
+    const closeDiesel = stockOpenDiesel + purchases.filter(p => p.date === today).reduce((s, p) => s + p.dieselLitres, 0) - sales.dieselLtr;
+    const nocCloseBal = nocOpeningBal + purchases.filter(p => p.date === today).reduce((s, p) => s + p.amount, 0) - nocPayments.filter(p => p.date === today).reduce((s, p) => s + p.amount, 0);
+
+    const snapshot = {
+        date: today,
+        openingCash, openingBank, closingCash, closingBank,
+        petrolRate: parseFloat(document.getElementById('petrolRate').value) || 0,
+        dieselRate: parseFloat(document.getElementById('dieselRate').value) || 0,
+        nozzles: nozzles.map(n => ({ id: n.id, open: n.open, close: n.close })),
+        outPetrolLtr: parseFloat(document.getElementById('outPetrolLtr').value) || 0,
+        outDieselLtr: parseFloat(document.getElementById('outDieselLtr').value) || 0,
+        creditSales: [...getAllCreditSalesForDate(today)],
+        collections: [...getAllCollectionsForDate(today)],
+        expenses: [...getAllExpensesForDate(today)],
+        deposits: [...deposits],
+        withdrawals: [...withdrawals],
+        charges: [...bankCharges],
+        sales: sales,
+        stockOpenPetrol, stockOpenDiesel,
+        stockClosePetrol: closePetrol, stockCloseDiesel: closeDiesel,
+        purchases: [...purchases.filter(p => p.date === today)],
+        nocPayments: [...nocPayments.filter(p => p.date === today)],
+        nocOpenBal: nocOpeningBal, nocCloseBal
+    };
+    postedDays.push(snapshot);
+    lockedDates.push(today);
+    adjustments = adjustments.filter(a => a.date !== today);
+    saveAll();
+    updateUIForLocked();
+    updateAll();
+    alert('Day posted and locked. Nozzle readings & balances will carry forward to next day automatically.');
+    setDefaultDate();
+    handleDateChange();
+}
     // Bind events
     function bindEvents() {
         document.getElementById('toggleViewBtn').onclick = toggleView;
