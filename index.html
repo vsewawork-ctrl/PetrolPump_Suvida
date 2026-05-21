@@ -390,8 +390,9 @@
     function isDateLocked(date) { return lockedDates.includes(date); }
     function updateUIForLocked() {
     const locked = isDateLocked(getTodayDate());
-    document.getElementById('lockedInfo').style.display = locked ? 'block' : 'none';
-        // We no longer disable buttons – editing is always allowed.
+    const info = document.getElementById('lockedInfo');
+    if (info) info.style.display = locked ? 'block' : 'none';
+    // No longer referencing addAdjustmentBtn – editing is always allowed
 }
 
     function handleDateChange() {
