@@ -48,6 +48,7 @@ html
         .save-btn { background: #16a34a; color: white; padding: 2px 6px; font-size: 0.65rem; border-radius: 7px; margin-right: 3px; }
         .section-total { font-size:0.7rem; font-weight:bold; margin-left:6px; }
         @media print { body * { visibility: hidden; } .print-only, .print-only * { visibility: visible; } .print-only { position: absolute; left: 0; top: 0; width: 100%; } }
+         .search-dropdown-list div.highlighted { background: #bfdbfe; }   
     </style>
 </head>
 <body>
@@ -347,22 +348,97 @@ html
         updateUIForLocked();
         updateAll();
     }
-    function initSearchableDropdown(inputId, listId, dataArray) {
-        const input = document.getElementById(inputId), list = document.getElementById(listId);
-        const sorted = [...dataArray].sort((a,b) => a.localeCompare(b, undefined, {sensitivity:'base'}));
-        function filter() {
-            const query = input.value.toLowerCase(); list.innerHTML = '';
-            const filtered = sorted.filter(item => item.toLowerCase().includes(query));
-            if (filtered.length > 0 && query.length > 0) { list.style.display = 'block';
-                filtered.forEach(item => { const div = document.createElement('div'); div.textContent = item;
-                    div.addEventListener('mousedown', (e) => { e.preventDefault(); input.value = item; list.style.display = 'none'; }); list.appendChild(div);
-                });
-            } else list.style.display = 'none';
-        }
-        input.addEventListener('input', filter); input.addEventListener('focus', filter);
-        input.addEventListener('blur', () => setTimeout(() => list.style.display = 'none', 200));
-        input.addEventListener('keydown', (e) => { if (e.key === 'Enter') { const first = list.querySelector('div'); if (first && list.style.display !== 'none') { input.value = first.textContent; list.style.display = 'none'; e.preventDefault(); } } });
+    function initSearchableDropdown(inputId, listId, dataArray, amountFieldId) {
+    const input = document.getElementById(inputId),
+          list = document.getElementById(listId),
+          amountField = document.getElementById(amountFieldId);
+    const sorted = [...dataArray].sort((a,b) => a.localeCompare(b, undefined, {sensitivity:'base'}));
+    let highlightIndex = -1;
+
+    function clearHighlight() {
+        const items = list.querySelectorAll('div');
+        items.forEach(item => item.classList.remove('highlighted'));
     }
+
+    function setHighlight(index) {
+        clearHighlight();
+        const items = list.querySelectorAll('div');
+        if (index >= 0 && index < items.length) {
+            items[index].classList.add('highlighted');
+            items[index].scrollIntoView({ block: 'nearest' });
+        }
+    }
+
+    function filter() {
+        const query = input.value.toLowerCase();
+        list.innerHTML = '';
+        highlightIndex = -1;
+        const filtered = sorted.filter(item => item.toLowerCase().includes(query));
+        if (filtered.length > 0 && query.length > 0) {
+            list.style.display = 'block';
+            filtered.forEach(item => {
+                const div = document.createElement('div');
+                div.textContent = item;
+                div.addEventListener('mousedown', (e) => {
+                    e.preventDefault();
+                    input.value = item;
+                    list.style.display = 'none';
+                    highlightIndex = -1;
+                    if (amountField) amountField.focus();
+                });
+                div.addEventListener('mouseenter', () => {
+                    const idx = Array.from(list.children).indexOf(div);
+                    highlightIndex = idx;
+                    setHighlight(idx);
+                });
+                div.addEventListener('mouseleave', () => {
+                    highlightIndex = -1;
+                    clearHighlight();
+                });
+                list.appendChild(div);
+            });
+        } else {
+            list.style.display = 'none';
+        }
+    }
+
+    input.addEventListener('input', filter);
+    input.addEventListener('focus', filter);
+    input.addEventListener('blur', () => setTimeout(() => { list.style.display = 'none'; highlightIndex = -1; }, 200));
+
+    input.addEventListener('keydown', (e) => {
+        const items = list.querySelectorAll('div');
+        if (e.key === 'ArrowDown') {
+            e.preventDefault();
+            if (list.style.display === 'none') {
+                filter();
+                if (items.length > 0) { highlightIndex = 0; setHighlight(0); }
+            } else {
+                highlightIndex = Math.min(highlightIndex + 1, items.length - 1);
+                setHighlight(highlightIndex);
+            }
+        } else if (e.key === 'ArrowUp') {
+            e.preventDefault();
+            if (items.length > 0) {
+                highlightIndex = Math.max(highlightIndex - 1, 0);
+                setHighlight(highlightIndex);
+            }
+        } else if (e.key === 'Enter') {
+            e.preventDefault();
+            if (highlightIndex >= 0 && highlightIndex < items.length) {
+                input.value = items[highlightIndex].textContent;
+            } else if (items.length > 0) {
+                input.value = items[0].textContent;
+            }
+            list.style.display = 'none';
+            highlightIndex = -1;
+            if (amountField) amountField.focus();
+        } else if (e.key === 'Escape') {
+            list.style.display = 'none';
+            highlightIndex = -1;
+        }
+    });
+}
     function getAllCreditSalesForDate(date) { return [...creditSales.filter(t=>t.date===date), ...adjustments.filter(a=>a.date===date&&a.type==='credit').map(a=>({date:a.date, debtor:a.debtor, amount:a.amount}))]; }
     function getAllCollectionsForDate(date) { return [...collections.filter(t=>t.date===date), ...adjustments.filter(a=>a.date===date&&a.type==='collection').map(a=>({date:a.date, debtor:a.debtor, amount:a.amount}))]; }
     function getAllExpensesForDate(date) { return [...expensesList.filter(t=>t.date===date), ...adjustments.filter(a=>a.date===date&&a.type==='expense').map(a=>({date:a.date, category:a.category, amount:a.amount}))]; }
@@ -619,62 +695,68 @@ html
     function preventScroll() { document.addEventListener('wheel', e => { if (e.target.tagName==='INPUT'&&e.target.type==='number'&&!e.ctrlKey) e.preventDefault(); }, {passive:false}); }
 
     function recordCredit() {
-        const d = document.getElementById('creditDebtorSearch').value.trim();
-        const a = parseFloat(document.getElementById('creditAmount').value);
-        if (!d || !(a > 0)) return;
-        if (!debtorsList.includes(d)) {
-            alert('Debtor not in list. Please select from dropdown.');
-            document.getElementById('creditDebtorSearch').focus();
-            return;
-        }
-        if (isDateLocked(getTodayDate())) {
-            creditSales.push({ date: getTodayDate(), debtor: d, amount: a, lastEdited: { date: new Date().toISOString(), user: 'edited' } });
-        } else {
-            creditSales.push({ date: getTodayDate(), debtor: d, amount: a });
-        }
-        saveAll();
-        document.getElementById('creditAmount').value = '';
-        document.getElementById('creditDebtorSearch').value = '';
+    const d = document.getElementById('creditDebtorSearch').value.trim();
+    const a = parseFloat(document.getElementById('creditAmount').value);
+    if (!d || !(a > 0)) return;
+    if (!debtorsList.includes(d)) {
+        alert('Debtor not in list. Please select from dropdown.');
         document.getElementById('creditDebtorSearch').focus();
-        updateAll();
+        return;
     }
+    if (isDateLocked(getTodayDate())) {
+        creditSales.push({ date: getTodayDate(), debtor: d, amount: a, lastEdited: { date: new Date().toISOString(), user: 'edited' } });
+    } else {
+        creditSales.push({ date: getTodayDate(), debtor: d, amount: a });
+    }
+    saveAll();
+    document.getElementById('creditAmount').value = '';
+    document.getElementById('creditDebtorSearch').value = '';
+    document.getElementById('creditDebtorSearch').focus();
+    updateAll();
+}
 
-    function recordCollection() {
-        const d = document.getElementById('collectionDebtorSearch').value.trim();
-        const a = parseFloat(document.getElementById('collectionAmount').value);
-        if (!d || !(a > 0)) return;
-        if (!debtorsList.includes(d)) {
-            alert('Debtor not in list. Please select from dropdown.');
-            document.getElementById('collectionDebtorSearch').focus();
-            return;
-        }
-        if (isDateLocked(getTodayDate())) {
-            collections.push({ date: getTodayDate(), debtor: d, amount: a, lastEdited: { date: new Date().toISOString(), user: 'edited' } });
-        } else {
-            collections.push({ date: getTodayDate(), debtor: d, amount: a });
-        }
-        saveAll();
-        document.getElementById('collectionAmount').value = '';
-        document.getElementById('collectionDebtorSearch').value = '';
+function recordCollection() {
+    const d = document.getElementById('collectionDebtorSearch').value.trim();
+    const a = parseFloat(document.getElementById('collectionAmount').value);
+    if (!d || !(a > 0)) return;
+    if (!debtorsList.includes(d)) {
+        alert('Debtor not in list. Please select from dropdown.');
         document.getElementById('collectionDebtorSearch').focus();
-        updateAll();
+        return;
     }
+    if (isDateLocked(getTodayDate())) {
+        collections.push({ date: getTodayDate(), debtor: d, amount: a, lastEdited: { date: new Date().toISOString(), user: 'edited' } });
+    } else {
+        collections.push({ date: getTodayDate(), debtor: d, amount: a });
+    }
+    saveAll();
+    document.getElementById('collectionAmount').value = '';
+    document.getElementById('collectionDebtorSearch').value = '';
+    document.getElementById('collectionDebtorSearch').focus();
+    updateAll();
+}
 
-    function recordExpense() {
-        const c = document.getElementById('expenseSearch').value.trim();
-        const a = parseFloat(document.getElementById('expenseAmount').value);
-        if (!c || isNaN(a) || a === 0) return;
-        if (!expenseCategories.includes(c)) {
-            alert('Expense category not in list. Please select from dropdown.');
-            document.getElementById('expenseSearch').focus();
-            return;
-        }
-        if (isDateLocked(getTodayDate())) {
-            expensesList.push({ date: getTodayDate(), category: c, amount: a, lastEdited: { date: new Date().toISOString(), user: 'edited' } });
-        } else {
-            expensesList.push({ date: getTodayDate(), category: c, amount: a });
-        }
-        saveAll();
+function recordExpense() {
+    const c = document.getElementById('expenseSearch').value.trim();
+    const a = parseFloat(document.getElementById('expenseAmount').value);
+    if (!c || isNaN(a) || a === 0) return;
+    if (!expenseCategories.includes(c)) {
+        alert('Expense category not in list. Please select from dropdown.');
+        document.getElementById('expenseSearch').focus();
+        return;
+    }
+    if (isDateLocked(getTodayDate())) {
+        expensesList.push({ date: getTodayDate(), category: c, amount: a, lastEdited: { date: new Date().toISOString(), user: 'edited' } });
+    } else {
+        expensesList.push({ date: getTodayDate(), category: c, amount: a });
+    }
+    saveAll();
+    document.getElementById('expenseAmount').value = '';
+    document.getElementById('expenseSearch').value = '';
+    document.getElementById('expenseSearch').focus();
+    updateAll();
+}
+    saveAll();
         document.getElementById('expenseAmount').value = '';
         document.getElementById('expenseSearch').value = '';
         document.getElementById('expenseSearch').focus();
@@ -726,8 +808,11 @@ html
     function showModal(content) { document.getElementById('modalContent').innerHTML = content||''; document.getElementById('ledgerModal').style.display = content?'block':'none'; }
    document.getElementById('modalClose').onclick = () => showModal('');
     window.onclick = e => { if (e.target === document.getElementById('ledgerModal')) showModal(''); };
-    function refreshDropdowns() { initSearchableDropdown('creditDebtorSearch','creditDebtorList',debtorsList); initSearchableDropdown('collectionDebtorSearch','collectionDebtorList',debtorsList); initSearchableDropdown('expenseSearch','expenseList',expenseCategories); }
-
+    function refreshDropdowns() {
+    initSearchableDropdown('creditDebtorSearch', 'creditDebtorList', debtorsList, 'creditAmount');
+    initSearchableDropdown('collectionDebtorSearch', 'collectionDebtorList', debtorsList, 'collectionAmount');
+    initSearchableDropdown('expenseSearch', 'expenseList', expenseCategories, 'expenseAmount');
+}
       function init() { loadFromCloud().then(() => { refreshDropdowns(); renderFuelTable(); bindEvents(); setupKeyboard(); preventScroll(); setDefaultDate(); handleDateChange(); updateAll(); }); }
     init();
 })();
