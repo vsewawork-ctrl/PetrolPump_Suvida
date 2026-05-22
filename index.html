@@ -1,9 +1,10 @@
+html
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-    <title>Phatkeshwari Oil Stores – Supabase Sync</title>
+    <title>Phatkeshwari Oil Stores – Supabase Sync (Validated Entries)</title>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js"></script>
     <style>
@@ -74,6 +75,7 @@
         </div>
     </div>
 
+    <!-- Main daily view -->
     <div id="mainView">
         <div class="card">
             <div style="display:flex; gap:12px; align-items:center; flex-wrap:wrap;">
@@ -110,7 +112,6 @@
                     <div class="search-dropdown"><input type="text" id="collectionDebtorSearch" placeholder="Search debtor..." autocomplete="off"><div class="search-dropdown-list" id="collectionDebtorList"></div></div>
                     <input type="number" id="collectionAmount" placeholder="Amount" step="any"><button id="recordCollectionBtn" style="width:100%">Record Collection</button>
                     <table id="todayCollectionTable"><thead><tr><th>Debtor</th><th>Amount</th><th></th></tr></thead><tbody></tbody></table>
-                    
                 </div>
             </div>
             <div>
@@ -119,13 +120,12 @@
                     <div class="search-dropdown"><input type="text" id="creditDebtorSearch" placeholder="Search debtor..." autocomplete="off"><div class="search-dropdown-list" id="creditDebtorList"></div></div>
                     <input type="number" id="creditAmount" placeholder="Amount" step="any"><button id="recordCreditBtn" style="width:100%">Record Credit Sale</button>
                     <table id="todayCreditTable"><thead><tr><th>Debtor</th><th>Amount</th><th></th></tr></thead><tbody></tbody></table>
-                   </div>
+                </div>
                 <div class="card">
                     <div class="flex-between"><strong>🧾 Daily Expenses <span class="section-total" id="expenseCardTotal">(Rs 0)</span></strong><button id="addExpenseCatBtn" class="btn-outline btn-sm">+ Cat</button></div>
                     <div class="search-dropdown"><input type="text" id="expenseSearch" placeholder="Search expense..." autocomplete="off"><div class="search-dropdown-list" id="expenseList"></div></div>
                     <input type="number" id="expenseAmount" placeholder="Amount (negative = income)" step="any"><button id="recordExpenseBtn" style="width:100%">Record Expense</button>
                     <table id="todayExpenseTable"><thead><tr><th>Category</th><th>Amount</th><th></th></tr></thead><tbody></tbody></table>
-                    
                 </div>
             </div>
         </div>
@@ -169,6 +169,7 @@
         </div>
     </div>
 
+    <!-- Stock & NOC View with date range -->
     <div id="stockView">
         <div class="card" style="background:#f0f4ff; border-left:5px solid #3b82f6;">
             <div class="card-title" style="border-left:4px solid #3b82f6;">📦 Stock Management & NOC Supplier Ledger</div>
@@ -203,6 +204,7 @@
 
 <script>
 (function() {
+    // ---------- SUPABASE CONFIG ----------
     const SUPABASE_URL = 'https://pdmhpbddfvbonsaclgvw.supabase.co';
     const SUPABASE_ANON_KEY = 'sb_publishable_q4kliTASjCYC4xk5TnwFDQ_H0FYNSiR';
     const { createClient } = supabase;
@@ -261,7 +263,7 @@
             if (error) throw error;
             if (data && data.data && Object.keys(data.data).length > 0) { applyCloudData(data.data); setSyncStatus('🟢 Synced'); }
             else { await saveToCloud(); }
-        } catch (err) { console.error('Cloud load error', err); loadLocalFallback(); }
+        } catch (err) { console.warn('Cloud load failed – using local storage only'); loadLocalFallback(); }
     }
 
     async function saveToCloud() {
@@ -365,7 +367,7 @@
     function getAllCollectionsForDate(date) { return [...collections.filter(t=>t.date===date), ...adjustments.filter(a=>a.date===date&&a.type==='collection').map(a=>({date:a.date, debtor:a.debtor, amount:a.amount}))]; }
     function getAllExpensesForDate(date) { return [...expensesList.filter(t=>t.date===date), ...adjustments.filter(a=>a.date===date&&a.type==='expense').map(a=>({date:a.date, category:a.category, amount:a.amount}))]; }
 
-    function updateCardTotals() {
+   function updateCardTotals() {
         const today = getTodayDate();
         const totalCredits = getAllCreditSalesForDate(today).reduce((s, t) => s + t.amount, 0);
         const totalCashColls = getAllCollectionsForDate(today).reduce((s, t) => s + t.amount, 0);
@@ -609,12 +611,75 @@
     function exportDatabase() { const backup = { debtors: debtorsList, expenseCategories, creditSales, collections, expensesList, deposits, withdrawals, bankCharges, postedDays, lockedDates, adjustments, purchases, nocPayments, nocOpeningBal, stockOpenPetrol, stockOpenDiesel, nozzles: nozzles.map(n=>({open:n.open,close:n.close})), openingCash: document.getElementById('openingCash').value, openingBank: document.getElementById('openingBank').value, petrolRate: document.getElementById('petrolRate').value, dieselRate: document.getElementById('dieselRate').value, currentDate: document.getElementById('currentDate').value, outPetrolLtr: document.getElementById('outPetrolLtr').value, outDieselLtr: document.getElementById('outDieselLtr').value }; const blob = new Blob([JSON.stringify(backup,null,2)],{type:'application/json'}); const a = document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='Phatkeshwari_Backup.json'; a.click(); }
     function importDatabase() { const input = document.createElement('input'); input.type='file'; input.accept='.json'; input.onchange = e => { const file = e.target.files[0]; if(!file) return; const reader = new FileReader(); reader.onload = function(e) { try { const backup = JSON.parse(e.target.result); if(!backup.debtors) throw new Error('Invalid'); debtorsList = backup.debtors; expenseCategories = backup.expenseCategories; creditSales = backup.creditSales; collections = backup.collections; expensesList = backup.expensesList; deposits = backup.deposits; withdrawals = backup.withdrawals; bankCharges = backup.bankCharges; postedDays = backup.postedDays; lockedDates = backup.lockedDates; adjustments = backup.adjustments; purchases = backup.purchases||[]; nocPayments = backup.nocPayments||[]; nocOpeningBal = backup.nocOpeningBal||0; stockOpenPetrol = backup.stockOpenPetrol||0; stockOpenDiesel = backup.stockOpenDiesel||0; if(backup.nozzles) backup.nozzles.forEach((n,i)=>{ if(nozzles[i]){nozzles[i].open=n.open;nozzles[i].close=n.close;} }); document.getElementById('openingCash').value = backup.openingCash||0; document.getElementById('openingBank').value = backup.openingBank||0; document.getElementById('prabhuOpeningBal').value = backup.openingBank||0; document.getElementById('petrolRate').value = backup.petrolRate||0; document.getElementById('dieselRate').value = backup.dieselRate||0; document.getElementById('outPetrolLtr').value = backup.outPetrolLtr||0; document.getElementById('outDieselLtr').value = backup.outDieselLtr||0; if(backup.currentDate) document.getElementById('currentDate').value = backup.currentDate; saveAll(); refreshDropdowns(); renderFuelTable(); updateAll(); alert('Database restored successfully!'); } catch(err) { alert('Error: Invalid backup file.'); console.error(err); } }; reader.readAsText(file); }; input.click(); }
 
-    function setupKeyboard() { document.getElementById('creditAmount').addEventListener('keypress', e => { if(e.key==='Enter') recordCredit(); }); document.getElementById('collectionAmount').addEventListener('keypress', e => { if(e.key==='Enter') recordCollection(); }); document.getElementById('expenseAmount').addEventListener('keypress', e => { if(e.key==='Enter') recordExpense(); }); }
+    function setupKeyboard() {
+        document.getElementById('creditAmount').addEventListener('keypress', e => { if(e.key==='Enter') recordCredit(); });
+        document.getElementById('collectionAmount').addEventListener('keypress', e => { if(e.key==='Enter') recordCollection(); });
+        document.getElementById('expenseAmount').addEventListener('keypress', e => { if(e.key==='Enter') recordExpense(); });
+    }
     function preventScroll() { document.addEventListener('wheel', e => { if (e.target.tagName==='INPUT'&&e.target.type==='number'&&!e.ctrlKey) e.preventDefault(); }, {passive:false}); }
 
-    function recordCredit() { if (isDateLocked(getTodayDate())) { const d = document.getElementById('creditDebtorSearch').value.trim(); const a = parseFloat(document.getElementById('creditAmount').value); if (d && a > 0) { creditSales.push({ date: getTodayDate(), debtor: d, amount: a, lastEdited: { date: new Date().toISOString(), user: 'edited' } }); saveAll(); document.getElementById('creditAmount').value = ''; updateAll(); } return; } const d = document.getElementById('creditDebtorSearch').value.trim(); const a = parseFloat(document.getElementById('creditAmount').value); if (d && a > 0) { creditSales.push({ date: getTodayDate(), debtor: d, amount: a }); saveAll(); document.getElementById('creditAmount').value = ''; updateAll(); } }
-    function recordCollection() { if (isDateLocked(getTodayDate())) { const d = document.getElementById('collectionDebtorSearch').value.trim(); const a = parseFloat(document.getElementById('collectionAmount').value); if (d && a > 0) { collections.push({ date: getTodayDate(), debtor: d, amount: a, lastEdited: { date: new Date().toISOString(), user: 'edited' } }); saveAll(); document.getElementById('collectionAmount').value = ''; updateAll(); } return; } const d = document.getElementById('collectionDebtorSearch').value.trim(); const a = parseFloat(document.getElementById('collectionAmount').value); if (d && a > 0) { collections.push({ date: getTodayDate(), debtor: d, amount: a }); saveAll(); document.getElementById('collectionAmount').value = ''; updateAll(); } }
-    function recordExpense() { if (isDateLocked(getTodayDate())) { const c = document.getElementById('expenseSearch').value.trim(); const a = parseFloat(document.getElementById('expenseAmount').value); if (c && !isNaN(a) && a !== 0) { expensesList.push({ date: getTodayDate(), category: c, amount: a, lastEdited: { date: new Date().toISOString(), user: 'edited' } }); saveAll(); document.getElementById('expenseAmount').value = ''; updateAll(); } return; } const c = document.getElementById('expenseSearch').value.trim(); const a = parseFloat(document.getElementById('expenseAmount').value); if (c && !isNaN(a) && a !== 0) { expensesList.push({ date: getTodayDate(), category: c, amount: a }); saveAll(); document.getElementById('expenseAmount').value = ''; updateAll(); } }
+    function recordCredit() {
+        const d = document.getElementById('creditDebtorSearch').value.trim();
+        const a = parseFloat(document.getElementById('creditAmount').value);
+        if (!d || !(a > 0)) return;
+        if (!debtorsList.includes(d)) {
+            alert('Debtor not in list. Please select from dropdown.');
+            document.getElementById('creditDebtorSearch').focus();
+            return;
+        }
+        if (isDateLocked(getTodayDate())) {
+            creditSales.push({ date: getTodayDate(), debtor: d, amount: a, lastEdited: { date: new Date().toISOString(), user: 'edited' } });
+        } else {
+            creditSales.push({ date: getTodayDate(), debtor: d, amount: a });
+        }
+        saveAll();
+        document.getElementById('creditAmount').value = '';
+        document.getElementById('creditDebtorSearch').value = '';
+        document.getElementById('creditDebtorSearch').focus();
+        updateAll();
+    }
+
+    function recordCollection() {
+        const d = document.getElementById('collectionDebtorSearch').value.trim();
+        const a = parseFloat(document.getElementById('collectionAmount').value);
+        if (!d || !(a > 0)) return;
+        if (!debtorsList.includes(d)) {
+            alert('Debtor not in list. Please select from dropdown.');
+            document.getElementById('collectionDebtorSearch').focus();
+            return;
+        }
+        if (isDateLocked(getTodayDate())) {
+            collections.push({ date: getTodayDate(), debtor: d, amount: a, lastEdited: { date: new Date().toISOString(), user: 'edited' } });
+        } else {
+            collections.push({ date: getTodayDate(), debtor: d, amount: a });
+        }
+        saveAll();
+        document.getElementById('collectionAmount').value = '';
+        document.getElementById('collectionDebtorSearch').value = '';
+        document.getElementById('collectionDebtorSearch').focus();
+        updateAll();
+    }
+
+    function recordExpense() {
+        const c = document.getElementById('expenseSearch').value.trim();
+        const a = parseFloat(document.getElementById('expenseAmount').value);
+        if (!c || isNaN(a) || a === 0) return;
+        if (!expenseCategories.includes(c)) {
+            alert('Expense category not in list. Please select from dropdown.');
+            document.getElementById('expenseSearch').focus();
+            return;
+        }
+        if (isDateLocked(getTodayDate())) {
+            expensesList.push({ date: getTodayDate(), category: c, amount: a, lastEdited: { date: new Date().toISOString(), user: 'edited' } });
+        } else {
+            expensesList.push({ date: getTodayDate(), category: c, amount: a });
+        }
+        saveAll();
+        document.getElementById('expenseAmount').value = '';
+        document.getElementById('expenseSearch').value = '';
+        document.getElementById('expenseSearch').focus();
+        updateAll();
+    }
     function addNewDebtor() { const name = prompt('Enter new debtor name:'); if(name&&!debtorsList.includes(name)){ debtorsList.push(name); saveAll(); refreshDropdowns(); updateAll(); } }
     function addNewExpenseCat() { const cat = prompt('Enter new expense category:'); if(cat&&!expenseCategories.includes(cat)){ expenseCategories.push(cat); saveAll(); refreshDropdowns(); updateAll(); } }
     function addBankDeposit() { const desc = document.getElementById('bankDepDesc').value.trim() || 'Deposit'; const amt = parseFloat(document.getElementById('bankDepAmt').value); if (isNaN(amt) || amt <= 0) return; deposits.push({ type: 'Manual', desc, amount: amt }); saveAll(); document.getElementById('bankDepDesc').value = ''; document.getElementById('bankDepAmt').value = ''; updateAll(); }
