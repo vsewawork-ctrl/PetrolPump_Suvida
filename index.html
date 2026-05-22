@@ -760,7 +760,7 @@ function recordExpense() {
         document.getElementById('expenseSearch').value = '';
         document.getElementById('expenseSearch').focus();
         updateAll();
-    }
+    }}
     function addNewDebtor() { const name = prompt('Enter new debtor name:'); if(name&&!debtorsList.includes(name)){ debtorsList.push(name); saveAll(); refreshDropdowns(); updateAll(); } }
     function addNewExpenseCat() { const cat = prompt('Enter new expense category:'); if(cat&&!expenseCategories.includes(cat)){ expenseCategories.push(cat); saveAll(); refreshDropdowns(); updateAll(); } }
     function addBankDeposit() { const desc = document.getElementById('bankDepDesc').value.trim() || 'Deposit'; const amt = parseFloat(document.getElementById('bankDepAmt').value); if (isNaN(amt) || amt <= 0) return; deposits.push({ type: 'Manual', desc, amount: amt }); saveAll(); document.getElementById('bankDepDesc').value = ''; document.getElementById('bankDepAmt').value = ''; updateAll(); }
