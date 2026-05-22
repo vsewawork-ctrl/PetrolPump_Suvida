@@ -724,11 +724,11 @@ html
 
     function toggleView() { const main = document.getElementById('mainView'), stock = document.getElementById('stockView'), btn = document.getElementById('toggleViewBtn'); const pt = document.getElementById('postTodayBtn'), ps = document.getElementById('postStockBtn'); if (stock.style.display==='none'||stock.style.display==='') { stock.style.display='block'; main.style.display='none'; btn.innerText='📋 Daily Ledger'; pt.style.display='none'; ps.style.display='inline-block'; document.getElementById('stockStartDate').value = getTodayDate(); document.getElementById('stockEndDate').value = getTodayDate(); updateStockAndNOC(getTodayDate(), getTodayDate()); } else { stock.style.display='none'; main.style.display='block'; btn.innerText='📦 Stock & NOC'; pt.style.display='inline-block'; ps.style.display='none'; } }
     function showModal(content) { document.getElementById('modalContent').innerHTML = content||''; document.getElementById('ledgerModal').style.display = content?'block':'none'; }
-    document.getElementById('modalClose').onclick = () => showModal('');
+   document.getElementById('modalClose').onclick = () => showModal('');
     window.onclick = e => { if (e.target === document.getElementById('ledgerModal')) showModal(''); };
     function refreshDropdowns() { initSearchableDropdown('creditDebtorSearch','creditDebtorList',debtorsList); initSearchableDropdown('collectionDebtorSearch','collectionDebtorList',debtorsList); initSearchableDropdown('expenseSearch','expenseList',expenseCategories); }
 
-    function init() { loadFromCloud().then(() => { refreshDropdowns(); renderFuelTable(); bindEvents(); setupKeyboard(); preventScroll(); setDefaultDate(); handleDateChange(); updateAll(); }); }
+      function init() { loadFromCloud().then(() => { refreshDropdowns(); renderFuelTable(); bindEvents(); setupKeyboard(); preventScroll(); setDefaultDate(); handleDateChange(); updateAll(); }); }
     init();
 })();
 </script>
