@@ -56,6 +56,13 @@
         <div>
             <h1>⛽ Phatkeshwari Oil Stores, Zero Kilo</h1>
             <p>Daily Ledger (Rs) – Supabase Sync</p>
+            <div style="margin-top:6px; display:flex; align-items:center; gap:8px;">
+            <label style="color:white; font-size:0.8rem;">Date:
+                <input type="date" id="currentDate" style="color:#000; padding:3px 6px; border-radius:6px; border:none; width:140px;">
+            </label>
+            <span id="dateInfo" style="font-size:0.7rem; color:#ccc;"></span>
+        </div>
+    </div>
         </div>
         <div class="header-buttons">
             <span class="sync-indicator" id="syncStatus">🔄 Local</span>
@@ -79,7 +86,6 @@
     <div id="mainView">
         <div class="card">
             <div style="display:flex; gap:12px; align-items:center; flex-wrap:wrap;">
-                <div style="flex:1"><label>Date <input type="date" id="currentDate"></label><span id="dateInfo" style="font-size:0.7rem; color:#475569; margin-left:6px;"></span></div>
                 <div style="flex:1"><label>Opening Cash <input type="number" id="openingCash" step="any" value="932540"></label></div>
                 <div style="flex:1"><label>Opening Bank <input type="number" id="openingBank" step="any" value="1513259.44"></label></div>
             </div>
