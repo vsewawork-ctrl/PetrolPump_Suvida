@@ -340,8 +340,8 @@
             const prevStr = prev.toISOString().split('T')[0];
             const prevPosted = postedDays.find(p => p.date === prevStr);
             if (prevPosted) {
-                document.getElementById('openingCash').value = prevPosted.closingCash;
-                document.getElementById('openingBank').value = prevPosted.closingBank;
+                document.getElementById('openingCash').value = round2(prevPosted.closingCash);
+                document.getElementById('openingBank').value = round2(prevPosted.closingBank);
                 document.getElementById('prabhuOpeningBal').value = prevPosted.closingBank;
                 if (prevPosted.nozzles?.length === nozzles.length) prevPosted.nozzles.forEach((n,i)=>nozzles[i].open=n.close);
                 if (prevPosted.stockClosePetrol !== undefined) { stockOpenPetrol = prevPosted.stockClosePetrol; document.getElementById('stockOpenPetrolInput').value = stockOpenPetrol; }
