@@ -3,55 +3,51 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-    <title>Phatkeshwari Oil Stores – Modern Ledger</title>
+    <title>Phatkeshwari Oil Stores – Supabase Sync (Validated Entries)</title>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js"></script>
     <style>
-        * { box-sizing: border-box; font-family: 'Segoe UI', system-ui, sans-serif; }
-        body { background: #f0f2f5; margin: 0; padding: 10px 15px; font-size: 0.85rem; }
+        * { box-sizing: border-box; font-family: system-ui, 'Segoe UI', Roboto, sans-serif; }
+        body { background: #eef2f5; margin: 0; padding: 8px 10px; font-size: 0.82rem; }
         .container { max-width: 1600px; margin: 0 auto; }
-        .header { background: linear-gradient(135deg, #0b2b4f 0%, #1e4d7b 100%); color: white; padding: 16px 24px; border-radius: 16px; margin-bottom: 16px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; box-shadow: 0 8px 20px rgba(0,0,0,0.1); }
-        .header h1 { margin: 0; font-size: 1.5rem; font-weight: 700; }
-        .header p { margin: 4px 0 0; opacity: 0.85; font-size: 0.8rem; }
-        .header-buttons { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
-        .header-buttons button { border: none; border-radius: 8px; padding: 6px 12px; font-size: 0.8rem; font-weight: 600; cursor: pointer; transition: all 0.2s; }
-        .btn-primary { background: #f4b942; color: #0b2b4f; }
-        .btn-primary:hover { background: #e0a800; }
-        .btn-outline { background: transparent; border: 2px solid rgba(255,255,255,0.5); color: white; }
-        .btn-outline:hover { background: rgba(255,255,255,0.15); border-color: white; }
-        .btn-sm { padding: 4px 8px; font-size: 0.7rem; }
-        .btn-lg { padding: 8px 18px; font-size: 0.9rem; }
-        .card { background: white; border-radius: 14px; padding: 14px 18px; margin-bottom: 14px; box-shadow: 0 4px 12px rgba(0,0,0,0.04); }
-        .card-title { font-size: 1.1rem; font-weight: 700; color: #0b2b4f; border-left: 5px solid #f4b942; padding-left: 12px; margin: 0 0 10px 0; }
-        .grid-2col { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 14px; }
-        label { font-weight: 600; display: block; margin-bottom: 4px; font-size: 0.8rem; color: #333; }
-        input, select, button { padding: 7px 10px; border-radius: 8px; border: 1px solid #d1d5db; font-size: 0.85rem; outline: none; transition: border-color 0.2s; }
-        input:focus, select:focus { border-color: #1e4d7b; box-shadow: 0 0 0 3px rgba(30,77,123,0.1); }
-        button { background-color: #1e4d7b; color: white; border: none; cursor: pointer; }
-        button:hover { background-color: #0b2b4f; }
+        .header { background: linear-gradient(135deg, #0f2b4a, #1e4d6e); color: white; padding: 14px 20px; border-radius: 20px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; box-shadow: 0 6px 18px rgba(0,0,0,0.15); }
+        .header h1 { margin: 0; font-size: 1.4rem; font-weight: 700; }
+        .header p { margin: 2px 0 0; opacity: 0.9; font-size: 0.78rem; }
+        .header-buttons { display: flex; gap: 6px; flex-wrap: wrap; align-items: center; }
+        .card { background: white; border-radius: 14px; padding: 10px 14px; margin-bottom: 10px; box-shadow: 0 3px 10px rgba(0,0,0,0.04); }
+        .card-title { font-size: 1rem; font-weight: 600; color: #0a2b44; border-left: 4px solid #f4b942; padding-left: 10px; margin: 0 0 8px 0; }
+        .grid-2col { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 10px; }
+        label { font-weight: 500; display: block; margin-bottom: 2px; font-size: 0.75rem; }
+        input, select, button { padding: 5px 8px; border-radius: 8px; border: 1px solid #cbd5e1; font-size: 0.78rem; }
+        input, select { width: 100%; background: white; }
+        button { background-color: #2c5f8a; color: white; border: none; cursor: pointer; transition: 0.2s; font-weight: 500; }
+        button:hover { background-color: #1e3a5f; }
         button:disabled { opacity:0.5; cursor:not-allowed; }
-        .delete-btn { background: #e74c3c; padding: 2px 6px; font-size: 0.7rem; }
-        .save-btn { background: #27ae60; padding: 2px 6px; font-size: 0.65rem; margin-right: 4px; border-radius: 6px; }
-        table { width: 100%; border-collapse: collapse; margin-top: 6px; font-size: 0.85rem; }
-        th, td { padding: 6px 8px; text-align: left; border-bottom: 1px solid #e2e8f0; }
-        th { background: #f8fafc; font-weight: 700; color: #333; }
-        tr:hover { background-color: #f1f5f9; }
-        .flex-between { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 6px; }
+        .btn-outline { background: white; border: 1px solid #2c5f8a; color: #2c5f8a; }
+        .btn-sm { padding: 3px 7px; font-size: 0.7rem; border-radius: 7px; }
+        .btn-lg { padding: 8px 16px; font-size: 0.9rem; border-radius: 10px; font-weight: bold; }
+        .delete-btn { background: #dc2626; color: white; padding: 2px 6px; font-size: 0.65rem; }
+        table { width: 100%; border-collapse: collapse; margin-top: 4px; font-size: 0.75rem; }
+        th, td { padding: 4px 5px; text-align: left; border-bottom: 1px solid #e2e8f0; }
+        th { background: #f1f5f9; font-weight: 600; }
+        .flex-between { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 4px; }
+        input[type=number] { -moz-appearance: textfield; }
+        input[type=number]::-webkit-outer-spin-button, input[type=number]::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+        .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); }
+        .modal-content { background: white; margin: 3% auto; padding: 20px; border-radius: 16px; width: 85%; max-height: 85vh; overflow-y: auto; }
+        .close { float: right; font-size: 1.6rem; cursor: pointer; }
         .search-dropdown { position: relative; }
-        .search-dropdown input { width: 100%; }
-        .search-dropdown-list { position: absolute; top: 100%; left: 0; right: 0; background: white; border: 1px solid #d1d5db; border-radius: 8px; max-height: 200px; overflow-y: auto; z-index: 20; display: none; }
-        .search-dropdown-list div { padding: 8px 10px; cursor: pointer; }
+        .search-dropdown input { width: 100%; padding: 5px 8px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 0.78rem; }
+        .search-dropdown-list { position: absolute; top: 100%; left: 0; right: 0; background: white; border: 1px solid #cbd5e1; border-radius: 8px; max-height: 200px; overflow-y: auto; z-index: 20; display: none; }
+        .search-dropdown-list div { padding: 5px 8px; cursor: pointer; font-size: 0.75rem; }
         .search-dropdown-list div:hover { background: #e0e7ff; }
-        .search-dropdown-list div.highlighted { background: #bfdbfe; }
         #stockView { display: none; }
-        .recon-box { background: #e8f5e9; border: 1px solid #a5d6a7; border-radius: 12px; padding: 12px 16px; margin-top: 10px; }
-        .sync-indicator { font-size: 0.7rem; margin-left: 10px; padding: 3px 10px; border-radius: 12px; background: rgba(255,255,255,0.15); }
-        .section-total { font-size:0.7rem; font-weight:bold; margin-left:8px; }
-        .dropdown-content { display: none; position: absolute; top: 100%; right: 0; background: white; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); z-index: 10; }
-        .dropdown-content button { display: block; width: 100%; text-align: left; background: none; border: none; padding: 8px 16px; color: #333; cursor: pointer; }
-        .dropdown-content button:hover { background: #f0f0f0; }
-        .dropdown:hover .dropdown-content { display: block; }
+        .recon-box { background: #f0fdf4; border: 1px solid #86efac; border-radius: 12px; padding: 10px 14px; margin-top: 8px; }
+        .sync-indicator { font-size: 0.7rem; margin-left: 10px; padding: 2px 8px; border-radius: 10px; background: rgba(255,255,255,0.2); }
+        .save-btn { background: #16a34a; color: white; padding: 2px 6px; font-size: 0.65rem; border-radius: 7px; margin-right: 3px; }
+        .section-total { font-size:0.7rem; font-weight:bold; margin-left:6px; }
         @media print { body * { visibility: hidden; } .print-only, .print-only * { visibility: visible; } .print-only { position: absolute; left: 0; top: 0; width: 100%; } }
+         .search-dropdown-list div.highlighted { background: #bfdbfe; }   
     </style>
 </head>
 <body>
@@ -59,93 +55,94 @@
     <div class="header">
         <div>
             <h1>⛽ Phatkeshwari Oil Stores, Zero Kilo</h1>
-            <p>Modern Ledger (Rs) – Auto Cloud Sync</p>
-            <div style="margin-top:8px; display:flex; align-items:center; gap:10px;">
-                <label style="color:white; font-size:0.85rem;">Date:
-                    <input type="date" id="currentDate" style="color:#000; padding:4px 8px; border-radius:6px; border:none; width:150px;">
-                </label>
-                <span id="dateInfo" style="font-size:0.75rem; color:#ccc;"></span>
-            </div>
+            <p>Daily Ledger (Rs) – Supabase Sync</p>
+            <div style="margin-top:6px; display:flex; align-items:center; gap:8px;">
+            <label style="color:white; font-size:0.8rem;">Date:
+                <input type="date" id="currentDate" style="color:#000; padding:3px 6px; border-radius:6px; border:none; width:140px;">
+            </label>
+            <span id="dateInfo" style="font-size:0.7rem; color:#ccc;"></span>
+        </div>
+    </div>
         </div>
         <div class="header-buttons">
             <span class="sync-indicator" id="syncStatus">🔄 Local</span>
-            <button id="toggleViewBtn" class="btn-outline btn-sm">📦 Stock & NOC</button>
+            <button id="toggleViewBtn" class="btn-sm toggle-stock-btn">📦 Stock & NOC</button>
             <button id="dayBookBtn" class="btn-outline btn-sm">📖 Day Book</button>
             <button id="exportCsvBtn" class="btn-outline btn-sm">📤 Export CSV</button>
             <button id="ledgerBtn" class="btn-outline btn-sm">📒 Ledgers</button>
-            <div class="dropdown" style="position:relative;">
-                <button class="btn-outline btn-sm">💾 DB Backup ▾</button>
-                <div class="dropdown-content">
-                    <button id="exportDbBtn">📥 Download Backup</button>
-                    <button id="importDbBtn">📤 Restore Backup</button>
+            <div class="dropdown">
+                <button id="dbDropdownBtn" class="btn-outline btn-sm">💾 DB Backup ▾</button>
+                <div class="dropdown-content" style="display:none; position:absolute; background:white; min-width:140px; border-radius:10px; box-shadow:0 4px 12px rgba(0,0,0,0.1); z-index:10;">
+                    <button id="exportDbBtn" style="display:block; width:100%; text-align:left; background:none; border:none; color:#1e3a5f; padding:6px 12px;">📥 Download Backup</button>
+                    <button id="importDbBtn" style="display:block; width:100%; text-align:left; background:none; border:none; color:#1e3a5f; padding:6px 12px;">📤 Restore Backup</button>
                 </div>
             </div>
-            <button id="postTodayBtn" class="btn-primary btn-lg">📌 Post Today</button>
-            <button id="postStockBtn" class="btn-primary btn-lg" style="display:none;">📌 Post Stock</button>
+            <button id="postTodayBtn" class="btn-lg" style="background:#f4b942; color:#000;">📌 Post Today</button>
+            <button id="postStockBtn" class="btn-lg" style="background:#f4b942; color:#000; display:none;">📌 Post Stock</button>
         </div>
     </div>
 
     <!-- Main daily view -->
     <div id="mainView">
         <div class="card">
-            <div style="display:flex; gap:16px; align-items:center; flex-wrap:wrap;">
+            <div style="display:flex; gap:12px; align-items:center; flex-wrap:wrap;">
                 <div style="flex:1"><label>Opening Cash <input type="number" id="openingCash" step="any" value="932540"></label></div>
                 <div style="flex:1"><label>Opening Bank <input type="number" id="openingBank" step="any" value="1513259.44"></label></div>
             </div>
-            <div id="lockedInfo" style="margin-top:8px; font-weight:bold; color:#e74c3c; display:none;">🔒 This day is locked – edits will be marked with ✎</div>
+            <div id="lockedInfo" style="margin-top:8px; font-weight:bold; color:#dc2626; display:none;">🔒 This day is locked – edits will be marked with ✎</div>
         </div>
 
-        <div style="display:grid; grid-template-columns:1fr 1fr; gap:14px;">
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
             <div>
                 <div class="card">
                     <div class="flex-between">
                         <strong>⛽ Fuel Sales</strong>
-                        <div class="flex-between" style="gap:6px;">
+                        <div class="flex-between" style="gap:4px;">
                             <label>Petrol Rate <input type="number" id="petrolRate" step="0.01" value="220.30" style="width:80px;"></label>
                             <label>Diesel Rate <input type="number" id="dieselRate" step="0.01" value="208.30" style="width:80px;"></label>
                         </div>
                     </div>
                     <table id="fuelTable"><thead><tr><th>Nozzle</th><th>Opening</th><th>Closing</th><th>Sold (Ltr)</th><th>Rate</th><th>Amount</th></tr></thead><tbody id="fuelBody"></tbody></table>
-                    <div class="flex-between" style="margin-top:6px;"><span><strong>Out of Nozzle:</strong></span>
+                    <div class="flex-between" style="margin-top:4px;"><span><strong>Out of Nozzle:</strong></span>
                         <label>Petrol Ltr <input type="number" id="outPetrolLtr" value="0" step="any" style="width:70px"></label>
                         <label>Diesel Ltr <input type="number" id="outDieselLtr" value="0" step="any" style="width:70px"></label>
                     </div>
-                    <div style="margin-top:10px; background:#f8fafc; padding:10px; border-radius:8px;">
+                    <div style="margin-top:6px;">
                         <div style="margin-bottom:4px;"><strong>Petrol Total:</strong> <span id="petrolSalesTotal">0</span></div>
                         <div style="margin-bottom:4px;"><strong>Diesel Total:</strong> <span id="dieselSalesTotal">0</span></div>
-                        <div style="font-size:1.1rem; font-weight:700; color:#0b5e2e;">⛽ Grand Total: <span id="totalSalesDisplay">0</span></div>
+                        <div style="margin-top:6px; font-size:1.1rem; font-weight:700; color:#0b5e2e;">⛽ Grand Total: <span id="totalSalesDisplay">0</span></div>
                     </div>
                 </div>
                 <div class="card">
-                    <div class="flex-between"><strong>💰 Cash Collections <span class="section-total" id="collectionCardTotal">(Rs 0)</span></strong><button id="addCollectionDebtorBtn" class="btn-outline" style="color:#1e4d7b; border-color:#1e4d7b;">+ Debtor</button></div>
+                    <div class="flex-between"><strong>💰 Cash Collections <span class="section-total" id="collectionCardTotal">(Rs 0)</span></strong><button id="addCollectionDebtorBtn" class="btn-outline btn-sm">+ Debtor</button></div>
                     <div class="search-dropdown"><input type="text" id="collectionDebtorSearch" placeholder="Search debtor..." autocomplete="off"><div class="search-dropdown-list" id="collectionDebtorList"></div></div>
-                    <input type="number" id="collectionAmount" placeholder="Amount" step="any" style="margin:4px 0;"><button id="recordCollectionBtn" style="width:100%;">Record Collection</button>
+                    <input type="number" id="collectionAmount" placeholder="Amount" step="any"><button id="recordCollectionBtn" style="width:100%">Record Collection</button>
                     <table id="todayCollectionTable"><thead><tr><th>Debtor</th><th>Amount</th><th></th></tr></thead><tbody></tbody></table>
                 </div>
             </div>
             <div>
                 <div class="card">
-                    <div class="flex-between"><strong>📋 Credit Sales <span class="section-total" id="creditCardTotal">(Rs 0)</span></strong><button id="addDebtorBtn" class="btn-outline" style="color:#1e4d7b; border-color:#1e4d7b;">+ Debtor</button></div>
+                    <div class="flex-between"><strong>📋 Credit Sales <span class="section-total" id="creditCardTotal">(Rs 0)</span></strong><button id="addDebtorBtn" class="btn-outline btn-sm">+ Debtor</button></div>
                     <div class="search-dropdown"><input type="text" id="creditDebtorSearch" placeholder="Search debtor..." autocomplete="off"><div class="search-dropdown-list" id="creditDebtorList"></div></div>
-                    <input type="number" id="creditAmount" placeholder="Amount" step="any" style="margin:4px 0;"><button id="recordCreditBtn" style="width:100%;">Record Credit Sale</button>
+                    <input type="number" id="creditAmount" placeholder="Amount" step="any"><button id="recordCreditBtn" style="width:100%">Record Credit Sale</button>
                     <table id="todayCreditTable"><thead><tr><th>Debtor</th><th>Amount</th><th></th></tr></thead><tbody></tbody></table>
                 </div>
                 <div class="card">
-                    <div class="flex-between"><strong>🧾 Daily Expenses <span class="section-total" id="expenseCardTotal">(Rs 0)</span></strong><button id="addExpenseCatBtn" class="btn-outline" style="color:#1e4d7b; border-color:#1e4d7b;">+ Cat</button></div>
+                    <div class="flex-between"><strong>🧾 Daily Expenses <span class="section-total" id="expenseCardTotal">(Rs 0)</span></strong><button id="addExpenseCatBtn" class="btn-outline btn-sm">+ Cat</button></div>
                     <div class="search-dropdown"><input type="text" id="expenseSearch" placeholder="Search expense..." autocomplete="off"><div class="search-dropdown-list" id="expenseList"></div></div>
-                    <input type="number" id="expenseAmount" placeholder="Amount (negative = income)" step="any" style="margin:4px 0;"><button id="recordExpenseBtn" style="width:100%;">Record Expense</button>
+                    <input type="number" id="expenseAmount" placeholder="Amount (negative = income)" step="any"><button id="recordExpenseBtn" style="width:100%">Record Expense</button>
                     <table id="todayExpenseTable"><thead><tr><th>Category</th><th>Amount</th><th></th></tr></thead><tbody></tbody></table>
                 </div>
             </div>
         </div>
 
-        <div class="card" style="background:#e8f4fd; border-left:5px solid #1e4d7b;">
-            <div class="card-title" style="border-left:5px solid #1e4d7b;">🏦 Bank (Deposits, Withdrawals & Charges)</div>
-            <div style="display:flex; gap:16px; align-items:center; flex-wrap:wrap; margin-bottom:10px;">
-                <label>Opening Bank <input type="number" id="prabhuOpeningBal" step="any" value="1513259.44" style="width:140px;" readonly></label>
-                <span style="font-weight:700;">Closing Bank: <span id="bankClosing">0</span></span>
+        <div class="card" style="background:#e0f7fa; border-left:5px solid #00838f;">
+            <div class="card-title" style="border-left:4px solid #00838f;">🏦 Bank (Deposits, Withdrawals & Charges)</div>
+            <div style="display:flex; gap:12px; align-items:center; flex-wrap:wrap; margin-bottom:8px;">
+                <label>Opening Bank <input type="number" id="prabhuOpeningBal" step="any" value="1513259.44" style="width:140px;"></label>
+                <span style="font-weight:bold;">Closing Bank: <span id="bankClosing">0</span></span>
             </div>
-            <div class="grid-2col" style="gap:10px;">
+            <div class="grid-2col">
                 <div><strong>Deposits (Cash → Bank)</strong>
                     <div style="display:flex; gap:4px; margin:4px 0;"><input type="text" id="bankDepDesc" placeholder="Description" style="width:120px;"><input type="number" id="bankDepAmt" placeholder="Amount" step="any" style="width:100px;"><button id="addBankDepBtn">+ Add</button></div>
                     <table id="bankDepTable"><thead><tr><th>Desc</th><th>Amount</th><th></th></tr></thead><tbody></tbody></table>
@@ -166,7 +163,7 @@
 
         <div class="recon-box">
             <strong>📊 Daily Reconciliation</strong>
-            <div style="display:flex; justify-content:space-between; flex-wrap:wrap; gap:10px; margin-top:8px;">
+            <div style="display:flex; justify-content:space-between; flex-wrap:wrap; gap:8px; margin-top:6px;">
                 <span>Opening Cash: <span id="recOpenCash">0</span></span>
                 <span>+ Inflows (Sales + Collections): <span id="recInflows">0</span></span>
                 <span>− Outflows (Cr.Sales + Exp + Dep): <span id="recOutflows">0</span></span>
@@ -174,60 +171,52 @@
                 <span>Closing Cash: <span id="recClosingCash">0</span></span>
                 <span id="recStatus" style="font-weight:bold;">✅ Balanced</span>
             </div>
-            <button id="recalcBtn" style="margin-top:8px; background:#1e4d7b;">⟳ Recalculate</button>
+            <button id="recalcBtn" class="btn-sm" style="margin-top:6px;">⟳ Recalculate</button>
         </div>
     </div>
 
-    <!-- Stock & NOC View -->
+    <!-- Stock & NOC View with date range -->
     <div id="stockView">
-        <div class="card" style="background:#f0f4ff; border-left:5px solid #1e4d7b;">
-            <div class="card-title" style="border-left:5px solid #1e4d7b;">📦 Stock Management & NOC Supplier Ledger</div>
+        <div class="card" style="background:#f0f4ff; border-left:5px solid #3b82f6;">
+            <div class="card-title" style="border-left:4px solid #3b82f6;">📦 Stock Management & NOC Supplier Ledger</div>
             <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap; margin-bottom:10px;">
-                <label>From <input type="date" id="stockStartDate" style="width:150px;"></label>
-                <label>To <input type="date" id="stockEndDate" style="width:150px;"></label>
-                <button id="stockRefreshBtn" style="background:#1e4d7b;">🔄 Refresh</button>
+                <label>From <input type="date" id="stockStartDate" style="width:140px;"></label>
+                <label>To <input type="date" id="stockEndDate" style="width:140px;"></label>
+                <button id="stockRefreshBtn" class="btn-sm">🔄 Refresh</button>
             </div>
             <div class="grid-2col">
                 <div><strong>Fuel Stock</strong>
-                    <table style="margin-bottom:8px;"><tr><th></th><th>Petrol (Ltr)</th><th>Diesel (Ltr)</th></tr>
+                    <table style="margin-bottom:6px;"><tr><th></th><th>Petrol (Ltr)</th><th>Diesel (Ltr)</th></tr>
                         <tr><td>Opening</td><td><input type="number" id="stockOpenPetrolInput" step="any" value="0" style="width:100px;"></td><td><input type="number" id="stockOpenDieselInput" step="any" value="0" style="width:100px;"></td></tr>
                         <tr><td>Purchases (NOC)</td><td id="stockPurchPetrol">0</td><td id="stockPurchDiesel">0</td></tr>
                         <tr><td>Sales</td><td id="stockSalesPetrol">0</td><td id="stockSalesDiesel">0</td></tr>
                         <tr><td><strong>Closing</strong></td><td><strong id="stockClosePetrol">0</strong></td><td><strong id="stockCloseDiesel">0</strong></td></tr>
                     </table>
-                    <div style="margin:6px 0;"><button id="addPurchaseBtn">+ Add Purchase (NOC)</button><button id="pasteNocBtn" style="margin-left:4px;">📋 Paste NOC Data</button></div>
+                    <div style="margin:4px 0;"><button id="addPurchaseBtn" class="btn-sm">+ Add Purchase (NOC)</button><button id="pasteNocBtn" class="btn-sm" style="margin-left:4px;">📋 Paste NOC Data</button></div>
                     <table id="purchaseTable" style="margin-top:4px;"><thead><tr><th>Date</th><th>Petrol Ltr</th><th>Diesel Ltr</th><th>Amount (Rs)</th><th style="width:80px;"></th></tr></thead><tbody></tbody></table>
                 </div>
                 <div><strong>NOC Ledger</strong>
                     <div>Opening Balance: <span id="nocOpenBal">0</span></div>
-                    <button id="addNocPaymentBtn" style="margin:4px 0;">+ Record Payment to NOC</button>
+                    <button id="addNocPaymentBtn" class="btn-sm" style="margin:4px 0;">+ Record Payment to NOC</button>
                     <table id="nocLedgerTable"><thead><tr><th>Date</th><th>Particulars</th><th>Debit (Purchase)</th><th>Credit (Payment)</th><th style="width:80px;"></th></tr></thead><tbody></tbody></table>
                     <div>Closing Balance: <span id="nocCloseBal">0</span></div>
                 </div>
             </div>
-            <div style="margin-top:10px; text-align:right;"><button id="exportStockExcelBtn" style="background:#1e4d7b;">📥 Excel (Stock)</button><button id="printStockBtn" style="background:#1e4d7b; margin-left:4px;">🖨️ Print (Stock)</button></div>
+            <div style="margin-top:10px; text-align:right;"><button id="exportStockExcelBtn" class="btn-sm">📥 Excel (Stock)</button><button id="printStockBtn" class="btn-sm">🖨️ Print (Stock)</button></div>
         </div>
     </div>
 </div>
-<div id="ledgerModal" class="modal" style="display:none; position:fixed; z-index:1000; left:0; top:0; width:100%; height:100%; background:rgba(0,0,0,0.5);">
-    <div class="modal-content" style="background:white; margin:5% auto; padding:20px; border-radius:16px; width:85%; max-height:85vh; overflow-y:auto;">
-        <span class="close" id="modalClose" style="float:right; font-size:1.6rem; cursor:pointer;">&times;</span>
-        <div id="modalContent"></div>
-    </div>
-</div>
+<div id="ledgerModal" class="modal"><div class="modal-content"><span class="close" id="modalClose">&times;</span><div id="modalContent"></div></div></div>
 
 <script>
 (function() {
+    // ---------- SUPABASE CONFIG ----------
     const SUPABASE_URL = 'https://pdmhpbddfvbonsaclgvw.supabase.co';
     const SUPABASE_ANON_KEY = 'sb_publishable_q4kliTASjCYC4xk5TnwFDQ_H0FYNSiR';
     const { createClient } = supabase;
     const supa = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
     const syncStatus = document.getElementById('syncStatus');
     function setSyncStatus(text) { if (syncStatus) syncStatus.innerText = text; }
-
-    const round2 = (num) => Math.round((num + Number.EPSILON) * 100) / 100;
-    const MIN_DATE = '2026-05-14';
-    function isBeforeMinDate(date) { return date < MIN_DATE; }
 
     function gatherAllData() {
         return {
@@ -237,8 +226,8 @@
             purchases, nocPayments, nocOpeningBal, stockOpenPetrol, stockOpenDiesel,
             nozzles: nozzles.map(n => ({ open: n.open, close: n.close })),
             currentInputs: {
-                openingCash: round2(document.getElementById('openingCash').value || 0),
-                openingBank: round2(document.getElementById('openingBank').value || 0),
+                openingCash: document.getElementById('openingCash').value,
+                openingBank: document.getElementById('openingBank').value,
                 petrolRate: document.getElementById('petrolRate').value,
                 dieselRate: document.getElementById('dieselRate').value,
                 outPetrolLtr: document.getElementById('outPetrolLtr').value,
@@ -262,9 +251,9 @@
         if (data.nozzles) { data.nozzles.forEach((n,i)=>{ if(nozzles[i]){nozzles[i].open=n.open;nozzles[i].close=n.close;} }); }
         if (data.currentInputs) {
             const inp = data.currentInputs;
-            document.getElementById('openingCash').value = round2(inp.openingCash || 0);
-            document.getElementById('openingBank').value = round2(inp.openingBank || 0);
-            document.getElementById('prabhuOpeningBal').value = round2(inp.openingBank || 0);
+            document.getElementById('openingCash').value = inp.openingCash || 0;
+            document.getElementById('openingBank').value = inp.openingBank || 0;
+            document.getElementById('prabhuOpeningBal').value = inp.openingBank || 0;
             document.getElementById('petrolRate').value = inp.petrolRate || 220.30;
             document.getElementById('dieselRate').value = inp.dieselRate || 208.30;
             document.getElementById('outPetrolLtr').value = inp.outPetrolLtr || 0;
@@ -301,8 +290,8 @@
 
     let saveAll = function() { localStorage.setItem('phatkeshwari_local_backup', JSON.stringify(gatherAllData())); saveToCloud(); };
 
-    // Data arrays
-    let debtorsList = ["Basu Lamsal (Nava Jyoti Crusher)","Bhanja(8307)","Bikram","Dev Singh","Haldetar Shyam","Hari Tamang","Koshipari (6143)","Mel Kancha","Ramesh(7353)","Rs Nirman","Samakoshi Depo","Shera Construction","Tara Dai","Tara Dai Dm","Tilak Lama(4303)","Unique","Moving Debtor","3G Crusher","6838 Saila","Bijaya Hokshe","Bijay Parajuli(4294)","Bindabasini Suppliers","Binod(2807)","Birash 796","Bir B","Bishal Dolalghat","Daduwa Kancha","Dakshinkali Itta Udhyog Pvt. Ltd.","Dek Bd Kunwar","Dhandhoj Lama","Dhawa Lama","Dipen Thapa","Doleshwor Nirman","Durga Chaulagain","Gauri Kaji","Gaurishankar Khanij Udhyog Pvt. Ltd","Hanuman Construction","Hari Krishna Parajuli","Indrawati Baluwa","Indreni School","Joglal Shrestha","Kamakhya Oil Stores","Krishna Lama","Krishna Pakhrin","Kumar Parajuli","Mandan Deupur Nagarpalika","Melamchi Indrawati Hume Pipe Udhyog","Min Bahadur Basnet","Nepal Nirman Crusher Udhyog Pvt. Ltd.","Nidhi Shakti Pvt.Ltd","Palanchwok Samiti","Pepsi","Prem  Lama","Rajkumar","Ram Hari","R&R Samay JV","Sahil Srivastava","Salik Ram (2510)","Sandip Awale","Sange Lama","Sanup (3805)","Sher Construction","Shiv Chaulagain","Siri Dai","Sudarsan Giri","Topten Lama","Tribeni Infra International Pvt. Ltd.","Tuk Prasad Cash","Tuk Prasad - Three Dimensional Builders","Valley School Panchkhal","Worldlink Net","Non Moving Debtor","Akela JV","Arun Maharjan","Ashok Tamang","Babu Krishna","Bajra Guru- Dawa Construction Pvt Ltd","Balkrishna","Bhagwati Mine","Bhim Lama","Bhumlu Gaupalika","Bramayani  Eta Udhyod","Champeshwori Nirman Sewa Pvt Ltd","Chin Bahadur","Dhiraj Gc","Dulaleshwor Club","Ganesh Karki - Staff","Ganga Indrawti Crusher Udhyog Pvt Ltd","Govinda Giri","Helambu Gaupalika","Jaldevi","Kalika - Pacific Engineering Co. Pvt. Ltd.","Kumar Bhattrai","Lama Crusher- Melamchi A Cone Crusher Aggregate Pvt","Lama Nirman Suppliers Pvt. Ltd.","Lami Dada Bikki","Madan Nepal","Madhab Neupane","Man Dhoj","Melamchi A Cone Crusher","Nilgiri","Nima Lama","Palanchowk Itta Bhatta","Palanchowk Pitch","Palchowkimai Roda Dhunga Pvt Ltd","Rajan Shiwakoti","Rajesh Neupane","Ramesh Giri","Ram Prasad Sapkota","Ravi Lama","Rio Bari","Salik","Samir Hamal","Samir Lama","Saroj Lama","Saroj Melamchi","Shree AV and N Construction","Shrestha Construction- Shrestha Raman Lumbini JV","Silame","Sukbir Tamang","Suman Karki","Suvida Sewa","Tinkune","Tribeni Brahamyani","Tribeni Trading & Suppliers","Udab Gautam","Yadav Thakuri","Partner A/C","Basu Dev Dahal- Debtor","Hari Lama- Debtor"];
+    // ---------- DATA ARRAYS ----------
+    let debtorsList = ["Basu Lamsal  (Nava Jyoti Crusher)","Bhanja(8307)","Bikram","Dev Singh","Haldetar Shyam","Hari Tamang","Koshipari (6143)","Mel Kancha","Ramesh(7353)","Rs Nirman","Samakoshi Depo","Shera Construction","Tara Dai","Tara Dai Dm","Tilak Lama(4303)","Unique","Moving Debtor","3G Crusher","6838 Saila","Bijaya Hokshe","Bijay Parajuli(4294)","Bindabasini Suppliers","Binod(2807)","Birash 796","Bir B","Bishal Dolalghat","Daduwa Kancha","Dakshinkali Itta Udhyog Pvt. Ltd.","Dek Bd Kunwar","Dhandhoj Lama","Dhawa Lama","Dipen Thapa","Doleshwor Nirman","Durga Chaulagain","Gauri Kaji","Gaurishankar Khanij Udhyog Pvt. Ltd","Hanuman Construction","Hari Krishna Parajuli","Indrawati Baluwa","Indreni School","Joglal Shrestha","Kamakhya Oil Stores","Krishna Lama","Krishna Pakhrin","Kumar Parajuli","Mandan Deupur Nagarpalika","Melamchi Indrawati Hume Pipe Udhyog","Min Bahadur Basnet","Nepal Nirman Crusher Udhyog Pvt. Ltd.","Nidhi Shakti Pvt.Ltd","Palanchwok Samiti","Pepsi","Prem  Lama","Rajkumar","Ram Hari","R&R Samay JV","Sahil Srivastava","Salik Ram (2510)","Sandip Awale","Sange Lama","Sanup (3805)","Sher Construction","Shiv Chaulagain","Siri Dai","Sudarsan Giri","Topten Lama","Tribeni Infra International Pvt. Ltd.","Tuk Prasad Cash","Tuk Prasad - Three Dimensional Builders","Valley School Panchkhal","Worldlink Net","Non Moving Debtor","Akela JV","Arun Maharjan","Ashok Tamang","Babu Krishna","Bajra Guru- Dawa Construction Pvt Ltd","Balkrishna","Bhagwati Mine","Bhim Lama","Bhumlu Gaupalika","Bramayani  Eta Udhyod","Champeshwori Nirman Sewa Pvt Ltd","Chin Bahadur","Dhiraj Gc","Dulaleshwor Club","Ganesh Karki - Staff","Ganga Indrawti Crusher Udhyog Pvt Ltd","Govinda Giri","Helambu Gaupalika","Jaldevi","Kalika - Pacific Engineering Co. Pvt. Ltd.","Kumar Bhattrai","Lama Crusher- Melamchi A Cone Crusher Aggregate Pvt","Lama Nirman Suppliers Pvt. Ltd.","Lami Dada Bikki","Madan Nepal","Madhab Neupane","Man Dhoj","Melamchi A Cone Crusher","Nilgiri","Nima Lama","Palanchowk Itta Bhatta","Palanchowk Pitch","Palchowkimai Roda Dhunga Pvt Ltd","Rajan Shiwakoti","Rajesh Neupane","Ramesh Giri","Ram Prasad Sapkota","Ravi Lama","Rio Bari","Salik","Samir Hamal","Samir Lama","Saroj Lama","Saroj Melamchi","Shree AV and N Construction","Shrestha Construction- Shrestha Raman Lumbini JV","Silame","Sukbir Tamang","Suman Karki","Suvida Sewa","Tinkune","Tribeni Brahamyani","Tribeni Trading & Suppliers","Udab Gautam","Yadav Thakuri","Partner A/C","Basu Dev Dahal- Debtor","Hari Lama- Debtor"];
     let expenseCategories = ["Bike Fuel Expenses","Fuel Expenses- Panchkhal Chauki","Generator Fuel Expense","Interest and Bank Charges","Bank Charges","Interest Expenses RBB","Interest HP Loan","Int Income/Expense","Int Bank Loan","Int From Partners","Motorcycle Fuel","Renewal Expenses","Banijya Bank Expenses","Naptole Expenses","Registration Expense -Ward Office","Renewal Charge","Renewal Expenses-Software","Renewal NOC","Ward Registration and Rental Tax","Salary","Consulting Charges","Dashain Allowance","Dinesh Tamang- Salary(Thankot)","Ground Cleaning","Provident Fund","Salary-Staff","Tranker-Salary","Tax & VAT Expense","Advance Tax","Dividend Tax","Full Audit Expenses","Full Audit Tax","Income Tax","Income Tax and TDS","Income Tax-Party Tds","SST","Tax&Vat Mandan","Tds Done by Party","TDS Expense","TDS on Audit Fee","TDS on Rent","TDS on Salary","VAT Expense","Vat Vsewa","Audit Expense","Bike Expenses","Breakfast Expenses","Cctv","Dashain/Tihar/bishwo Puja","Depreciation Expenses A/c","Dispenser Pump","Donation Expenses","Electricity Expenses","Fuel Expenses- Hari Lama","Internet Expenses","Kavre Association Expenses","Medical Expenses","Mess Expenses","Office Expenses","Other Expenses","Other Insurance","Petrol Loss","Provision For VAT","Pump Insurance","Repair","Repair and Maintenance","Software","Stationery Expense","Thankot Kharcha","Vat Expenses-Kamakhya","Water Expenses","Water Pump","2246-Collection","2246-Expenses","2246-Fuel","Tranker Insurance","Interest Income","Other Income","Rental Income","TDS Income","2246 Tranker Transportation","Transportation-Thankot","Insurance Direct","Meter Test","Purchase","Purchase Diesel","Purchase Petrol","Sales Accounts","Vittartha Sewa Pvt. Ltd.","Diesel Sales","Diesel Sales (Out of Nozol)","Petrol Sales","Petrol Sales (Out Of Nozol)","Sales"];
     let creditSales = [], collections = [], expensesList = [], deposits = [], withdrawals = [], bankCharges = [];
     let postedDays = [], lockedDates = [], adjustments = [];
@@ -315,10 +304,10 @@
         { id: "Diesel III", type: "diesel", open: 4932858, close: 4932858 }
     ];
 
-    // Formatting & utils
+    // ---------- FORMATTING ----------
     function formatNepaliNumber(num) {
         if (isNaN(num)) return '0.00';
-        let x = round2(num).toFixed(2), ap = x.slice(-3), bp = x.slice(0, x.length-3);
+        let x = num.toFixed(2), ap = x.slice(-3), bp = x.slice(0, x.length-3);
         if (bp.length > 3) { let lt = bp.slice(-3), ot = bp.slice(0, -3); if (ot) lt = ',' + lt; return ot.replace(/\B(?=(\d{2})+(?!\d))/g, ",") + lt + ap; }
         return bp + ap;
     }
@@ -350,9 +339,9 @@
             const prevStr = prev.toISOString().split('T')[0];
             const prevPosted = postedDays.find(p => p.date === prevStr);
             if (prevPosted) {
-                document.getElementById('openingCash').value = round2(prevPosted.closingCash);
-                document.getElementById('openingBank').value = round2(prevPosted.closingBank);
-                document.getElementById('prabhuOpeningBal').value = round2(prevPosted.closingBank);
+                document.getElementById('openingCash').value = prevPosted.closingCash;
+                document.getElementById('openingBank').value = prevPosted.closingBank;
+                document.getElementById('prabhuOpeningBal').value = prevPosted.closingBank;
                 if (prevPosted.nozzles?.length === nozzles.length) prevPosted.nozzles.forEach((n,i)=>nozzles[i].open=n.close);
                 if (prevPosted.stockClosePetrol !== undefined) { stockOpenPetrol = prevPosted.stockClosePetrol; document.getElementById('stockOpenPetrolInput').value = stockOpenPetrol; }
                 if (prevPosted.stockCloseDiesel !== undefined) { stockOpenDiesel = prevPosted.stockCloseDiesel; document.getElementById('stockOpenDieselInput').value = stockOpenDiesel; }
@@ -365,46 +354,107 @@
         updateAll();
     }
     function initSearchableDropdown(inputId, listId, dataArray, amountFieldId) {
-        const input = document.getElementById(inputId), list = document.getElementById(listId), amountField = document.getElementById(amountFieldId);
-        const sorted = [...dataArray].sort((a,b) => a.localeCompare(b, undefined, {sensitivity:'base'}));
-        let highlightIndex = -1;
-        function clearHighlight() { const items = list.querySelectorAll('div'); items.forEach(item => item.classList.remove('highlighted')); }
-        function setHighlight(index) { clearHighlight(); const items = list.querySelectorAll('div'); if (index >= 0 && index < items.length) { items[index].classList.add('highlighted'); items[index].scrollIntoView({ block: 'nearest' }); } }
-        function filter() {
-            const query = input.value.toLowerCase(); list.innerHTML = ''; highlightIndex = -1;
-            const filtered = sorted.filter(item => item.toLowerCase().includes(query));
-            if (filtered.length > 0 && query.length > 0) {
-                list.style.display = 'block';
-                filtered.forEach(item => {
-                    const div = document.createElement('div'); div.textContent = item;
-                    div.addEventListener('mousedown', (e) => { e.preventDefault(); input.value = item; list.style.display = 'none'; highlightIndex = -1; if (amountField) amountField.focus(); });
-                    div.addEventListener('mouseenter', () => { const idx = Array.from(list.children).indexOf(div); highlightIndex = idx; setHighlight(idx); });
-                    div.addEventListener('mouseleave', () => { highlightIndex = -1; clearHighlight(); });
-                    list.appendChild(div);
-                });
-            } else { list.style.display = 'none'; }
-        }
-        input.addEventListener('input', filter); input.addEventListener('focus', filter);
-        input.addEventListener('blur', () => setTimeout(() => { list.style.display = 'none'; highlightIndex = -1; }, 200));
-        input.addEventListener('keydown', (e) => {
-            const items = list.querySelectorAll('div');
-            if (e.key === 'ArrowDown') { e.preventDefault(); if (list.style.display === 'none') { filter(); if (items.length > 0) { highlightIndex = 0; setHighlight(0); } } else { highlightIndex = Math.min(highlightIndex + 1, items.length - 1); setHighlight(highlightIndex); } }
-            else if (e.key === 'ArrowUp') { e.preventDefault(); if (items.length > 0) { highlightIndex = Math.max(highlightIndex - 1, 0); setHighlight(highlightIndex); } }
-            else if (e.key === 'Enter') { e.preventDefault(); if (highlightIndex >= 0 && highlightIndex < items.length) { input.value = items[highlightIndex].textContent; } else if (items.length > 0) { input.value = items[0].textContent; } list.style.display = 'none'; highlightIndex = -1; if (amountField) amountField.focus(); }
-            else if (e.key === 'Escape') { list.style.display = 'none'; highlightIndex = -1; }
-        });
+    const input = document.getElementById(inputId),
+          list = document.getElementById(listId),
+          amountField = document.getElementById(amountFieldId);
+    const sorted = [...dataArray].sort((a,b) => a.localeCompare(b, undefined, {sensitivity:'base'}));
+    let highlightIndex = -1;
+
+    function clearHighlight() {
+        const items = list.querySelectorAll('div');
+        items.forEach(item => item.classList.remove('highlighted'));
     }
+
+    function setHighlight(index) {
+        clearHighlight();
+        const items = list.querySelectorAll('div');
+        if (index >= 0 && index < items.length) {
+            items[index].classList.add('highlighted');
+            items[index].scrollIntoView({ block: 'nearest' });
+        }
+    }
+
+    function filter() {
+        const query = input.value.toLowerCase();
+        list.innerHTML = '';
+        highlightIndex = -1;
+        const filtered = sorted.filter(item => item.toLowerCase().includes(query));
+        if (filtered.length > 0 && query.length > 0) {
+            list.style.display = 'block';
+            filtered.forEach(item => {
+                const div = document.createElement('div');
+                div.textContent = item;
+                div.addEventListener('mousedown', (e) => {
+                    e.preventDefault();
+                    input.value = item;
+                    list.style.display = 'none';
+                    highlightIndex = -1;
+                    if (amountField) amountField.focus();
+                });
+                div.addEventListener('mouseenter', () => {
+                    const idx = Array.from(list.children).indexOf(div);
+                    highlightIndex = idx;
+                    setHighlight(idx);
+                });
+                div.addEventListener('mouseleave', () => {
+                    highlightIndex = -1;
+                    clearHighlight();
+                });
+                list.appendChild(div);
+            });
+        } else {
+            list.style.display = 'none';
+        }
+    }
+
+    input.addEventListener('input', filter);
+    input.addEventListener('focus', filter);
+    input.addEventListener('blur', () => setTimeout(() => { list.style.display = 'none'; highlightIndex = -1; }, 200));
+
+    input.addEventListener('keydown', (e) => {
+        const items = list.querySelectorAll('div');
+        if (e.key === 'ArrowDown') {
+            e.preventDefault();
+            if (list.style.display === 'none') {
+                filter();
+                if (items.length > 0) { highlightIndex = 0; setHighlight(0); }
+            } else {
+                highlightIndex = Math.min(highlightIndex + 1, items.length - 1);
+                setHighlight(highlightIndex);
+            }
+        } else if (e.key === 'ArrowUp') {
+            e.preventDefault();
+            if (items.length > 0) {
+                highlightIndex = Math.max(highlightIndex - 1, 0);
+                setHighlight(highlightIndex);
+            }
+        } else if (e.key === 'Enter') {
+            e.preventDefault();
+            if (highlightIndex >= 0 && highlightIndex < items.length) {
+                input.value = items[highlightIndex].textContent;
+            } else if (items.length > 0) {
+                input.value = items[0].textContent;
+            }
+            list.style.display = 'none';
+            highlightIndex = -1;
+            if (amountField) amountField.focus();
+        } else if (e.key === 'Escape') {
+            list.style.display = 'none';
+            highlightIndex = -1;
+        }
+    });
+}
     function getAllCreditSalesForDate(date) { return [...creditSales.filter(t=>t.date===date), ...adjustments.filter(a=>a.date===date&&a.type==='credit').map(a=>({date:a.date, debtor:a.debtor, amount:a.amount}))]; }
     function getAllCollectionsForDate(date) { return [...collections.filter(t=>t.date===date), ...adjustments.filter(a=>a.date===date&&a.type==='collection').map(a=>({date:a.date, debtor:a.debtor, amount:a.amount}))]; }
     function getAllExpensesForDate(date) { return [...expensesList.filter(t=>t.date===date), ...adjustments.filter(a=>a.date===date&&a.type==='expense').map(a=>({date:a.date, category:a.category, amount:a.amount}))]; }
 
-    function updateCardTotals() {
+   function updateCardTotals() {
         const today = getTodayDate();
-        const totalCredits = round2(getAllCreditSalesForDate(today).reduce((s, t) => s + t.amount, 0));
-        const totalCashColls = round2(getAllCollectionsForDate(today).reduce((s, t) => s + t.amount, 0));
-        const totalExp = round2(getAllExpensesForDate(today).reduce((s, t) => s + t.amount, 0));
-        const totalDep = round2(deposits.reduce((s, d) => s + d.amount, 0));
-        const totalWith = round2(withdrawals.reduce((s, w) => s + w.amount, 0));
+        const totalCredits = getAllCreditSalesForDate(today).reduce((s, t) => s + t.amount, 0);
+        const totalCashColls = getAllCollectionsForDate(today).reduce((s, t) => s + t.amount, 0);
+        const totalExp = getAllExpensesForDate(today).reduce((s, t) => s + t.amount, 0);
+        const totalDep = deposits.reduce((s, d) => s + d.amount, 0);
+        const totalWith = withdrawals.reduce((s, w) => s + w.amount, 0);
         const crSpan = document.getElementById('creditCardTotal'); if (crSpan) crSpan.innerText = '(Rs ' + formatNepaliNumber(totalCredits) + ')';
         const colSpan = document.getElementById('collectionCardTotal'); if (colSpan) colSpan.innerText = '(Rs ' + formatNepaliNumber(totalCashColls) + ')';
         const expSpan = document.getElementById('expenseCardTotal'); if (expSpan) expSpan.innerText = totalExp < 0 ? '(Net Income Rs ' + formatNepaliNumber(-totalExp) + ')' : '(Rs ' + formatNepaliNumber(totalExp) + ')';
@@ -419,7 +469,7 @@
         const crTbody = document.querySelector('#todayCreditTable tbody'); crTbody.innerHTML = '';
         tCredits.forEach(c => {
             const row = crTbody.insertRow(); row.insertCell(0).innerText = c.debtor;
-            let amtText = formatRs(round2(c.amount));
+            let amtText = formatRs(c.amount);
             if (locked && c.lastEdited) { amtText += ` <span style="color:red; font-size:0.65rem;" title="Edited on ${c.lastEdited.date}">✎ ${c.lastEdited.date?.slice(0,10)}</span>`; }
             row.insertCell(1).innerHTML = amtText;
             const del = row.insertCell(2); const btn = document.createElement('button'); btn.className='delete-btn btn-sm'; btn.innerText='✖';
@@ -435,7 +485,7 @@
         const colTbody = document.querySelector('#todayCollectionTable tbody'); colTbody.innerHTML = '';
         tColls.forEach(c => {
             const row = colTbody.insertRow(); row.insertCell(0).innerText = c.debtor;
-            let amtText = formatRs(round2(c.amount));
+            let amtText = formatRs(c.amount);
             if (locked && c.lastEdited) { amtText += ` <span style="color:red; font-size:0.65rem;" title="Edited on ${c.lastEdited.date}">✎ ${c.lastEdited.date?.slice(0,10)}</span>`; }
             row.insertCell(1).innerHTML = amtText;
             const del = row.insertCell(2); const btn = document.createElement('button'); btn.className='delete-btn btn-sm'; btn.innerText='✖';
@@ -451,7 +501,7 @@
         const expTbody = document.querySelector('#todayExpenseTable tbody'); expTbody.innerHTML = '';
         tExp.forEach(e => {
             const row = expTbody.insertRow(); row.insertCell(0).innerText = e.category;
-            let amtText = formatRs(round2(e.amount));
+            let amtText = formatRs(e.amount);
             if (locked && e.lastEdited) { amtText += ` <span style="color:red; font-size:0.65rem;" title="Edited on ${e.lastEdited.date}">✎ ${e.lastEdited.date?.slice(0,10)}</span>`; }
             row.insertCell(1).innerHTML = amtText;
             const del = row.insertCell(2); const btn = document.createElement('button'); btn.className='delete-btn btn-sm'; btn.innerText='✖';
@@ -494,11 +544,9 @@
     }
 
     function updateBankDisplay() {
-        const totalDep = round2(deposits.reduce((s,d)=>s+d.amount,0));
-        const totalWit = round2(withdrawals.reduce((s,w)=>s+w.amount,0));
-        const totalChg = round2(bankCharges.reduce((s,c)=>s+c.amount,0));
-        const opening = round2(parseFloat(document.getElementById('prabhuOpeningBal').value) || 0);
-        const closing = round2(opening + totalDep - totalWit - totalChg);
+        const totalDep = deposits.reduce((s,d)=>s+d.amount,0), totalWit = withdrawals.reduce((s,w)=>s+w.amount,0), totalChg = bankCharges.reduce((s,c)=>s+c.amount,0);
+        const opening = parseFloat(document.getElementById('prabhuOpeningBal').value) || 0;
+        const closing = opening + totalDep - totalWit - totalChg;
         document.getElementById('bankClosing').innerText = formatRs(closing);
         document.getElementById('bankDepTotal').innerText = formatRs(totalDep);
         document.getElementById('bankWitTotal').innerText = formatRs(totalWit);
@@ -506,20 +554,15 @@
     }
 
     function updateReconciliation() {
-        const openingCash = round2(parseFloat(document.getElementById('openingCash').value)||0);
+        const openingCash = parseFloat(document.getElementById('openingCash').value)||0;
         const sales = getNozzleSales();
-        document.getElementById('petrolSalesTotal').innerText = formatRs(round2(sales.petrolAmt)) + ' (' + sales.petrolLtr.toFixed(2) + ' Ltr)';
-        document.getElementById('dieselSalesTotal').innerText = formatRs(round2(sales.dieselAmt)) + ' (' + sales.dieselLtr.toFixed(2) + ' Ltr)';
-        document.getElementById('totalSalesDisplay').innerText = formatRs(round2(sales.total));
+        document.getElementById('petrolSalesTotal').innerText = formatRs(sales.petrolAmt) + ' (' + sales.petrolLtr.toFixed(2) + ' Ltr)';
+        document.getElementById('dieselSalesTotal').innerText = formatRs(sales.dieselAmt) + ' (' + sales.dieselLtr.toFixed(2) + ' Ltr)';
+        document.getElementById('totalSalesDisplay').innerText = formatRs(sales.total);
         const today = getTodayDate();
-        const totalCredits = round2(getAllCreditSalesForDate(today).reduce((s,t)=>s+t.amount,0));
-        const totalColls = round2(getAllCollectionsForDate(today).reduce((s,t)=>s+t.amount,0));
-        const totalExp = round2(getAllExpensesForDate(today).reduce((s,t)=>s+t.amount,0));
-        const totalDep = round2(deposits.reduce((s,d)=>s+d.amount,0));
-        const inflows = round2(sales.total + totalColls);
-        const outflows = round2(totalCredits + totalExp + totalDep);
-        const net = round2(inflows - outflows);
-        const closing = round2(openingCash + net);
+        const totalCredits = getAllCreditSalesForDate(today).reduce((s,t)=>s+t.amount,0), totalColls = getAllCollectionsForDate(today).reduce((s,t)=>s+t.amount,0);
+        const totalExp = getAllExpensesForDate(today).reduce((s,t)=>s+t.amount,0), totalDep = deposits.reduce((s,d)=>s+d.amount,0);
+        const inflows = sales.total + totalColls, outflows = totalCredits + totalExp + totalDep, net = inflows - outflows, closing = openingCash + net;
         document.getElementById('recOpenCash').innerText = formatRs(openingCash);
         document.getElementById('recInflows').innerText = formatRs(inflows);
         document.getElementById('recOutflows').innerText = formatRs(outflows);
@@ -530,12 +573,11 @@
 
     function updateAll() { displayTodayEntries(); updateReconciliation(); updateBankDisplay(); }
 
-    // Fuel nozzles
     function renderFuelTable() {
         const tbody = document.getElementById('fuelBody'); tbody.innerHTML = '';
         nozzles.forEach((noz, idx) => {
             const row = tbody.insertRow(); row.insertCell(0).innerText = noz.id;
-            const op = row.insertCell(1), cl = row.insertCell(2), so = row.insertCell(3), ra = row.insertCell(4), am = row.insertCell(5);
+            const op = row.insertCell(1), cl = row.insertCell(2); row.insertCell(3); row.insertCell(4); row.insertCell(5);
             const opInp = document.createElement('input'); opInp.type='number'; opInp.value=noz.open; opInp.readOnly = true; opInp.style.background = '#f1f5f9';
             opInp.onchange = e => { nozzles[idx].open = parseFloat(e.target.value)||0; updateFuelCells(); updateAll(); };
             const clInp = document.createElement('input'); clInp.type='number'; clInp.value=noz.close;
@@ -554,7 +596,7 @@
     function updateFuelRow(row, noz) {
         const pRate = parseFloat(document.getElementById('petrolRate').value)||0, dRate = parseFloat(document.getElementById('dieselRate').value)||0;
         const rate = noz.type === 'petrol' ? pRate : dRate; const litres = Math.max(0, noz.close - noz.open);
-        row.cells[3].innerText = litres.toFixed(3); row.cells[4].innerText = formatRs(rate); row.cells[5].innerText = formatRs(round2(litres * rate));
+        row.cells[3].innerText = litres.toFixed(3); row.cells[4].innerText = formatRs(rate); row.cells[5].innerText = formatRs(litres * rate);
     }
     function updateFuelCells() { document.querySelectorAll('#fuelBody tr').forEach((row, i) => { if (nozzles[i]) updateFuelRow(row, nozzles[i]); }); }
     function getNozzleSales() {
@@ -563,157 +605,191 @@
         nozzles.forEach(n => { const litres = Math.max(0, n.close - n.open); if (n.type === 'petrol') petrolLtr += litres; else dieselLtr += litres; });
         const outP = parseFloat(document.getElementById('outPetrolLtr').value)||0, outD = parseFloat(document.getElementById('outDieselLtr').value)||0;
         petrolLtr += outP; dieselLtr += outD;
-        return { petrolLtr, dieselLtr, petrolAmt: round2(petrolLtr*pRate), dieselAmt: round2(dieselLtr*dRate), total: round2((petrolLtr*pRate)+(dieselLtr*dRate)) };
+        return { petrolLtr, dieselLtr, petrolAmt: petrolLtr*pRate, dieselAmt: dieselLtr*dRate, total: (petrolLtr*pRate)+(dieselLtr*dRate) };
     }
 
-    // Stock & NOC with date range
+    // ---------- STOCK & NOC WITH DATE RANGE ----------
     function updateStockAndNOC(startDate, endDate) {
-        if (!startDate) startDate = getTodayDate(); if (!endDate) endDate = getTodayDate();
-        let petrolSalesLtr = 0, dieselSalesLtr = 0;
-        postedDays.forEach(day => { if (day.date >= startDate && day.date <= endDate) { petrolSalesLtr += (day.sales?.petrolLtr || 0); dieselSalesLtr += (day.sales?.dieselLtr || 0); } });
-        const today = getTodayDate();
-        if (today >= startDate && today <= endDate) { const liveSales = (typeof getNozzleSales === 'function') ? getNozzleSales() : { petrolLtr: 0, dieselLtr: 0 }; petrolSalesLtr += liveSales.petrolLtr; dieselSalesLtr += liveSales.dieselLtr; }
-        const rangePurchases = purchases.filter(p => p.date >= startDate && p.date <= endDate);
-        const rangePayments  = nocPayments.filter(p => p.date >= startDate && p.date <= endDate);
-        const purchPetrol  = rangePurchases.reduce((s, p) => s + p.petrolLitres, 0);
-        const purchDiesel  = rangePurchases.reduce((s, p) => s + p.dieselLitres, 0);
-        const purchAmount  = rangePurchases.reduce((s, p) => s + p.amount, 0);
-        const totalPayments = rangePayments.reduce((s, p) => s + p.amount, 0);
-        const openPetrol  = parseFloat(document.getElementById('stockOpenPetrolInput').value) || 0;
-        const openDiesel  = parseFloat(document.getElementById('stockOpenDieselInput').value) || 0;
-        document.getElementById('stockOpenPetrolInput').value = openPetrol; document.getElementById('stockOpenDieselInput').value = openDiesel;
-        document.getElementById('stockPurchPetrol').innerText = purchPetrol.toFixed(2); document.getElementById('stockPurchDiesel').innerText = purchDiesel.toFixed(2);
-        document.getElementById('stockSalesPetrol').innerText = petrolSalesLtr.toFixed(2); document.getElementById('stockSalesDiesel').innerText = dieselSalesLtr.toFixed(2);
-        document.getElementById('stockClosePetrol').innerText = (openPetrol + purchPetrol - petrolSalesLtr).toFixed(2);
-        document.getElementById('stockCloseDiesel').innerText = (openDiesel + purchDiesel - dieselSalesLtr).toFixed(2);
-        document.getElementById('nocOpenBal').innerText = formatRs(nocOpeningBal);
-        document.getElementById('nocCloseBal').innerText = formatRs(nocOpeningBal + purchAmount - totalPayments);
+    // Default to today if no range provided
+    if (!startDate) startDate = getTodayDate();
+    if (!endDate) endDate = getTodayDate();
 
-        const purchTbody = document.querySelector('#purchaseTable tbody'); purchTbody.innerHTML = '';
-        rangePurchases.forEach(p => {
-            const globalIdx = purchases.indexOf(p); const row = purchTbody.insertRow(); const locked = isDateLocked(p.date);
-            const dateCell = row.insertCell(0); const dateInput = document.createElement('input'); dateInput.type = 'date'; dateInput.value = p.date; dateInput.style.width = '120px'; dateInput.disabled = locked;
-            if (!locked) { dateInput.addEventListener('change', () => { purchases[globalIdx].date = dateInput.value; saveAll(); updateStockAndNOC(startDate, endDate); updateAll(); }); } dateCell.appendChild(dateInput);
-            const petrolCell = row.insertCell(1); const petrolInput = document.createElement('input'); petrolInput.type = 'number'; petrolInput.step = 'any'; petrolInput.value = p.petrolLitres; petrolInput.style.width = '80px'; petrolInput.disabled = locked;
-            if (!locked) { petrolInput.addEventListener('change', () => { purchases[globalIdx].petrolLitres = parseFloat(petrolInput.value)||0; saveAll(); updateStockAndNOC(startDate, endDate); updateAll(); }); } petrolCell.appendChild(petrolInput);
-            const dieselCell = row.insertCell(2); const dieselInput = document.createElement('input'); dieselInput.type = 'number'; dieselInput.step = 'any'; dieselInput.value = p.dieselLitres; dieselInput.style.width = '80px'; dieselInput.disabled = locked;
-            if (!locked) { dieselInput.addEventListener('change', () => { purchases[globalIdx].dieselLitres = parseFloat(dieselInput.value)||0; saveAll(); updateStockAndNOC(startDate, endDate); updateAll(); }); } dieselCell.appendChild(dieselInput);
-            const amtCell = row.insertCell(3); const amtInput = document.createElement('input'); amtInput.type = 'number'; amtInput.step = 'any'; amtInput.value = p.amount; amtInput.style.width = '100px'; amtInput.disabled = locked;
-            if (!locked) { amtInput.addEventListener('change', () => { purchases[globalIdx].amount = parseFloat(amtInput.value)||0; saveAll(); updateStockAndNOC(startDate, endDate); updateAll(); }); } amtCell.appendChild(amtInput);
-            const actCell = row.insertCell(4); actCell.style.whiteSpace = 'nowrap';
-            if (!locked) { const saveBtn = document.createElement('button'); saveBtn.className = 'save-btn'; saveBtn.innerText = '💾'; saveBtn.addEventListener('click', () => { saveAll(); updateStockAndNOC(startDate, endDate); updateAll(); }); const delBtn = document.createElement('button'); delBtn.className = 'delete-btn btn-sm'; delBtn.innerText = '✖'; delBtn.addEventListener('click', () => { purchases.splice(globalIdx, 1); saveAll(); updateStockAndNOC(startDate, endDate); updateAll(); }); actCell.appendChild(saveBtn); actCell.appendChild(delBtn); }
-        });
+    // --- Sales from posted days (historical) ---
+    let petrolSalesLtr = 0, dieselSalesLtr = 0;
+    postedDays.forEach(day => {
+        if (day.date >= startDate && day.date <= endDate) {
+            petrolSalesLtr += (day.sales?.petrolLtr || 0);
+            dieselSalesLtr += (day.sales?.dieselLtr || 0);
+        }
+    });
 
-        const nocTbody = document.querySelector('#nocLedgerTable tbody'); nocTbody.innerHTML = '';
-        rangePurchases.forEach(p => {
-            const globalIdx = purchases.indexOf(p); const row = nocTbody.insertRow(); const locked = isDateLocked(p.date);
-            const dateCell = row.insertCell(0); const dateInput = document.createElement('input'); dateInput.type = 'date'; dateInput.value = p.date; dateInput.style.width = '120px'; dateInput.disabled = locked;
-            if (!locked) { dateInput.addEventListener('change', () => { purchases[globalIdx].date = dateInput.value; saveAll(); updateStockAndNOC(startDate, endDate); updateAll(); }); } dateCell.appendChild(dateInput);
-            row.insertCell(1).innerText = 'Purchase';
-            const debitCell = row.insertCell(2); const debitInput = document.createElement('input'); debitInput.type = 'number'; debitInput.step = 'any'; debitInput.value = p.amount; debitInput.style.width = '100px'; debitInput.disabled = locked;
-            if (!locked) { debitInput.addEventListener('change', () => { purchases[globalIdx].amount = parseFloat(debitInput.value)||0; saveAll(); updateStockAndNOC(startDate, endDate); updateAll(); }); } debitCell.appendChild(debitInput);
-            row.insertCell(3).innerText = '';
-            const actCell = row.insertCell(4);
-            if (!locked) { const saveBtn = document.createElement('button'); saveBtn.className = 'save-btn'; saveBtn.innerText = '💾'; saveBtn.addEventListener('click', () => { saveAll(); updateStockAndNOC(startDate, endDate); updateAll(); }); const delBtn = document.createElement('button'); delBtn.className = 'delete-btn btn-sm'; delBtn.innerText = '✖'; delBtn.addEventListener('click', () => { purchases.splice(globalIdx, 1); saveAll(); updateStockAndNOC(startDate, endDate); updateAll(); }); actCell.appendChild(saveBtn); actCell.appendChild(delBtn); }
-        });
-        rangePayments.forEach(pmt => {
-            const globalIdx = nocPayments.indexOf(pmt); const row = nocTbody.insertRow(); const locked = isDateLocked(pmt.date);
-            const dateCell = row.insertCell(0); const dateInput = document.createElement('input'); dateInput.type = 'date'; dateInput.value = pmt.date; dateInput.style.width = '120px'; dateInput.disabled = locked;
-            if (!locked) { dateInput.addEventListener('change', () => { nocPayments[globalIdx].date = dateInput.value; saveAll(); updateStockAndNOC(startDate, endDate); updateAll(); }); } dateCell.appendChild(dateInput);
-            const partCell = row.insertCell(1); const partInput = document.createElement('input'); partInput.type = 'text'; partInput.value = pmt.desc || 'NOC Payment'; partInput.style.width = '120px'; partInput.disabled = locked;
-            if (!locked) { partInput.addEventListener('change', () => { nocPayments[globalIdx].desc = partInput.value; saveAll(); updateStockAndNOC(startDate, endDate); updateAll(); }); } partCell.appendChild(partInput);
-            row.insertCell(2).innerText = '';
-            const creditCell = row.insertCell(3); const creditInput = document.createElement('input'); creditInput.type = 'number'; creditInput.step = 'any'; creditInput.value = pmt.amount; creditInput.style.width = '100px'; creditInput.disabled = locked;
-            if (!locked) { creditInput.addEventListener('change', () => { nocPayments[globalIdx].amount = parseFloat(creditInput.value)||0; saveAll(); updateStockAndNOC(startDate, endDate); updateAll(); }); } creditCell.appendChild(creditInput);
-            const actCell = row.insertCell(4);
-            if (!locked) { const saveBtn = document.createElement('button'); saveBtn.className = 'save-btn'; saveBtn.innerText = '💾'; saveBtn.addEventListener('click', () => { saveAll(); updateStockAndNOC(startDate, endDate); updateAll(); }); const delBtn = document.createElement('button'); delBtn.className = 'delete-btn btn-sm'; delBtn.innerText = '✖'; delBtn.addEventListener('click', () => { nocPayments.splice(globalIdx, 1); saveAll(); updateStockAndNOC(startDate, endDate); updateAll(); }); actCell.appendChild(saveBtn); actCell.appendChild(delBtn); }
-        });
+    // --- If today is within the selected range, add live (unposted) nozzle sales ---
+    const today = getTodayDate();
+    if (today >= startDate && today <= endDate) {
+        const liveSales = (typeof getNozzleSales === 'function') ? getNozzleSales() : { petrolLtr: 0, dieselLtr: 0 };
+        petrolSalesLtr += liveSales.petrolLtr;
+        dieselSalesLtr += liveSales.dieselLtr;
     }
 
-    function addPurchase() { const today = getTodayDate(); if (isBeforeMinDate(today)) { alert('Entries before ' + MIN_DATE + ' are not allowed.'); return; } if (isDateLocked(today)) return; const petrolL = parseFloat(prompt('Petrol litres:')); const dieselL = parseFloat(prompt('Diesel litres:')); const amt = parseFloat(prompt('Total amount (Rs):')); if (isNaN(petrolL)||isNaN(dieselL)||isNaN(amt)||amt<=0) return; purchases.push({ date: today, petrolLitres: petrolL, dieselLitres: dieselL, amount: amt }); saveAll(); const sDate = document.getElementById('stockStartDate').value || getTodayDate(); const eDate = document.getElementById('stockEndDate').value || getTodayDate(); updateStockAndNOC(sDate, eDate); updateAll(); }
-    function addNocPayment() { const today = getTodayDate(); if (isBeforeMinDate(today)) { alert('Entries before ' + MIN_DATE + ' are not allowed.'); return; } if (isDateLocked(today)) return; const amt = parseFloat(prompt('Payment amount (Rs):')); if (isNaN(amt)||amt<=0) return; nocPayments.push({ date: today, amount: amt, desc: 'NOC Payment' }); withdrawals.push({ desc: 'NOC Payment', amount: amt, date: today }); saveAll(); const sDate = document.getElementById('stockStartDate').value || getTodayDate(); const eDate = document.getElementById('stockEndDate').value || getTodayDate(); updateStockAndNOC(sDate, eDate); updateAll(); }
-    function pasteNOCData() { const today = getTodayDate(); if (isBeforeMinDate(today)) { alert('Entries before ' + MIN_DATE + ' are not allowed.'); return; } if (isDateLocked(today)) return; const raw = prompt('Paste NOC purchase data:\n\nExpected format per line:\nBagmati Provincial Office  5/15/2026  HSD - Diesel - BS VI  193.67  9,000  1,743,029.82  226,593.88  1,969,623.7'); if (!raw) return; const lines = raw.split('\n').filter(l=>l.trim()); let added = 0; lines.forEach(line => { const parts = line.split(/\t|\s{2,}/); if (parts.length<8) return; const dateStr = parts[1].trim(); const product = parts[2].trim(); const qty = parseFloat(parts[4].replace(/,/g,'')); const total = parseFloat(parts[7].replace(/,/g,'')); if (isNaN(qty)||isNaN(total)) return; const dateParts = dateStr.split('/'); if (dateParts.length!==3) return; const isoDate = `${dateParts[2]}-${dateParts[0].padStart(2,'0')}-${dateParts[1].padStart(2,'0')}`; let petrol=0, diesel=0; if (product.toLowerCase().includes('petrol')) petrol=qty; else if (product.toLowerCase().includes('diesel')||product.toLowerCase().includes('hsd')) diesel=qty; else return; purchases.push({ date: isoDate, petrolLitres: petrol, dieselLitres: diesel, amount: total }); added++; }); saveAll(); const sDate = document.getElementById('stockStartDate').value || getTodayDate(); const eDate = document.getElementById('stockEndDate').value || getTodayDate(); updateStockAndNOC(sDate, eDate); updateAll(); if (added) alert(`Added ${added} purchase(s).`); }
+    // --- Purchases and payments in the range ---
+    const rangePurchases = purchases.filter(p => p.date >= startDate && p.date <= endDate);
+    const rangePayments  = nocPayments.filter(p => p.date >= startDate && p.date <= endDate);
+    const purchPetrol  = rangePurchases.reduce((s, p) => s + p.petrolLitres, 0);
+    const purchDiesel  = rangePurchases.reduce((s, p) => s + p.dieselLitres, 0);
+    const purchAmount  = rangePurchases.reduce((s, p) => s + p.amount, 0);
+    const totalPayments = rangePayments.reduce((s, p) => s + p.amount, 0);
 
-    function postStock() { const today = getTodayDate(); if (isBeforeMinDate(today)) { alert('Entries before ' + MIN_DATE + ' are not allowed.'); return; } if (!today) return alert('Select a date'); const sales = (typeof getNozzleSales === 'function') ? getNozzleSales() : { petrolLtr: 0, dieselLtr: 0 }; const todayPurchases = purchases.filter(p => p.date === today); const todayPayments = nocPayments.filter(p => p.date === today); const closePetrol = stockOpenPetrol + todayPurchases.reduce((s, p) => s + p.petrolLitres, 0) - sales.petrolLtr; const closeDiesel = stockOpenDiesel + todayPurchases.reduce((s, p) => s + p.dieselLitres, 0) - sales.dieselLtr; const nocCloseBal = nocOpeningBal + todayPurchases.reduce((s, p) => s + p.amount, 0) - todayPayments.reduce((s, p) => s + p.amount, 0); const stockSnapshot = { date: today, stockOpenPetrol, stockOpenDiesel, stockClosePetrol: closePetrol, stockCloseDiesel: closeDiesel, purchases: [...todayPurchases], nocPayments: [...todayPayments], nocOpenBal: nocOpeningBal, nocCloseBal }; if (!window.stockPostedDays) window.stockPostedDays = []; window.stockPostedDays.push(stockSnapshot); stockOpenPetrol = closePetrol; stockOpenDiesel = closeDiesel; nocOpeningBal = nocCloseBal; purchases = purchases.filter(p => p.date !== today); nocPayments = nocPayments.filter(p => p.date !== today); withdrawals = withdrawals.filter(w => w.date !== today || w.desc !== 'NOC Payment'); saveAll(); updateStockAndNOC(today, today); updateAll(); alert('Stock/NOC posted and carried forward.'); }
+    // --- Opening stock (user‑controlled) ---
+    const openPetrol  = parseFloat(document.getElementById('stockOpenPetrolInput').value) || 0;
+    const openDiesel  = parseFloat(document.getElementById('stockOpenDieselInput').value) || 0;
+    document.getElementById('stockOpenPetrolInput').value = openPetrol;
+    document.getElementById('stockOpenDieselInput').value = openDiesel;
 
-    function postToday() { const today = getTodayDate(); if (isBeforeMinDate(today)) { alert('Entries before ' + MIN_DATE + ' are not allowed.'); return; } if (!today) return alert('Select a date'); if (isDateLocked(today)) return alert('Already locked.'); if (postedDays.some(p => p.date === today)) return alert('Already posted.'); if (!confirm('Post today? Editing will be locked for this date.')) return; const sales = getNozzleSales(); const openingCash = round2(parseFloat(document.getElementById('openingCash').value)||0), openingBank = round2(parseFloat(document.getElementById('openingBank').value)||0); const totalCredits = getAllCreditSalesForDate(today).reduce((s,t)=>s+t.amount,0), totalColls = getAllCollectionsForDate(today).reduce((s,t)=>s+t.amount,0); const totalExp = getAllExpensesForDate(today).reduce((s,t)=>s+t.amount,0); const totalDep = deposits.reduce((s,d)=>s+d.amount,0), totalWit = withdrawals.reduce((s,w)=>s+w.amount,0), totalChg = bankCharges.reduce((s,c)=>s+c.amount,0); const totalCashInflows = sales.total + totalColls, totalCashOutflows = totalCredits + totalExp + totalDep; const netCashChange = totalCashInflows - totalCashOutflows, closingCash = round2(openingCash + netCashChange); const closingBank = round2(openingBank + totalDep - totalWit - totalChg); const closePetrol = stockOpenPetrol + purchases.filter(p=>p.date===today).reduce((s,p)=>s+p.petrolLitres,0) - sales.petrolLtr; const closeDiesel = stockOpenDiesel + purchases.filter(p=>p.date===today).reduce((s,p)=>s+p.dieselLitres,0) - sales.dieselLtr; const nocCloseBal = nocOpeningBal + purchases.filter(p=>p.date===today).reduce((s,p)=>s+p.amount,0) - nocPayments.filter(p=>p.date===today).reduce((s,p)=>s+p.amount,0); const snapshot = { date: today, openingCash, openingBank, closingCash, closingBank, petrolRate: parseFloat(document.getElementById('petrolRate').value)||0, dieselRate: parseFloat(document.getElementById('dieselRate').value)||0, nozzles: nozzles.map(n => ({ id: n.id, open: n.open, close: n.close })), outPetrolLtr: parseFloat(document.getElementById('outPetrolLtr').value)||0, outDieselLtr: parseFloat(document.getElementById('outDieselLtr').value)||0, creditSales: [...getAllCreditSalesForDate(today)], collections: [...getAllCollectionsForDate(today)], expenses: [...getAllExpensesForDate(today)], deposits: [...deposits], withdrawals: [...withdrawals], charges: [...bankCharges], sales: sales, stockOpenPetrol, stockOpenDiesel, stockClosePetrol: closePetrol, stockCloseDiesel: closeDiesel, purchases: [...purchases.filter(p=>p.date===today)], nocPayments: [...nocPayments.filter(p=>p.date===today)], nocOpenBal: nocOpeningBal, nocCloseBal }; postedDays.push(snapshot); lockedDates.push(today); adjustments = adjustments.filter(a => a.date !== today); saveAll(); updateUIForLocked(); updateAll(); alert('Day posted and locked. Nozzle readings & balances will carry forward to next day automatically.'); setDefaultDate(); handleDateChange(); }
+    // --- Update stock display ---
+    document.getElementById('stockPurchPetrol').innerText = purchPetrol.toFixed(2);
+    document.getElementById('stockPurchDiesel').innerText = purchDiesel.toFixed(2);
+    document.getElementById('stockSalesPetrol').innerText = petrolSalesLtr.toFixed(2);
+    document.getElementById('stockSalesDiesel').innerText = dieselSalesLtr.toFixed(2);
+    const closePetrol = openPetrol + purchPetrol - petrolSalesLtr;
+    const closeDiesel = openDiesel + purchDiesel - dieselSalesLtr;
+    document.getElementById('stockClosePetrol').innerText = closePetrol.toFixed(2);
+    document.getElementById('stockCloseDiesel').innerText = closeDiesel.toFixed(2);
 
-    // Backup / Restore
-    function exportDatabase() {
-        const backup = {
-            debtors: debtorsList, expenseCategories,
-            creditSales, collections, expensesList, deposits, withdrawals, bankCharges,
-            postedDays, lockedDates, adjustments,
-            purchases, nocPayments, nocOpeningBal, stockOpenPetrol, stockOpenDiesel,
-            nozzles: nozzles.map(n=>({open:n.open,close:n.close})),
-            openingCash: round2(document.getElementById('openingCash').value),
-            openingBank: round2(document.getElementById('openingBank').value),
-            petrolRate: document.getElementById('petrolRate').value,
-            dieselRate: document.getElementById('dieselRate').value,
-            currentDate: document.getElementById('currentDate').value,
-            outPetrolLtr: document.getElementById('outPetrolLtr').value,
-            outDieselLtr: document.getElementById('outDieselLtr').value
-        };
-        const blob = new Blob([JSON.stringify(backup, null, 2)], {type:'application/json'});
-        const a = document.createElement('a');
-        a.href = URL.createObjectURL(blob);
-        a.download = 'Phatkeshwari_Backup.json';
-        a.click();
-    }
+    // --- NOC Ledger ---
+    document.getElementById('nocOpenBal').innerText = formatRs(nocOpeningBal);
+    const closingNOC = nocOpeningBal + purchAmount - totalPayments;
+    document.getElementById('nocCloseBal').innerText = formatRs(closingNOC);
 
-    function importDatabase() {
-        const input = document.createElement('input');
-        input.type = 'file';
-        input.accept = '.json';
-        input.onchange = e => {
-            const file = e.target.files[0];
-            if (!file) return;
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                try {
-                    const backup = JSON.parse(e.target.result);
-                    if (!backup.debtors) throw new Error('Invalid backup');
-                    debtorsList = backup.debtors;
-                    expenseCategories = backup.expenseCategories;
-                    creditSales = backup.creditSales || [];
-                    collections = backup.collections || [];
-                    expensesList = backup.expensesList || [];
-                    deposits = backup.deposits || [];
-                    withdrawals = backup.withdrawals || [];
-                    bankCharges = backup.bankCharges || [];
-                    postedDays = backup.postedDays || [];
-                    lockedDates = backup.lockedDates || [];
-                    adjustments = backup.adjustments || [];
-                    purchases = backup.purchases || [];
-                    nocPayments = backup.nocPayments || [];
-                    nocOpeningBal = backup.nocOpeningBal || 0;
-                    stockOpenPetrol = backup.stockOpenPetrol || 0;
-                    stockOpenDiesel = backup.stockOpenDiesel || 0;
-                    if (backup.nozzles) backup.nozzles.forEach((n,i)=>{ if(nozzles[i]){nozzles[i].open=n.open;nozzles[i].close=n.close;} });
-                    document.getElementById('openingCash').value = round2(backup.openingCash || 0);
-                    document.getElementById('openingBank').value = round2(backup.openingBank || 0);
-                    document.getElementById('prabhuOpeningBal').value = round2(backup.openingBank || 0);
-                    document.getElementById('petrolRate').value = backup.petrolRate || 220.30;
-                    document.getElementById('dieselRate').value = backup.dieselRate || 208.30;
-                    document.getElementById('outPetrolLtr').value = backup.outPetrolLtr || 0;
-                    document.getElementById('outDieselLtr').value = backup.outDieselLtr || 0;
-                    if (backup.currentDate) document.getElementById('currentDate').value = backup.currentDate;
-                    saveAll();
-                    refreshDropdowns();
-                    renderFuelTable();
-                    updateAll();
-                    alert('Database restored successfully!');
-                } catch (err) {
-                    alert('Error: Invalid backup file.');
-                    console.error(err);
-                }
-            };
-            reader.readAsText(file);
-        };
-        input.click();
-    }
+    // --- Render editable purchase table ---
+    const purchTbody = document.querySelector('#purchaseTable tbody');
+    purchTbody.innerHTML = '';
+    rangePurchases.forEach(p => {
+        const globalIdx = purchases.indexOf(p);
+        const row = purchTbody.insertRow();
+        const locked = isDateLocked(p.date);
+        // Date cell
+        const dateCell = row.insertCell(0);
+        const dateInput = document.createElement('input'); dateInput.type = 'date'; dateInput.value = p.date;
+        dateInput.style.width = '120px'; dateInput.disabled = locked;
+        if (!locked) { dateInput.addEventListener('change', () => { purchases[globalIdx].date = dateInput.value; saveAll(); updateStockAndNOC(startDate, endDate); updateAll(); }); }
+        dateCell.appendChild(dateInput);
+        // Petrol litres
+        const petrolCell = row.insertCell(1);
+        const petrolInput = document.createElement('input'); petrolInput.type = 'number'; petrolInput.step = 'any';
+        petrolInput.value = p.petrolLitres; petrolInput.style.width = '80px'; petrolInput.disabled = locked;
+        if (!locked) { petrolInput.addEventListener('change', () => { purchases[globalIdx].petrolLitres = parseFloat(petrolInput.value)||0; saveAll(); updateStockAndNOC(startDate, endDate); updateAll(); }); }
+        petrolCell.appendChild(petrolInput);
+        // Diesel litres
+        const dieselCell = row.insertCell(2);
+        const dieselInput = document.createElement('input'); dieselInput.type = 'number'; dieselInput.step = 'any';
+        dieselInput.value = p.dieselLitres; dieselInput.style.width = '80px'; dieselInput.disabled = locked;
+        if (!locked) { dieselInput.addEventListener('change', () => { purchases[globalIdx].dieselLitres = parseFloat(dieselInput.value)||0; saveAll(); updateStockAndNOC(startDate, endDate); updateAll(); }); }
+        dieselCell.appendChild(dieselInput);
+        // Amount
+        const amtCell = row.insertCell(3);
+        const amtInput = document.createElement('input'); amtInput.type = 'number'; amtInput.step = 'any';
+        amtInput.value = p.amount; amtInput.style.width = '100px'; amtInput.disabled = locked;
+        if (!locked) { amtInput.addEventListener('change', () => { purchases[globalIdx].amount = parseFloat(amtInput.value)||0; saveAll(); updateStockAndNOC(startDate, endDate); updateAll(); }); }
+        amtCell.appendChild(amtInput);
+        // Actions
+        const actCell = row.insertCell(4); actCell.style.whiteSpace = 'nowrap';
+        if (!locked) {
+            const saveBtn = document.createElement('button'); saveBtn.className = 'save-btn'; saveBtn.innerText = '💾';
+            saveBtn.addEventListener('click', () => { saveAll(); updateStockAndNOC(startDate, endDate); updateAll(); });
+            const delBtn = document.createElement('button'); delBtn.className = 'delete-btn btn-sm'; delBtn.innerText = '✖';
+            delBtn.addEventListener('click', () => { purchases.splice(globalIdx, 1); saveAll(); updateStockAndNOC(startDate, endDate); updateAll(); });
+            actCell.appendChild(saveBtn); actCell.appendChild(delBtn);
+        }
+    });
 
-    // Keyboard & scroll
+    // --- Render editable NOC Ledger ---
+    const nocTbody = document.querySelector('#nocLedgerTable tbody');
+    nocTbody.innerHTML = '';
+    // Purchases as debit
+    rangePurchases.forEach(p => {
+        const globalIdx = purchases.indexOf(p);
+        const row = nocTbody.insertRow();
+        const locked = isDateLocked(p.date);
+        // Date
+        const dateCell = row.insertCell(0);
+        const dateInput = document.createElement('input'); dateInput.type = 'date'; dateInput.value = p.date;
+        dateInput.style.width = '120px'; dateInput.disabled = locked;
+        if (!locked) { dateInput.addEventListener('change', () => { purchases[globalIdx].date = dateInput.value; saveAll(); updateStockAndNOC(startDate, endDate); updateAll(); }); }
+        dateCell.appendChild(dateInput);
+        // Particulars
+        row.insertCell(1).innerText = 'Purchase';
+        // Debit amount
+        const debitCell = row.insertCell(2);
+        const debitInput = document.createElement('input'); debitInput.type = 'number'; debitInput.step = 'any';
+        debitInput.value = p.amount; debitInput.style.width = '100px'; debitInput.disabled = locked;
+        if (!locked) { debitInput.addEventListener('change', () => { purchases[globalIdx].amount = parseFloat(debitInput.value)||0; saveAll(); updateStockAndNOC(startDate, endDate); updateAll(); }); }
+        debitCell.appendChild(debitInput);
+        // Credit (empty)
+        row.insertCell(3).innerText = '';
+        // Actions
+        const actCell = row.insertCell(4);
+        if (!locked) {
+            const saveBtn = document.createElement('button'); saveBtn.className = 'save-btn'; saveBtn.innerText = '💾';
+            saveBtn.addEventListener('click', () => { saveAll(); updateStockAndNOC(startDate, endDate); updateAll(); });
+            const delBtn = document.createElement('button'); delBtn.className = 'delete-btn btn-sm'; delBtn.innerText = '✖';
+            delBtn.addEventListener('click', () => { purchases.splice(globalIdx, 1); saveAll(); updateStockAndNOC(startDate, endDate); updateAll(); });
+            actCell.appendChild(saveBtn); actCell.appendChild(delBtn);
+        }
+    });
+    // Payments as credit
+    rangePayments.forEach(pmt => {
+        const globalIdx = nocPayments.indexOf(pmt);
+        const row = nocTbody.insertRow();
+        const locked = isDateLocked(pmt.date);
+        // Date
+        const dateCell = row.insertCell(0);
+        const dateInput = document.createElement('input'); dateInput.type = 'date'; dateInput.value = pmt.date;
+        dateInput.style.width = '120px'; dateInput.disabled = locked;
+        if (!locked) { dateInput.addEventListener('change', () => { nocPayments[globalIdx].date = dateInput.value; saveAll(); updateStockAndNOC(startDate, endDate); updateAll(); }); }
+        dateCell.appendChild(dateInput);
+        // Particulars (editable)
+        const partCell = row.insertCell(1);
+        const partInput = document.createElement('input'); partInput.type = 'text'; partInput.value = pmt.desc || 'NOC Payment';
+        partInput.style.width = '120px'; partInput.disabled = locked;
+        if (!locked) { partInput.addEventListener('change', () => { nocPayments[globalIdx].desc = partInput.value; saveAll(); updateStockAndNOC(startDate, endDate); updateAll(); }); }
+        partCell.appendChild(partInput);
+        // Debit (empty)
+        row.insertCell(2).innerText = '';
+        // Credit amount
+        const creditCell = row.insertCell(3);
+        const creditInput = document.createElement('input'); creditInput.type = 'number'; creditInput.step = 'any';
+        creditInput.value = pmt.amount; creditInput.style.width = '100px'; creditInput.disabled = locked;
+        if (!locked) { creditInput.addEventListener('change', () => { nocPayments[globalIdx].amount = parseFloat(creditInput.value)||0; saveAll(); updateStockAndNOC(startDate, endDate); updateAll(); }); }
+        creditCell.appendChild(creditInput);
+        // Actions
+        const actCell = row.insertCell(4);
+        if (!locked) {
+            const saveBtn = document.createElement('button'); saveBtn.className = 'save-btn'; saveBtn.innerText = '💾';
+            saveBtn.addEventListener('click', () => { saveAll(); updateStockAndNOC(startDate, endDate); updateAll(); });
+            const delBtn = document.createElement('button'); delBtn.className = 'delete-btn btn-sm'; delBtn.innerText = '✖';
+            delBtn.addEventListener('click', () => { nocPayments.splice(globalIdx, 1); saveAll(); updateStockAndNOC(startDate, endDate); updateAll(); });
+            actCell.appendChild(saveBtn); actCell.appendChild(delBtn);
+        }
+    });
+}
+    function addPurchase() { const today = getTodayDate(); if (isDateLocked(today)) return; const petrolL = parseFloat(prompt('Petrol litres:')); const dieselL = parseFloat(prompt('Diesel litres:')); const amt = parseFloat(prompt('Total amount (Rs):')); if (isNaN(petrolL)||isNaN(dieselL)||isNaN(amt)||amt<=0) return; purchases.push({ date: today, petrolLitres: petrolL, dieselLitres: dieselL, amount: amt }); saveAll(); const sDate = document.getElementById('stockStartDate').value || getTodayDate(); const eDate = document.getElementById('stockEndDate').value || getTodayDate(); updateStockAndNOC(sDate, eDate); updateAll(); }
+    function addNocPayment() { const today = getTodayDate(); if (isDateLocked(today)) return; const amt = parseFloat(prompt('Payment amount (Rs):')); if (isNaN(amt)||amt<=0) return; nocPayments.push({ date: today, amount: amt, desc: 'NOC Payment' }); withdrawals.push({ desc: 'NOC Payment', amount: amt }); saveAll(); const sDate = document.getElementById('stockStartDate').value || getTodayDate(); const eDate = document.getElementById('stockEndDate').value || getTodayDate(); updateStockAndNOC(sDate, eDate); updateAll(); }
+    function pasteNOCData() { const today = getTodayDate(); if (isDateLocked(today)) return; const raw = prompt('Paste NOC purchase data:\n\nExpected format per line:\nBagmati Provincial Office  5/15/2026  HSD - Diesel - BS VI  193.67  9,000  1,743,029.82  226,593.88  1,969,623.7'); if (!raw) return; const lines = raw.split('\n').filter(l=>l.trim()); let added = 0; lines.forEach(line => { const parts = line.split(/\t|\s{2,}/); if (parts.length<8) return; const dateStr = parts[1].trim(); const product = parts[2].trim(); const qty = parseFloat(parts[4].replace(/,/g,'')); const total = parseFloat(parts[7].replace(/,/g,'')); if (isNaN(qty)||isNaN(total)) return; const dateParts = dateStr.split('/'); if (dateParts.length!==3) return; const isoDate = `${dateParts[2]}-${dateParts[0].padStart(2,'0')}-${dateParts[1].padStart(2,'0')}`; let petrol=0, diesel=0; if (product.toLowerCase().includes('petrol')) petrol=qty; else if (product.toLowerCase().includes('diesel')||product.toLowerCase().includes('hsd')) diesel=qty; else return; purchases.push({ date: isoDate, petrolLitres: petrol, dieselLitres: diesel, amount: total }); added++; }); saveAll(); const sDate = document.getElementById('stockStartDate').value || getTodayDate(); const eDate = document.getElementById('stockEndDate').value || getTodayDate(); updateStockAndNOC(sDate, eDate); updateAll(); if (added) alert(`Added ${added} purchase(s).`); }
+
+    function postStock() { const today = getTodayDate(); if (!today) return alert('Select a date'); const sales = (typeof getNozzleSales === 'function') ? getNozzleSales() : { petrolLtr: 0, dieselLtr: 0 }; const todayPurchases = purchases.filter(p => p.date === today); const todayPayments = nocPayments.filter(p => p.date === today); const closePetrol = stockOpenPetrol + todayPurchases.reduce((s, p) => s + p.petrolLitres, 0) - sales.petrolLtr; const closeDiesel = stockOpenDiesel + todayPurchases.reduce((s, p) => s + p.dieselLitres, 0) - sales.dieselLtr; const nocCloseBal = nocOpeningBal + todayPurchases.reduce((s, p) => s + p.amount, 0) - todayPayments.reduce((s, p) => s + p.amount, 0); const stockSnapshot = { date: today, stockOpenPetrol, stockOpenDiesel, stockClosePetrol: closePetrol, stockCloseDiesel: closeDiesel, purchases: [...todayPurchases], nocPayments: [...todayPayments], nocOpenBal: nocOpeningBal, nocCloseBal }; if (!window.stockPostedDays) window.stockPostedDays = []; window.stockPostedDays.push(stockSnapshot); stockOpenPetrol = closePetrol; stockOpenDiesel = closeDiesel; nocOpeningBal = nocCloseBal; purchases = purchases.filter(p => p.date !== today); nocPayments = nocPayments.filter(p => p.date !== today); withdrawals = withdrawals.filter(w => w.date !== today || w.desc !== 'NOC Payment'); saveAll(); updateStockAndNOC(today, today); updateAll(); alert('Stock/NOC posted and carried forward.'); }
+
+    function postToday() { const today = getTodayDate(); if (!today) return alert('Select a date'); if (isDateLocked(today)) return alert('Already locked.'); if (postedDays.some(p => p.date === today)) return alert('Already posted.'); if (!confirm('Post today? Editing will be locked for this date.')) return; const sales = getNozzleSales(); const openingCash = parseFloat(document.getElementById('openingCash').value)||0, openingBank = parseFloat(document.getElementById('openingBank').value)||0; const totalCredits = getAllCreditSalesForDate(today).reduce((s,t)=>s+t.amount,0), totalColls = getAllCollectionsForDate(today).reduce((s,t)=>s+t.amount,0); const totalExp = getAllExpensesForDate(today).reduce((s,t)=>s+t.amount,0); const totalDep = deposits.reduce((s,d)=>s+d.amount,0), totalWit = withdrawals.reduce((s,w)=>s+w.amount,0), totalChg = bankCharges.reduce((s,c)=>s+c.amount,0); const totalCashInflows = sales.total + totalColls, totalCashOutflows = totalCredits + totalExp + totalDep; const netCashChange = totalCashInflows - totalCashOutflows, closingCash = openingCash + netCashChange; const closingBank = openingBank + totalDep - totalWit - totalChg; const closePetrol = stockOpenPetrol + purchases.filter(p=>p.date===today).reduce((s,p)=>s+p.petrolLitres,0) - sales.petrolLtr; const closeDiesel = stockOpenDiesel + purchases.filter(p=>p.date===today).reduce((s,p)=>s+p.dieselLitres,0) - sales.dieselLtr; const nocCloseBal = nocOpeningBal + purchases.filter(p=>p.date===today).reduce((s,p)=>s+p.amount,0) - nocPayments.filter(p=>p.date===today).reduce((s,p)=>s+p.amount,0); const snapshot = { date: today, openingCash, openingBank, closingCash, closingBank, petrolRate: parseFloat(document.getElementById('petrolRate').value)||0, dieselRate: parseFloat(document.getElementById('dieselRate').value)||0, nozzles: nozzles.map(n => ({ id: n.id, open: n.open, close: n.close })), outPetrolLtr: parseFloat(document.getElementById('outPetrolLtr').value)||0, outDieselLtr: parseFloat(document.getElementById('outDieselLtr').value)||0, creditSales: [...getAllCreditSalesForDate(today)], collections: [...getAllCollectionsForDate(today)], expenses: [...getAllExpensesForDate(today)], deposits: [...deposits], withdrawals: [...withdrawals], charges: [...bankCharges], sales: sales, stockOpenPetrol, stockOpenDiesel, stockClosePetrol: closePetrol, stockCloseDiesel: closeDiesel, purchases: [...purchases.filter(p=>p.date===today)], nocPayments: [...nocPayments.filter(p=>p.date===today)], nocOpenBal: nocOpeningBal, nocCloseBal }; postedDays.push(snapshot); lockedDates.push(today); adjustments = adjustments.filter(a => a.date !== today); saveAll(); updateUIForLocked(); updateAll(); alert('Day posted and locked. Nozzle readings & balances will carry forward to next day automatically.'); setDefaultDate(); handleDateChange(); }
+
+    function openCombinedLedger() { const combined = [...debtorsList, ...expenseCategories].sort((a,b)=>a.localeCompare(b,undefined,{sensitivity:'base'})); let modalHtml = `<h3>📒 Ledgers</h3><div class="search-dropdown"><input type="text" id="ledgerSearchInput" placeholder="Search debtor or expense..." autocomplete="off" style="width:100%;margin-bottom:6px;"><div class="search-dropdown-list" id="ledgerSearchList"></div></div><div id="ledgerResult"></div>`; showModal(modalHtml); const input = document.getElementById('ledgerSearchInput'), list = document.getElementById('ledgerSearchList'), resultDiv = document.getElementById('ledgerResult'); function filter() { const q = input.value.toLowerCase(); list.innerHTML = ''; const f = combined.filter(i=>i.toLowerCase().includes(q)); if (f.length&&q.length) { list.style.display='block'; f.forEach(i=>{ const d=document.createElement('div'); d.textContent=i; d.addEventListener('mousedown',(e)=>{e.preventDefault(); input.value=i; list.style.display='none'; showLedgerForItem(i);}); list.appendChild(d); }); } else list.style.display='none'; } input.addEventListener('input',filter); input.addEventListener('focus',filter); input.addEventListener('blur',()=>setTimeout(()=>list.style.display='none',200)); input.addEventListener('keydown',(e)=>{ if(e.key==='Enter'){ const first=list.querySelector('div'); if(first&&list.style.display!=='none'){ input.value=first.textContent; list.style.display='none'; showLedgerForItem(first.textContent); e.preventDefault(); } } }); function showLedgerForItem(item) { if (debtorsList.includes(item)) { const credits = creditSales.filter(t=>t.debtor===item), collects = collections.filter(t=>t.debtor===item); let h=`<h4>Debtor: ${item}</h4><table><tr><th>Date</th><th>Credit</th><th>Collection</th></tr>`; let all=[...credits.map(c=>({date:c.date,credit:c.amount,col:0})),...collects.map(c=>({date:c.date,credit:0,col:c.amount}))]; all.sort((a,b)=>a.date.localeCompare(b.date)); all.forEach(t=>h+=`<tr><td>${t.date}</td><td>${t.credit?formatRs(t.credit):''}</td><td>${t.col?formatRs(t.col):''}</td></tr>`); const tCr=credits.reduce((s,t)=>s+t.amount,0), tCo=collects.reduce((s,t)=>s+t.amount,0); h+=`<tr><td><b>Total</b></td><td><b>${formatRs(tCr)}</b></td><td><b>${formatRs(tCo)}</b></td></tr><p>Outstanding: ${formatRs(tCr-tCo)}</p>`; resultDiv.innerHTML=h; } else if (expenseCategories.includes(item)) { const exp = expensesList.filter(e=>e.category===item); let h=`<h4>Expense: ${item}</h4><table><tr><th>Date</th><th>Amount</th></tr>`; exp.sort((a,b)=>a.date.localeCompare(b.date)); exp.forEach(e=>h+=`<tr><td>${e.date}</td><td>${formatRs(e.amount)}</td></tr>`); const tot=exp.reduce((s,e)=>s+e.amount,0); h+=`<tr><td><b>Total</b></td><td><b>${formatRs(tot)}</b></td></tr>`; resultDiv.innerHTML=h; } } }
+
+    function showDayBook() { const startDate = prompt('Start date (YYYY-MM-DD):', ''); if (!startDate) return; const endDate = prompt('End date (YYYY-MM-DD):', startDate); if (!endDate) return; const days = postedDays.filter(d => d.date >= startDate && d.date <= endDate).sort((a,b)=>a.date.localeCompare(b.date)); if (!days.length) { alert('No data in range.'); return; } const reportHTML = `<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><title>Day Book</title><script src="https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js"><\/script><style>body{font-family:sans-serif;margin:20px} table{width:100%;border-collapse:collapse} th,td{padding:6px;border:1px solid #ccc}</style></head><body><h2>📖 Day Book: ${startDate} to ${endDate}</h2><button id="exportExcelBtn">📥 Download Excel</button><button onclick="window.print()">🖨️ Print</button>${days.map(day => { const totalSales = day.sales?.total||0; const totalCredits = (day.creditSales||[]).reduce((s,t)=>s+t.amount,0); const totalColls = (day.collections||[]).reduce((s,t)=>s+t.amount,0); const totalExp = (day.expenses||[]).reduce((s,t)=>s+t.amount,0); const totalDep = (day.deposits||[]).reduce((s,t)=>s+t.amount,0); const totalWit = (day.withdrawals||[]).reduce((s,t)=>s+t.amount,0); const totalChg = (day.charges||[]).reduce((s,t)=>s+t.amount,0); const netCash = totalSales + totalColls - totalCredits - totalExp - totalDep; const closingCash = (day.openingCash||0) + netCash; const closingBank = (day.openingBank||0) + totalDep - totalWit - totalChg; return `<div style="border:1px solid #ccc; margin:10px 0; padding:10px;"><h3>${day.date}</h3><table><tr><th>Nozzle</th><th>Opening</th><th>Closing</th><th>Sold</th><th>Amount</th></tr>${(day.nozzles||[]).map(n => { const rate = n.id.startsWith('Petrol')?day.petrolRate:day.dieselRate; const litres = Math.max(0,n.close-n.open); return `<tr><td>${n.id}</td><td>${n.open}</td><td>${n.close}</td><td>${litres.toFixed(2)}</td><td>Rs ${(litres*rate).toFixed(2)}</td></tr>`; }).join('')}</table><p>Total Sales: Rs ${totalSales.toFixed(2)}</p><p>Opening Cash: Rs ${(day.openingCash||0).toFixed(2)} → Closing Cash: Rs ${closingCash.toFixed(2)} (Net: Rs ${netCash.toFixed(2)})</p><p>Opening Bank: Rs ${(day.openingBank||0).toFixed(2)} → Closing Bank: Rs ${closingBank.toFixed(2)}</p></div>`; }).join('')}<script>const postedData=${JSON.stringify(days)}; document.getElementById('exportExcelBtn').addEventListener('click',function(){ const wb=XLSX.utils.book_new(); const ws=XLSX.utils.aoa_to_sheet([['Date','Total Sales','Net Cash','Closing Cash','Closing Bank']].concat(postedData.map(d=>[d.date,d.sales?.total||0,((d.sales?.total||0)+(d.collections||[]).reduce((s,c)=>s+c.amount,0)-((d.creditSales||[]).reduce((s,c)=>s+c.amount,0)+(d.expenses||[]).reduce((s,e)=>s+e.amount,0)+(d.deposits||[]).reduce((s,d)=>s+d.amount,0))),(d.openingCash||0)+((d.sales?.total||0)+(d.collections||[]).reduce((s,c)=>s+c.amount,0)-((d.creditSales||[]).reduce((s,c)=>s+c.amount,0)+(d.expenses||[]).reduce((s,e)=>s+e.amount,0)+(d.deposits||[]).reduce((s,d)=>s+d.amount,0))),(d.openingBank||0)+(d.deposits||[]).reduce((s,d)=>s+d.amount,0)-(d.withdrawals||[]).reduce((s,w)=>s+w.amount,0)-(d.charges||[]).reduce((s,c)=>s+c.amount,0)]))); XLSX.utils.book_append_sheet(wb,ws,'Summary'); XLSX.writeFile(wb,'DayBook_${startDate}_${endDate}.xlsx');});<\/script></body></html>`; const blob = new Blob([reportHTML], {type:'text/html'}); const url = URL.createObjectURL(blob); const a = document.createElement('a'); a.href = url; a.target = '_blank'; a.style.display='none'; document.body.appendChild(a); a.click(); document.body.removeChild(a); }
+    function exportCsv() { const today = getTodayDate(); const rows = [['Type','Name/Cat','Amount']]; getAllCreditSalesForDate(today).forEach(c => rows.push(['Credit Sale', c.debtor, c.amount])); getAllCollectionsForDate(today).forEach(c => rows.push(['Cash Collection', c.debtor, c.amount])); getAllExpensesForDate(today).forEach(e => rows.push(['Expense', e.category, e.amount])); deposits.forEach(d => rows.push(['Bank Deposit', d.desc, d.amount])); withdrawals.forEach(w => rows.push(['Bank Withdrawal', w.desc, w.amount])); bankCharges.forEach(c => rows.push(['Bank Charge', c.desc, c.amount])); let csv = '\uFEFF' + rows.map(r => r.join(',')).join('\n'); const blob = new Blob([csv], {type:'text/csv;charset=utf-8;'}); const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = `DaySheet_${today}.csv`; a.click(); }
+    function showAdjustmentModal() { const today = getTodayDate(); let html = `<h3>Adjustment Sheet for ${today}</h3><h4>Add Credit Sale</h4><input type="text" id="adjCreditDebtor" placeholder="Debtor"><input type="number" id="adjCreditAmt" placeholder="Amount"><button id="addAdjCreditBtn">Add</button><h4>Add Collection</h4><input type="text" id="adjCollDebtor" placeholder="Debtor"><input type="number" id="adjCollAmt" placeholder="Amount"><button id="addAdjCollBtn">Add</button><h4>Add Expense</h4><input type="text" id="adjExpCat" placeholder="Category"><input type="number" id="adjExpAmt" placeholder="Amount"><button id="addAdjExpBtn">Add</button>`; showModal(html); document.getElementById('addAdjCreditBtn').onclick = () => { const debtor = document.getElementById('adjCreditDebtor').value; const amt = parseFloat(document.getElementById('adjCreditAmt').value); if (debtor && amt>0) { adjustments.push({date:today, type:'credit', debtor, amount:amt}); saveAll(); showModal(''); updateAll(); } }; document.getElementById('addAdjCollBtn').onclick = () => { const debtor = document.getElementById('adjCollDebtor').value; const amt = parseFloat(document.getElementById('adjCollAmt').value); if (debtor && amt>0) { adjustments.push({date:today, type:'collection', debtor, amount:amt}); saveAll(); showModal(''); updateAll(); } }; document.getElementById('addAdjExpBtn').onclick = () => { const cat = document.getElementById('adjExpCat').value; const amt = parseFloat(document.getElementById('adjExpAmt').value); if (cat && amt !== 0) { adjustments.push({date:today, type:'expense', category:cat, amount:amt}); saveAll(); showModal(''); updateAll(); } }; }
+    function exportStockExcel() { const sDate = document.getElementById('stockStartDate').value || getTodayDate(); const eDate = document.getElementById('stockEndDate').value || getTodayDate(); const rows = [['Date','Type','Petrol Ltr','Diesel Ltr','Amount']]; purchases.filter(p => p.date >= sDate && p.date <= eDate).forEach(p => rows.push([p.date,'Purchase',p.petrolLitres,p.dieselLitres,p.amount])); nocPayments.filter(p => p.date >= sDate && p.date <= eDate).forEach(p => rows.push([p.date,'Payment','','',p.amount])); const csv = '\uFEFF' + rows.map(r => r.join(',')).join('\n'); const blob = new Blob([csv],{type:'text/csv'}); const a = document.createElement('a'); a.href=URL.createObjectURL(blob); a.download = `Stock_NOC_${sDate}_${eDate}.csv`; a.click(); }
+    function printStock() { const printDiv = document.createElement('div'); printDiv.className = 'print-only'; printDiv.innerHTML = `<h2>Stock & NOC Report ${document.getElementById('stockStartDate').value} - ${document.getElementById('stockEndDate').value}</h2><table><tr><th>Opening Petrol</th><td>${stockOpenPetrol.toFixed(2)}</td><th>Opening Diesel</th><td>${stockOpenDiesel.toFixed(2)}</td></tr></table><h3>Purchases</h3>${document.getElementById('purchaseTable').outerHTML}<h3>NOC Ledger</h3>${document.getElementById('nocLedgerTable').outerHTML}`; document.body.appendChild(printDiv); window.print(); document.body.removeChild(printDiv); }
+    function exportDatabase() { const backup = { debtors: debtorsList, expenseCategories, creditSales, collections, expensesList, deposits, withdrawals, bankCharges, postedDays, lockedDates, adjustments, purchases, nocPayments, nocOpeningBal, stockOpenPetrol, stockOpenDiesel, nozzles: nozzles.map(n=>({open:n.open,close:n.close})), openingCash: document.getElementById('openingCash').value, openingBank: document.getElementById('openingBank').value, petrolRate: document.getElementById('petrolRate').value, dieselRate: document.getElementById('dieselRate').value, currentDate: document.getElementById('currentDate').value, outPetrolLtr: document.getElementById('outPetrolLtr').value, outDieselLtr: document.getElementById('outDieselLtr').value }; const blob = new Blob([JSON.stringify(backup,null,2)],{type:'application/json'}); const a = document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='Phatkeshwari_Backup.json'; a.click(); }
+    function importDatabase() { const input = document.createElement('input'); input.type='file'; input.accept='.json'; input.onchange = e => { const file = e.target.files[0]; if(!file) return; const reader = new FileReader(); reader.onload = function(e) { try { const backup = JSON.parse(e.target.result); if(!backup.debtors) throw new Error('Invalid'); debtorsList = backup.debtors; expenseCategories = backup.expenseCategories; creditSales = backup.creditSales; collections = backup.collections; expensesList = backup.expensesList; deposits = backup.deposits; withdrawals = backup.withdrawals; bankCharges = backup.bankCharges; postedDays = backup.postedDays; lockedDates = backup.lockedDates; adjustments = backup.adjustments; purchases = backup.purchases||[]; nocPayments = backup.nocPayments||[]; nocOpeningBal = backup.nocOpeningBal||0; stockOpenPetrol = backup.stockOpenPetrol||0; stockOpenDiesel = backup.stockOpenDiesel||0; if(backup.nozzles) backup.nozzles.forEach((n,i)=>{ if(nozzles[i]){nozzles[i].open=n.open;nozzles[i].close=n.close;} }); document.getElementById('openingCash').value = backup.openingCash||0; document.getElementById('openingBank').value = backup.openingBank||0; document.getElementById('prabhuOpeningBal').value = backup.openingBank||0; document.getElementById('petrolRate').value = backup.petrolRate||0; document.getElementById('dieselRate').value = backup.dieselRate||0; document.getElementById('outPetrolLtr').value = backup.outPetrolLtr||0; document.getElementById('outDieselLtr').value = backup.outDieselLtr||0; if(backup.currentDate) document.getElementById('currentDate').value = backup.currentDate; saveAll(); refreshDropdowns(); renderFuelTable(); updateAll(); alert('Database restored successfully!'); } catch(err) { alert('Error: Invalid backup file.'); console.error(err); } }; reader.readAsText(file); }; input.click(); }
+
     function setupKeyboard() {
         document.getElementById('creditAmount').addEventListener('keypress', e => { if(e.key==='Enter') recordCredit(); });
         document.getElementById('collectionAmount').addEventListener('keypress', e => { if(e.key==='Enter') recordCollection(); });
@@ -721,19 +797,90 @@
     }
     function preventScroll() { document.addEventListener('wheel', e => { if (e.target.tagName==='INPUT'&&e.target.type==='number'&&!e.ctrlKey) e.preventDefault(); }, {passive:false}); }
 
-    // Record handlers
-    function recordCredit() { const today = getTodayDate(); if (isBeforeMinDate(today)) { alert('Entries before ' + MIN_DATE + ' are not allowed.'); return; } const d = document.getElementById('creditDebtorSearch').value.trim(); const a = parseFloat(document.getElementById('creditAmount').value); if (!d || !(a > 0)) return; if (!debtorsList.includes(d)) { alert('Debtor not in list. Please select from dropdown.'); document.getElementById('creditDebtorSearch').focus(); return; } if (isDateLocked(today)) { creditSales.push({ date: today, debtor: d, amount: a, lastEdited: { date: new Date().toISOString(), user: 'edited' } }); } else { creditSales.push({ date: today, debtor: d, amount: a }); } saveAll(); document.getElementById('creditAmount').value = ''; document.getElementById('creditDebtorSearch').value = ''; document.getElementById('creditDebtorSearch').focus(); updateAll(); }
-    function recordCollection() { const today = getTodayDate(); if (isBeforeMinDate(today)) { alert('Entries before ' + MIN_DATE + ' are not allowed.'); return; } const d = document.getElementById('collectionDebtorSearch').value.trim(); const a = parseFloat(document.getElementById('collectionAmount').value); if (!d || !(a > 0)) return; if (!debtorsList.includes(d)) { alert('Debtor not in list. Please select from dropdown.'); document.getElementById('collectionDebtorSearch').focus(); return; } if (isDateLocked(today)) { collections.push({ date: today, debtor: d, amount: a, lastEdited: { date: new Date().toISOString(), user: 'edited' } }); } else { collections.push({ date: today, debtor: d, amount: a }); } saveAll(); document.getElementById('collectionAmount').value = ''; document.getElementById('collectionDebtorSearch').value = ''; document.getElementById('collectionDebtorSearch').focus(); updateAll(); }
-    function recordExpense() { const today = getTodayDate(); if (isBeforeMinDate(today)) { alert('Entries before ' + MIN_DATE + ' are not allowed.'); return; } const c = document.getElementById('expenseSearch').value.trim(); const a = parseFloat(document.getElementById('expenseAmount').value); if (!c || isNaN(a) || a === 0) return; if (!expenseCategories.includes(c)) { alert('Expense category not in list. Please select from dropdown.'); document.getElementById('expenseSearch').focus(); return; } if (isDateLocked(today)) { expensesList.push({ date: today, category: c, amount: a, lastEdited: { date: new Date().toISOString(), user: 'edited' } }); } else { expensesList.push({ date: today, category: c, amount: a }); } saveAll(); document.getElementById('expenseAmount').value = ''; document.getElementById('expenseSearch').value = ''; document.getElementById('expenseSearch').focus(); updateAll(); }
+    function recordCredit() {
+    const d = document.getElementById('creditDebtorSearch').value.trim();
+    const a = parseFloat(document.getElementById('creditAmount').value);
+    if (!d || !(a > 0)) return;
+    if (!debtorsList.includes(d)) {
+        alert('Debtor not in list. Please select from dropdown.');
+        document.getElementById('creditDebtorSearch').focus();
+        return;
+    }
+    if (isDateLocked(getTodayDate())) {
+        creditSales.push({ date: getTodayDate(), debtor: d, amount: a, lastEdited: { date: new Date().toISOString(), user: 'edited' } });
+    } else {
+        creditSales.push({ date: getTodayDate(), debtor: d, amount: a });
+    }
+    saveAll();
+    document.getElementById('creditAmount').value = '';
+    document.getElementById('creditDebtorSearch').value = '';
+    document.getElementById('creditDebtorSearch').focus();
+    updateAll();
+}
+
+function recordCollection() {
+    const d = document.getElementById('collectionDebtorSearch').value.trim();
+    const a = parseFloat(document.getElementById('collectionAmount').value);
+    if (!d || !(a > 0)) return;
+    if (!debtorsList.includes(d)) {
+        alert('Debtor not in list. Please select from dropdown.');
+        document.getElementById('collectionDebtorSearch').focus();
+        return;
+    }
+    if (isDateLocked(getTodayDate())) {
+        collections.push({ date: getTodayDate(), debtor: d, amount: a, lastEdited: { date: new Date().toISOString(), user: 'edited' } });
+    } else {
+        collections.push({ date: getTodayDate(), debtor: d, amount: a });
+    }
+    saveAll();
+    document.getElementById('collectionAmount').value = '';
+    document.getElementById('collectionDebtorSearch').value = '';
+    document.getElementById('collectionDebtorSearch').focus();
+    updateAll();
+}
+
+function recordExpense() {
+    const c = document.getElementById('expenseSearch').value.trim();
+    const a = parseFloat(document.getElementById('expenseAmount').value);
+    if (!c || isNaN(a) || a === 0) return;
+    if (!expenseCategories.includes(c)) {
+        alert('Expense category not in list. Please select from dropdown.');
+        document.getElementById('expenseSearch').focus();
+        return;
+    }
+    if (isDateLocked(getTodayDate())) {
+        expensesList.push({ date: getTodayDate(), category: c, amount: a, lastEdited: { date: new Date().toISOString(), user: 'edited' } });
+    } else {
+        expensesList.push({ date: getTodayDate(), category: c, amount: a });
+    }
+    saveAll();
+    document.getElementById('expenseAmount').value = '';
+    document.getElementById('expenseSearch').value = '';
+    document.getElementById('expenseSearch').focus();
+    updateAll();
+}
     function addNewDebtor() { const name = prompt('Enter new debtor name:'); if(name&&!debtorsList.includes(name)){ debtorsList.push(name); saveAll(); refreshDropdowns(); updateAll(); } }
     function addNewExpenseCat() { const cat = prompt('Enter new expense category:'); if(cat&&!expenseCategories.includes(cat)){ expenseCategories.push(cat); saveAll(); refreshDropdowns(); updateAll(); } }
-    function addBankDeposit() { const today = getTodayDate(); if (isBeforeMinDate(today)) { alert('Entries before ' + MIN_DATE + ' are not allowed.'); return; } const desc = document.getElementById('bankDepDesc').value.trim() || 'Deposit'; const amt = parseFloat(document.getElementById('bankDepAmt').value); if (isNaN(amt) || amt <= 0) return; deposits.push({ type: 'Manual', desc, amount: amt, date: today }); saveAll(); document.getElementById('bankDepDesc').value = ''; document.getElementById('bankDepAmt').value = ''; updateAll(); }
-    function addBankWithdrawal() { const today = getTodayDate(); if (isBeforeMinDate(today)) { alert('Entries before ' + MIN_DATE + ' are not allowed.'); return; } const desc = document.getElementById('bankWitDesc').value.trim() || 'Withdrawal'; const amt = parseFloat(document.getElementById('bankWitAmt').value); if (isNaN(amt) || amt <= 0) return; withdrawals.push({ desc, amount: amt, date: today }); saveAll(); document.getElementById('bankWitDesc').value = ''; document.getElementById('bankWitAmt').value = ''; updateAll(); }
-    function addBankCharge() { const today = getTodayDate(); if (isBeforeMinDate(today)) { alert('Entries before ' + MIN_DATE + ' are not allowed.'); return; } const desc = document.getElementById('bankChgDesc').value.trim() || 'Bank Charge'; const amt = parseFloat(document.getElementById('bankChgAmt').value); if (isNaN(amt) || amt <= 0) return; bankCharges.push({ desc, amount: amt, date: today }); saveAll(); document.getElementById('bankChgDesc').value = ''; document.getElementById('bankChgAmt').value = ''; updateAll(); }
+    function addBankDeposit() { const desc = document.getElementById('bankDepDesc').value.trim() || 'Deposit'; const amt = parseFloat(document.getElementById('bankDepAmt').value); if (isNaN(amt) || amt <= 0) return; deposits.push({ type: 'Manual', desc, amount: amt }); saveAll(); document.getElementById('bankDepDesc').value = ''; document.getElementById('bankDepAmt').value = ''; updateAll(); }
+    function addBankWithdrawal() { const desc = document.getElementById('bankWitDesc').value.trim() || 'Withdrawal'; const amt = parseFloat(document.getElementById('bankWitAmt').value); if (isNaN(amt) || amt <= 0) return; withdrawals.push({ desc, amount: amt }); saveAll(); document.getElementById('bankWitDesc').value = ''; document.getElementById('bankWitAmt').value = ''; updateAll(); }
+    function addBankCharge() { const desc = document.getElementById('bankChgDesc').value.trim() || 'Bank Charge'; const amt = parseFloat(document.getElementById('bankChgAmt').value); if (isNaN(amt) || amt <= 0) return; bankCharges.push({ desc, amount: amt }); saveAll(); document.getElementById('bankChgDesc').value = ''; document.getElementById('bankChgAmt').value = ''; updateAll(); }
 
-    // Bind events
     function bindEvents() {
         document.getElementById('toggleViewBtn').onclick = toggleView;
+        // Toggle DB Backup dropdown
+document.getElementById('dbDropdownBtn').addEventListener('click', function (e) {
+    e.stopPropagation();
+    var dropdown = this.nextElementSibling; // the <div class="dropdown-content">
+    dropdown.style.display = dropdown.style.display === 'block' ? 'none' : 'block';
+});
+
+// Close the dropdown if the user clicks anywhere outside it
+document.addEventListener('click', function () {
+    var dropdowns = document.getElementsByClassName('dropdown-content');
+    for (var i = 0; i < dropdowns.length; i++) {
+        dropdowns[i].style.display = 'none';
+    }
+});
         document.getElementById('exportDbBtn').onclick = exportDatabase;
         document.getElementById('importDbBtn').onclick = importDatabase;
         document.getElementById('recordCreditBtn').onclick = recordCredit;
@@ -762,7 +909,7 @@
         document.getElementById('outPetrolLtr').oninput = () => updateAll();
         document.getElementById('outDieselLtr').oninput = () => updateAll();
         document.getElementById('openingCash').oninput = () => updateAll();
-        document.getElementById('openingBank').oninput = () => { document.getElementById('prabhuOpeningBal').value = round2(this.value); updateAll(); };
+        document.getElementById('openingBank').oninput = () => { document.getElementById('prabhuOpeningBal').value = this.value; updateAll(); };
         document.getElementById('currentDate').onchange = handleDateChange;
         document.getElementById('stockOpenPetrolInput').oninput = () => { stockOpenPetrol = parseFloat(document.getElementById('stockOpenPetrolInput').value)||0; const sDate = document.getElementById('stockStartDate').value || getTodayDate(); const eDate = document.getElementById('stockEndDate').value || getTodayDate(); updateStockAndNOC(sDate, eDate); };
         document.getElementById('stockOpenDieselInput').oninput = () => { stockOpenDiesel = parseFloat(document.getElementById('stockOpenDieselInput').value)||0; const sDate = document.getElementById('stockStartDate').value || getTodayDate(); const eDate = document.getElementById('stockEndDate').value || getTodayDate(); updateStockAndNOC(sDate, eDate); };
@@ -770,14 +917,14 @@
 
     function toggleView() { const main = document.getElementById('mainView'), stock = document.getElementById('stockView'), btn = document.getElementById('toggleViewBtn'); const pt = document.getElementById('postTodayBtn'), ps = document.getElementById('postStockBtn'); if (stock.style.display==='none'||stock.style.display==='') { stock.style.display='block'; main.style.display='none'; btn.innerText='📋 Daily Ledger'; pt.style.display='none'; ps.style.display='inline-block'; document.getElementById('stockStartDate').value = getTodayDate(); document.getElementById('stockEndDate').value = getTodayDate(); updateStockAndNOC(getTodayDate(), getTodayDate()); } else { stock.style.display='none'; main.style.display='block'; btn.innerText='📦 Stock & NOC'; pt.style.display='inline-block'; ps.style.display='none'; } }
     function showModal(content) { document.getElementById('modalContent').innerHTML = content||''; document.getElementById('ledgerModal').style.display = content?'block':'none'; }
-    document.getElementById('modalClose').onclick = () => showModal('');
-    window.addEventListener('click', function(e) { if (e.target === document.getElementById('ledgerModal')) showModal(''); });
+   document.getElementById('modalClose').onclick = () => showModal('');
+    window.onclick = e => { if (e.target === document.getElementById('ledgerModal')) showModal(''); };
     function refreshDropdowns() {
-        initSearchableDropdown('creditDebtorSearch', 'creditDebtorList', debtorsList, 'creditAmount');
-        initSearchableDropdown('collectionDebtorSearch', 'collectionDebtorList', debtorsList, 'collectionAmount');
-        initSearchableDropdown('expenseSearch', 'expenseList', expenseCategories, 'expenseAmount');
-    }
-    function init() { loadFromCloud().then(() => { refreshDropdowns(); renderFuelTable(); bindEvents(); setupKeyboard(); preventScroll(); setDefaultDate(); handleDateChange(); updateAll(); }); }
+    initSearchableDropdown('creditDebtorSearch', 'creditDebtorList', debtorsList, 'creditAmount');
+    initSearchableDropdown('collectionDebtorSearch', 'collectionDebtorList', debtorsList, 'collectionAmount');
+    initSearchableDropdown('expenseSearch', 'expenseList', expenseCategories, 'expenseAmount');
+}
+      function init() { loadFromCloud().then(() => { refreshDropdowns(); renderFuelTable(); bindEvents(); setupKeyboard(); preventScroll(); setDefaultDate(); handleDateChange(); updateAll(); }); }
     init();
 })();
 </script>
