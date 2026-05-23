@@ -71,7 +71,7 @@
             <button id="exportCsvBtn" class="btn-outline btn-sm">📤 Export CSV</button>
             <button id="ledgerBtn" class="btn-outline btn-sm">📒 Ledgers</button>
             <div class="dropdown">
-                <button class="btn-outline btn-sm">💾 DB Backup ▾</button>
+                <button id="dbDropdownBtn" class="btn-outline btn-sm">💾 DB Backup ▾</button>
                 <div class="dropdown-content" style="display:none; position:absolute; background:white; min-width:140px; border-radius:10px; box-shadow:0 4px 12px rgba(0,0,0,0.1); z-index:10;">
                     <button id="exportDbBtn" style="display:block; width:100%; text-align:left; background:none; border:none; color:#1e3a5f; padding:6px 12px;">📥 Download Backup</button>
                     <button id="importDbBtn" style="display:block; width:100%; text-align:left; background:none; border:none; color:#1e3a5f; padding:6px 12px;">📤 Restore Backup</button>
@@ -867,6 +867,20 @@ function recordExpense() {
 
     function bindEvents() {
         document.getElementById('toggleViewBtn').onclick = toggleView;
+        // Toggle DB Backup dropdown
+document.getElementById('dbDropdownBtn').addEventListener('click', function (e) {
+    e.stopPropagation();
+    var dropdown = this.nextElementSibling; // the <div class="dropdown-content">
+    dropdown.style.display = dropdown.style.display === 'block' ? 'none' : 'block';
+});
+
+// Close the dropdown if the user clicks anywhere outside it
+document.addEventListener('click', function () {
+    var dropdowns = document.getElementsByClassName('dropdown-content');
+    for (var i = 0; i < dropdowns.length; i++) {
+        dropdowns[i].style.display = 'none';
+    }
+});
         document.getElementById('exportDbBtn').onclick = exportDatabase;
         document.getElementById('importDbBtn').onclick = importDatabase;
         document.getElementById('recordCreditBtn').onclick = recordCredit;
