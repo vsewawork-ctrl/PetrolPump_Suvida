@@ -57,7 +57,7 @@
             <h1>⛽ Phatkeshwari Oil Stores, Zero Kilo</h1>
             <p>Daily Ledger (Rs) – Supabase Sync</p>
             <div style="margin-top:6px; display:flex; align-items:center; gap:8px;">
-            <label style="color:white; font-size:0.8rem;">Date: <input type="date" id="currentDate" min="2025-05-14" style="color:#000; padding:3px 6px; border-radius:6px; border:none; width:140px;">
+            <label style="color:white; font-size:0.8rem;">Date: <input type="date" id="currentDate" min="2026-05-14" style="color:#000; padding:3px 6px; border-radius:6px; border:none; width:140px;">
             </label>
             <span id="dateInfo" style="font-size:0.7rem; color:#ccc;"></span>
         </div>
@@ -343,18 +343,18 @@
         const info = document.getElementById('lockedInfo');
         if (info) info.style.display = locked ? 'block' : 'none';
     }
-    function handleDateChange() {
-    const minDate = "2025-05-14";
+function handleDateChange() {
+    const minDate = "2026-05-14";
     let today = getTodayDate();
 
-    // 1. Lock out older dates
+    // 1. Block any date before the start date
     if (today && today < minDate) {
-        alert("System locked for dates prior to " + minDate + ".");
+        alert("Data entry before " + minDate + " is not allowed. Date reset to " + minDate + ".");
         document.getElementById('currentDate').value = minDate;
         today = minDate;
     }
 
-    // 2. Update info display
+    // 2. Update the info line
     updateDateInfo(
         postedDays.length
             ? postedDays.reduce((latest, d) => d.date > latest ? d.date : latest, postedDays[0].date)
@@ -362,18 +362,16 @@
         today
     );
 
-    // 3. Force opening balances for the starting date (runs after data is loaded)
-    if (today === minDate) {
-        setTimeout(() => {
-            document.getElementById('openingCash').value = "9631793.96";
-            document.getElementById('openingBank').value = "1246117.63";
-            if (document.getElementById('prabhuOpeningBal')) {
-                document.getElementById('prabhuOpeningBal').value = "1246117.63";
-            }
-        }, 500);
+    // 3. Force the fixed opening balances ONLY on the start date and only if it’s not yet locked
+    if (today === minDate && !isDateLocked(today)) {
+        document.getElementById('openingCash').value = "9631793.96";
+        document.getElementById('openingBank').value = "1246117.63";
+        // If you still use the Prabhu opening field, sync it
+        const prabhuEl = document.getElementById('prabhuOpeningBal');
+        if (prabhuEl) prabhuEl.value = "1246117.63";
     }
 
-    // 4. Carry forward previous day’s data (only if today is not locked)
+    // 4. Carry forward from the previous posted day (only if today is not locked)
     if (today && !isDateLocked(today)) {
         const prev = new Date(today);
         prev.setDate(prev.getDate() - 1);
@@ -385,12 +383,12 @@
             document.getElementById('openingCash').value = round2(prevPosted.closingCash);
             document.getElementById('openingBank').value = round2(prevPosted.closingBank);
 
-            // Nozzles – opening = yesterday’s closing; closing only reset if it matches old opening
+            // Nozzles: opening = yesterday’s closing; keep existing closing if already entered
             if (prevPosted.nozzles?.length === nozzles.length) {
                 prevPosted.nozzles.forEach((n, i) => {
                     const oldClose = nozzles[i].close;
                     nozzles[i].open = round2(n.close);
-                    // If closing was still equal to the old opening (fresh day), reset it to opening
+                    // If closing was still equal to the old opening (fresh day), reset to opening
                     if (oldClose === nozzles[i].open) {
                         nozzles[i].close = nozzles[i].open;
                     } else {
@@ -412,7 +410,7 @@
                 nocOpeningBal = round2(prevPosted.nocCloseBal);
             }
 
-            // Reset out‑of‑nozzle litres for the new day
+            // Reset out‑of‑nozzle litres
             document.getElementById('outPetrolLtr').value = 0;
             document.getElementById('outDieselLtr').value = 0;
 
