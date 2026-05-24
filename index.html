@@ -57,8 +57,7 @@
             <h1>⛽ Phatkeshwari Oil Stores, Zero Kilo</h1>
             <p>Daily Ledger (Rs) – Supabase Sync</p>
             <div style="margin-top:6px; display:flex; align-items:center; gap:8px;">
-            <label style="color:white; font-size:0.8rem;">Date:
-                <input type="date" id="currentDate" style="color:#000; padding:3px 6px; border-radius:6px; border:none; width:140px;">
+            <label style="color:white; font-size:0.8rem;">Date: <input type="date" id="currentDate" min="2025-05-14" style="color:#000; padding:3px 6px; border-radius:6px; border:none; width:140px;">
             </label>
             <span id="dateInfo" style="font-size:0.7rem; color:#ccc;"></span>
         </div>
@@ -86,8 +85,8 @@
     <div id="mainView">
         <div class="card">
             <div style="display:flex; gap:12px; align-items:center; flex-wrap:wrap;">
-                <div style="flex:1"><label>Opening Cash <input type="number" id="openingCash" step="any" value="932540"></label></div>
-                <div style="flex:1"><label>Opening Bank <input type="number" id="openingBank" step="any" value="1513259.44"></label></div>
+               <div style="flex:1"><label>Opening Cash <input type="number" id="openingCash" step="any" value="9631793.96"></label></div> 
+<div style="flex:1"><label>Opening Bank <input type="number" id="openingBank" step="any" value="1246117.63"></label></div>
             </div>
             <div id="lockedInfo" style="margin-top:8px; font-weight:bold; color:#dc2626; display:none;">🔒 This day is locked – edits will be marked with ✎</div>
         </div>
@@ -139,7 +138,7 @@
         <div class="card" style="background:#e0f7fa; border-left:5px solid #00838f;">
             <div class="card-title" style="border-left:4px solid #00838f;">🏦 Bank (Deposits, Withdrawals & Charges)</div>
             <div style="display:flex; gap:12px; align-items:center; flex-wrap:wrap; margin-bottom:8px;">
-                <label>Opening Bank <input type="number" id="prabhuOpeningBal" step="any" value="1513259.44" style="width:140px;"></label>
+              <label>Opening Bank <input type="number" id="prabhuOpeningBal" step="any" value="1246117.63" style="width:140px;"></label>
                 <span style="font-weight:bold;">Closing Bank: <span id="bankClosing">0</span></span>
             </div>
             <div class="grid-2col">
@@ -180,8 +179,8 @@
         <div class="card" style="background:#f0f4ff; border-left:5px solid #3b82f6;">
             <div class="card-title" style="border-left:4px solid #3b82f6;">📦 Stock Management & NOC Supplier Ledger</div>
             <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap; margin-bottom:10px;">
-                <label>From <input type="date" id="stockStartDate" style="width:140px;"></label>
-                <label>To <input type="date" id="stockEndDate" style="width:140px;"></label>
+               <label>From <input type="date" id="stockStartDate" min="2025-05-14" style="width:140px;"></label> 
+            <label>To <input type="date" id="stockEndDate" min="2025-05-14" style="width:140px;"></label>
                 <button id="stockRefreshBtn" class="btn-sm">🔄 Refresh</button>
             </div>
             <div class="grid-2col">
@@ -315,13 +314,25 @@
     function round2(val) { return Math.round((val || 0) * 100) / 100; }
     function getTodayDate() { return document.getElementById('currentDate').value; }
     function setDefaultDate() {
-        const lastPosted = postedDays.length > 0 ? postedDays.reduce((latest, d) => d.date > latest ? d.date : latest, postedDays[0].date) : null;
-        let targetDate;
-        if (lastPosted) { const next = new Date(lastPosted); next.setDate(next.getDate()+1); targetDate = next.toISOString().split('T')[0]; }
-        else targetDate = new Date().toISOString().split('T')[0];
-        document.getElementById('currentDate').value = targetDate;
-        updateDateInfo(lastPosted, targetDate);
+    const lastPosted = postedDays.length > 0 ? postedDays.reduce((latest, d) => d.date > latest ? d.date : latest, postedDays[0].date) : null; 
+    let targetDate; 
+    if (lastPosted) { 
+        const next = new Date(lastPosted); 
+        next.setDate(next.getDate()+1); 
+        targetDate = next.toISOString().split('T')[0]; 
+    } else {
+        targetDate = new Date().toISOString().split('T')[0]; 
     }
+    
+    // Prevent defaulting to a date earlier than our cutoff
+    const minDate = "2025-05-14";
+    if (targetDate < minDate) {
+        targetDate = minDate;
+    }
+
+    document.getElementById('currentDate').value = targetDate; 
+    updateDateInfo(lastPosted, targetDate); 
+}
     function updateDateInfo(lastPosted, current) {
         const info = document.getElementById('dateInfo');
         if (info) info.innerText = lastPosted ? `(Posted up to: ${lastPosted} → Next: ${current})` : `(No posted days – starting fresh)`;
@@ -332,10 +343,19 @@
         const info = document.getElementById('lockedInfo');
         if (info) info.style.display = locked ? 'block' : 'none';
     }
-   function handleDateChange() {
-    const today = getTodayDate();
-    updateDateInfo(postedDays.length ? postedDays.reduce((latest,d)=>d.date>latest?d.date:latest,postedDays[0].date) : null, today);
+  function handleDateChange() {
+    const minDate = "2025-05-14";
+    let today = getTodayDate();
+    
+    // Add this check to prevent user from bypassing the calendar UI
+    if (today && today < minDate) {
+        alert("System locked for dates prior to " + minDate + ".");
+        document.getElementById('currentDate').value = minDate;
+        today = minDate;
+    }
 
+    updateDateInfo(postedDays.length ? postedDays.reduce((latest,d)=>d.date>latest?d.date:latest,postedDays[0].date) : null, today);
+   
     if (today) {
         if (isDateLocked(today)) {
             // SCENARIO 1: Viewing a locked/posted day in the past.
