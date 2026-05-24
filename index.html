@@ -345,7 +345,6 @@ function handleDateChange() {
     const minDate = "2026-05-14";
     let today = getTodayDate();
 
-    // Block dates before the start
     if (today && today < minDate) {
         alert("Data entry before " + minDate + " is not allowed. Date reset to " + minDate + ".");
         document.getElementById('currentDate').value = minDate;
@@ -397,20 +396,27 @@ function handleDateChange() {
         return;
     }
 
-    // ========== UNLOCKED day – carry forward from the MOST RECENT posted day before today ==========
+    // ========== UNLOCKED day – carry forward from the MOST RECENT posted day ==========
     if (today && !isDateLocked(today)) {
-        // Find the latest posted day whose date is strictly before today
-        const previousPostedDays = postedDays
-            .filter(p => p.date < today)
-            .sort((a, b) => b.date.localeCompare(a.date));   // newest first
-
-        const prevPosted = previousPostedDays[0];   // most recent before today
+        // 1. All posted days sorted newest first
+        const allPostedSorted = postedDays.slice().sort((a, b) => b.date.localeCompare(a.date));
+        // 2. The newest posted day that is strictly before today
+        const latestBeforeToday = allPostedSorted.find(p => p.date < today);
+        // 3. If none found, use the very latest posted day (even if it’s after today – just a fallback)
+        const prevPosted = latestBeforeToday || allPostedSorted[0];
 
         if (prevPosted) {
             const prevCloseCash = round2(prevPosted.closingCash);
             const prevCloseBank = round2(prevPosted.closingBank);
             const currentOpenCash = round2(parseFloat(document.getElementById('openingCash').value) || 0);
             const currentOpenBank = round2(parseFloat(document.getElementById('openingBank').value) || 0);
+
+            // Debug – you can see exactly what the function is doing
+            console.log('Carry-forward from', prevPosted.date,
+                        'closing cash:', prevCloseCash,
+                        'closing bank:', prevCloseBank,
+                        'current open cash:', currentOpenCash,
+                        'current open bank:', currentOpenBank);
 
             if (currentOpenCash !== prevCloseCash || currentOpenBank !== prevCloseBank) {
                 console.warn('Opening balances corrected to match closing of', prevPosted.date);
@@ -425,7 +431,6 @@ function handleDateChange() {
                 prevPosted.nozzles.forEach((n, i) => {
                     const oldClose = nozzles[i].close;
                     nozzles[i].open = round2(n.close);
-                    // Keep closing if already entered, else set to opening
                     nozzles[i].close = (oldClose === nozzles[i].open) ? nozzles[i].open : oldClose;
                 });
             }
@@ -448,14 +453,15 @@ function handleDateChange() {
 
             renderFuelTable();
         } else {
-            // ===== No posted day before today – only the very first day gets the hardcoded values =====
+            // ===== No posted day at all – only the very first day gets the hardcoded values =====
             if (today === minDate) {
+                console.log('No previous posted day – using hardcoded initial balances');
                 document.getElementById('openingCash').value = "9631793.96";
                 document.getElementById('openingBank').value = "1246117.63";
                 const prabhuEl = document.getElementById('prabhuOpeningBal');
                 if (prabhuEl) prabhuEl.value = "1246117.63";
             } else {
-                console.warn('No previous posted day found – opening balances may be inaccurate.');
+                console.warn('No posted day found anywhere – opening balances may be wrong.');
             }
         }
     }
