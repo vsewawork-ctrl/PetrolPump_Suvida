@@ -347,7 +347,6 @@ function handleDateChange() {
     const minDate = "2026-05-14";
     let today = getTodayDate();
 
-    // Block dates before the start
     if (today && today < minDate) {
         alert("Data entry before " + minDate + " is not allowed. Date reset to " + minDate + ".");
         document.getElementById('currentDate').value = minDate;
@@ -361,58 +360,67 @@ function handleDateChange() {
         today
     );
 
-    // Force opening balances on the start date (only if not yet locked)
-    if (today === minDate && !isDateLocked(today)) {
-        document.getElementById('openingCash').value = "9631793.96";
-        document.getElementById('openingBank').value = "1246117.63";
-        const prabhuEl = document.getElementById('prabhuOpeningBal');
-        if (prabhuEl) prabhuEl.value = "1246117.63";
-    }
-
-    // ------- NEW: For a LOCKED day, load the posted snapshot -------
+    // ========== LOCKED day → show snapshot data exactly as saved ==========
     if (today && isDateLocked(today)) {
         const snapshot = postedDays.find(p => p.date === today);
         if (snapshot) {
-            // Set nozzles from the snapshot (both open and close)
+            document.getElementById('openingCash').value = round2(snapshot.openingCash);
+            document.getElementById('openingBank').value = round2(snapshot.openingBank);
+
             if (snapshot.nozzles && snapshot.nozzles.length === nozzles.length) {
                 snapshot.nozzles.forEach((n, i) => {
                     nozzles[i].open = n.open;
                     nozzles[i].close = n.close;
                 });
             }
-            // Rates and out‑of‑nozzle
+
             document.getElementById('petrolRate').value = snapshot.petrolRate || 220.30;
             document.getElementById('dieselRate').value = snapshot.dieselRate || 208.30;
             document.getElementById('outPetrolLtr').value = snapshot.outPetrolLtr || 0;
             document.getElementById('outDieselLtr').value = snapshot.outDieselLtr || 0;
-            // Opening cash/bank – already displayed from posted data
+
+            if (snapshot.stockOpenPetrol !== undefined) {
+                stockOpenPetrol = snapshot.stockOpenPetrol;
+                document.getElementById('stockOpenPetrolInput').value = stockOpenPetrol;
+            }
+            if (snapshot.stockOpenDiesel !== undefined) {
+                stockOpenDiesel = snapshot.stockOpenDiesel;
+                document.getElementById('stockOpenDieselInput').value = stockOpenDiesel;
+            }
+            if (snapshot.nocOpenBal !== undefined) {
+                nocOpeningBal = snapshot.nocOpenBal;
+            }
+
             renderFuelTable();
         }
+        updateUIForLocked();
+        updateAll();
+        return;
     }
-    // ------- For an UNLOCKED day, carry forward from previous day -------
-    else if (today && !isDateLocked(today)) {
+
+    // ========== UNLOCKED day → carry forward from previous day ==========
+    if (today && !isDateLocked(today)) {
         const prev = new Date(today);
         prev.setDate(prev.getDate() - 1);
         const prevStr = prev.toISOString().split('T')[0];
         const prevPosted = postedDays.find(p => p.date === prevStr);
 
         if (prevPosted) {
+            // Cash & Bank
             document.getElementById('openingCash').value = round2(prevPosted.closingCash);
             document.getElementById('openingBank').value = round2(prevPosted.closingBank);
 
+            // Nozzles – opening = yesterday’s closing
             if (prevPosted.nozzles?.length === nozzles.length) {
                 prevPosted.nozzles.forEach((n, i) => {
                     const oldClose = nozzles[i].close;
                     nozzles[i].open = round2(n.close);
-                    // Keep existing closing if already entered, otherwise set to opening
-                    if (oldClose === nozzles[i].open) {
-                        nozzles[i].close = nozzles[i].open;
-                    } else {
-                        nozzles[i].close = oldClose;
-                    }
+                    // Keep closing if already entered, else set to opening
+                    nozzles[i].close = (oldClose === nozzles[i].open) ? nozzles[i].open : oldClose;
                 });
             }
 
+            // Stock & NOC carry‑forward
             if (prevPosted.stockClosePetrol !== undefined) {
                 stockOpenPetrol = round2(prevPosted.stockClosePetrol);
                 document.getElementById('stockOpenPetrolInput').value = stockOpenPetrol;
@@ -427,7 +435,17 @@ function handleDateChange() {
 
             document.getElementById('outPetrolLtr').value = 0;
             document.getElementById('outDieselLtr').value = 0;
+
             renderFuelTable();
+        } else {
+            // ===== VERY FIRST DAY (no previous posted day) =====
+            // Set the initial opening balances only once, before posting
+            if (today === minDate) {
+                document.getElementById('openingCash').value = "9631793.96";
+                document.getElementById('openingBank').value = "1246117.63";
+                const prabhuEl = document.getElementById('prabhuOpeningBal');
+                if (prabhuEl) prabhuEl.value = "1246117.63";
+            }
         }
     }
 
