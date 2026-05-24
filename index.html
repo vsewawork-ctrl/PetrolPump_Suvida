@@ -312,6 +312,13 @@
     }
     function formatRs(amt) { return 'Rs ' + formatNepaliNumber(amt); }
     function round2(val) { return Math.round((val || 0) * 100) / 100; }
+    function showToast(msg) {
+    const t = document.getElementById('toast');
+    if (!t) return;
+    t.innerText = msg;
+    t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), 2000);
+}
     function getTodayDate() { return document.getElementById('currentDate').value; }
     function setDefaultDate() {
     const lastPosted = postedDays.length > 0 ? postedDays.reduce((latest, d) => d.date > latest ? d.date : latest, postedDays[0].date) : null; 
