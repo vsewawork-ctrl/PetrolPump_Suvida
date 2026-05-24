@@ -347,7 +347,7 @@ function handleDateChange() {
     const minDate = "2026-05-14";
     let today = getTodayDate();
 
-    // Block earlier dates
+    // Block dates before the start
     if (today && today < minDate) {
         alert("Data entry before " + minDate + " is not allowed. Date reset to " + minDate + ".");
         document.getElementById('currentDate').value = minDate;
@@ -361,7 +361,7 @@ function handleDateChange() {
         today
     );
 
-    // ========== LOCKED day – show snapshot data exactly ==========
+    // ========== LOCKED day – show snapshot exactly ==========
     if (today && isDateLocked(today)) {
         const snapshot = postedDays.find(p => p.date === today);
         if (snapshot) {
@@ -399,30 +399,30 @@ function handleDateChange() {
         return;
     }
 
-    // ========== UNLOCKED day – carry forward from previous day ==========
+    // ========== UNLOCKED day – carry forward from the MOST RECENT posted day before today ==========
     if (today && !isDateLocked(today)) {
-        const prev = new Date(today);
-        prev.setDate(prev.getDate() - 1);
-        const prevStr = prev.toISOString().split('T')[0];
-        const prevPosted = postedDays.find(p => p.date === prevStr);
+        // Find the latest posted day whose date is strictly before today
+        const previousPostedDays = postedDays
+            .filter(p => p.date < today)
+            .sort((a, b) => b.date.localeCompare(a.date));   // newest first
+
+        const prevPosted = previousPostedDays[0];   // most recent before today
 
         if (prevPosted) {
-            // FORCE exact carry‑forward (prevents stale values from remaining)
             const prevCloseCash = round2(prevPosted.closingCash);
             const prevCloseBank = round2(prevPosted.closingBank);
             const currentOpenCash = round2(parseFloat(document.getElementById('openingCash').value) || 0);
             const currentOpenBank = round2(parseFloat(document.getElementById('openingBank').value) || 0);
 
-            // If they don’t match, show a warning and correct them
             if (currentOpenCash !== prevCloseCash || currentOpenBank !== prevCloseBank) {
-                console.warn('Opening balances corrected to match previous day closing.');
-                showToast('⚠️ Balances auto‑corrected from previous day');
+                console.warn('Opening balances corrected to match closing of', prevPosted.date);
             }
 
+            // Force the opening balances
             document.getElementById('openingCash').value = prevCloseCash;
             document.getElementById('openingBank').value = prevCloseBank;
 
-            // Nozzles – opening = yesterday’s closing
+            // Nozzles – opening = most recent closing
             if (prevPosted.nozzles?.length === nozzles.length) {
                 prevPosted.nozzles.forEach((n, i) => {
                     const oldClose = nozzles[i].close;
@@ -450,12 +450,14 @@ function handleDateChange() {
 
             renderFuelTable();
         } else {
-            // ===== VERY FIRST DAY (no previous posted day) =====
+            // ===== No posted day before today – only the very first day gets the hardcoded values =====
             if (today === minDate) {
                 document.getElementById('openingCash').value = "9631793.96";
                 document.getElementById('openingBank').value = "1246117.63";
                 const prabhuEl = document.getElementById('prabhuOpeningBal');
                 if (prabhuEl) prabhuEl.value = "1246117.63";
+            } else {
+                console.warn('No previous posted day found – opening balances may be inaccurate.');
             }
         }
     }
