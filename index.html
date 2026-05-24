@@ -416,7 +416,8 @@ function handleDateChange() {
             // If they don’t match, show a warning and correct them
             if (currentOpenCash !== prevCloseCash || currentOpenBank !== prevCloseBank) {
                 console.warn('Opening balances corrected to match previous day closing.');
-                 }
+                showToast('⚠️ Balances auto‑corrected from previous day');
+            }
 
             document.getElementById('openingCash').value = prevCloseCash;
             document.getElementById('openingBank').value = prevCloseBank;
