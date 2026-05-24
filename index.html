@@ -347,70 +347,31 @@
     const minDate = "2025-05-14";
     let today = getTodayDate();
     
-    // Add this check to prevent user from bypassing the calendar UI
+    // 1. Lock out older dates
     if (today && today < minDate) {
         alert("System locked for dates prior to " + minDate + ".");
         document.getElementById('currentDate').value = minDate;
         today = minDate;
     }
 
+    // 2. Existing info updates and data fetching (leave yours as is)
     updateDateInfo(postedDays.length ? postedDays.reduce((latest,d)=>d.date>latest?d.date:latest,postedDays[0].date) : null, today);
    
-    if (today) {
-        if (isDateLocked(today)) {
-            // SCENARIO 1: Viewing a locked/posted day in the past.
-            // Load the exact nozzle readings that were saved for this specific day.
-            const postedData = postedDays.find(p => p.date === today);
-            if (postedData && postedData.nozzles) {
-                postedData.nozzles.forEach((n, i) => {
-                    if (nozzles[i]) {
-                        nozzles[i].open = n.open;
-                        nozzles[i].close = n.close;
-                    }
-                });
+    // 3. FORCE the new balances for the starting date
+    if (today === minDate) {
+        // We use a slight delay so this runs AFTER your database fetches the old numbers
+        setTimeout(() => {
+            document.getElementById('openingCash').value = "9631793.96";
+            document.getElementById('openingBank').value = "1246117.63";
+            if (document.getElementById('prabhuOpeningBal')) {
+                document.getElementById('prabhuOpeningBal').value = "1246117.63";
             }
-            
-            // Also load the out-of-nozzle historical data if it exists
-            document.getElementById('outPetrolLtr').value = postedData.outPetrolLtr || 0;
-            document.getElementById('outDieselLtr').value = postedData.outDieselLtr || 0;
-
-        } else {
-            // SCENARIO 2: Viewing today or an unposted future date.
-            // Find the MOST RECENT posted day to use as our opening balances.
-            const pastPostedDays = postedDays.filter(p => p.date < today).sort((a,b) => b.date.localeCompare(a.date));
-            
-            if (pastPostedDays.length > 0) {
-                const latestPastDay = pastPostedDays[0]; // Gets the closest previous posted day
-                if (latestPastDay.nozzles?.length === nozzles.length) {
-                    latestPastDay.nozzles.forEach((n, i) => {
-                        if (nozzles[i]) {
-                            nozzles[i].open = n.close; // Set today's OPEN to the last posted CLOSE
-                        }
-                    });
-                }
-                
-                if (latestPastDay.stockClosePetrol !== undefined) {
-                    stockOpenPetrol = latestPastDay.stockClosePetrol;
-                    document.getElementById('stockOpenPetrolInput').value = stockOpenPetrol;
-                }
-                if (latestPastDay.stockCloseDiesel !== undefined) {
-                    stockOpenDiesel = latestPastDay.stockCloseDiesel;
-                    document.getElementById('stockOpenDieselInput').value = stockOpenDiesel;
-                }
-            }
-
-            // Reset out of nozzle inputs for new days
-            document.getElementById('outPetrolLtr').value = 0;
-            document.getElementById('outDieselLtr').value = 0;
-        }
-        
-        // Force the table to redraw with the correct numbers for the selected date
-        renderFuelTable(); 
+        }, 500); // 500 milliseconds delay
     }
 
-    updateUIForLocked();
-    updateAll();
-}
+    if (today) {
+        if (isDateLocked(today)) {
+        // ... [keep the rest of your existing function intact]
     function initSearchableDropdown(inputId, listId, dataArray, amountFieldId) {
     const input = document.getElementById(inputId),
           list = document.getElementById(listId),
