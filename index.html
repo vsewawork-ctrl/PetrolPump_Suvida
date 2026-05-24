@@ -312,13 +312,6 @@
     }
     function formatRs(amt) { return 'Rs ' + formatNepaliNumber(amt); }
     function round2(val) { return Math.round((val || 0) * 100) / 100; }
-    function showToast(msg) {
-    const t = document.getElementById('toast');
-    if (!t) return;
-    t.innerText = msg;
-    t.classList.add('show');
-    setTimeout(() => t.classList.remove('show'), 2000);
-}
     function getTodayDate() { return document.getElementById('currentDate').value; }
     function setDefaultDate() {
     const lastPosted = postedDays.length > 0 ? postedDays.reduce((latest, d) => d.date > latest ? d.date : latest, postedDays[0].date) : null; 
@@ -423,8 +416,7 @@ function handleDateChange() {
             // If they don’t match, show a warning and correct them
             if (currentOpenCash !== prevCloseCash || currentOpenBank !== prevCloseBank) {
                 console.warn('Opening balances corrected to match previous day closing.');
-                showToast('⚠️ Balances auto‑corrected from previous day');
-            }
+                          }
 
             document.getElementById('openingCash').value = prevCloseCash;
             document.getElementById('openingBank').value = prevCloseBank;
