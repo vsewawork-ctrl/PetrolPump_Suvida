@@ -217,25 +217,23 @@
     const syncStatus = document.getElementById('syncStatus');
     function setSyncStatus(text) { if (syncStatus) syncStatus.innerText = text; }
 
-    function gatherAllData() {
-        return {
-            debtors: debtorsList, expenseCategories,
-            creditSales, collections, expensesList, deposits, withdrawals, bankCharges,
-            postedDays, lockedDates, adjustments,
-            purchases, nocPayments, nocOpeningBal, stockOpenPetrol, stockOpenDiesel,
-            nozzles: nozzles.map(n => ({ open: n.open, close: n.close })),
-            currentInputs: {
-                openingCash: document.getElementById('openingCash').value,
-                openingBank: document.getElementById('openingBank').value,
-                petrolRate: document.getElementById('petrolRate').value,
-                dieselRate: document.getElementById('dieselRate').value,
-                outPetrolLtr: document.getElementById('outPetrolLtr').value,
-                outDieselLtr: document.getElementById('outDieselLtr').value,
-                currentDate: document.getElementById('currentDate').value
-            }
-        };
-    }
-
+   function gatherAllData() {
+    return {
+        debtors: debtorsList, expenseCategories,
+        creditSales, collections, expensesList, deposits, withdrawals, bankCharges,
+        postedDays, lockedDates, adjustments,
+        purchases, nocPayments, nocOpeningBal, stockOpenPetrol, stockOpenDiesel,
+        nozzles: nozzles.map(n => ({ open: n.open, close: n.close })),
+        currentInputs: {
+            // REMOVE openingCash and openingBank – they are calculated dynamically
+            petrolRate: document.getElementById('petrolRate').value,
+            dieselRate: document.getElementById('dieselRate').value,
+            outPetrolLtr: document.getElementById('outPetrolLtr').value,
+            outDieselLtr: document.getElementById('outDieselLtr').value,
+            currentDate: document.getElementById('currentDate').value
+        }
+    };
+}
     function applyCloudData(data) {
         if (data.debtors) debtorsList = data.debtors;
         if (data.expenseCategories) expenseCategories = data.expenseCategories;
@@ -250,8 +248,8 @@
         if (data.nozzles) { data.nozzles.forEach((n,i)=>{ if(nozzles[i]){nozzles[i].open=n.open;nozzles[i].close=n.close;} }); }
         if (data.currentInputs) {
             const inp = data.currentInputs;
-            document.getElementById('openingCash').value = inp.openingCash || 0;
-            document.getElementById('openingBank').value = inp.openingBank || 0;
+            // document.getElementById('openingCash').value = inp.openingCash || 0;
+            // document.getElementById('openingBank').value = inp.openingBank || 0;
             document.getElementById('prabhuOpeningBal').value = inp.openingBank || 0;
             document.getElementById('petrolRate').value = inp.petrolRate || 220.30;
             document.getElementById('dieselRate').value = inp.dieselRate || 208.30;
