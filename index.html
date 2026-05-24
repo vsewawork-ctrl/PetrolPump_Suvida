@@ -343,10 +343,10 @@
         const info = document.getElementById('lockedInfo');
         if (info) info.style.display = locked ? 'block' : 'none';
     }
-  function handleDateChange() {
+    function handleDateChange() {
     const minDate = "2025-05-14";
     let today = getTodayDate();
-    
+
     // 1. Lock out older dates
     if (today && today < minDate) {
         alert("System locked for dates prior to " + minDate + ".");
@@ -354,24 +354,75 @@
         today = minDate;
     }
 
-    // 2. Existing info updates and data fetching (leave yours as is)
-    updateDateInfo(postedDays.length ? postedDays.reduce((latest,d)=>d.date>latest?d.date:latest,postedDays[0].date) : null, today);
-   
-    // 3. FORCE the new balances for the starting date
+    // 2. Update info display
+    updateDateInfo(
+        postedDays.length
+            ? postedDays.reduce((latest, d) => d.date > latest ? d.date : latest, postedDays[0].date)
+            : null,
+        today
+    );
+
+    // 3. Force opening balances for the starting date (runs after data is loaded)
     if (today === minDate) {
-        // We use a slight delay so this runs AFTER your database fetches the old numbers
         setTimeout(() => {
             document.getElementById('openingCash').value = "9631793.96";
             document.getElementById('openingBank').value = "1246117.63";
             if (document.getElementById('prabhuOpeningBal')) {
                 document.getElementById('prabhuOpeningBal').value = "1246117.63";
             }
-        }, 500); // 500 milliseconds delay
+        }, 500);
     }
 
-    if (today) {
-        if (isDateLocked(today)) {
-        // ... [keep the rest of your existing function intact]
+    // 4. Carry forward previous day’s data (only if today is not locked)
+    if (today && !isDateLocked(today)) {
+        const prev = new Date(today);
+        prev.setDate(prev.getDate() - 1);
+        const prevStr = prev.toISOString().split('T')[0];
+        const prevPosted = postedDays.find(p => p.date === prevStr);
+
+        if (prevPosted) {
+            // Cash & bank
+            document.getElementById('openingCash').value = round2(prevPosted.closingCash);
+            document.getElementById('openingBank').value = round2(prevPosted.closingBank);
+
+            // Nozzles – opening = yesterday’s closing; closing only reset if it matches old opening
+            if (prevPosted.nozzles?.length === nozzles.length) {
+                prevPosted.nozzles.forEach((n, i) => {
+                    const oldClose = nozzles[i].close;
+                    nozzles[i].open = round2(n.close);
+                    // If closing was still equal to the old opening (fresh day), reset it to opening
+                    if (oldClose === nozzles[i].open) {
+                        nozzles[i].close = nozzles[i].open;
+                    } else {
+                        nozzles[i].close = oldClose;   // keep the closing you already entered
+                    }
+                });
+            }
+
+            // Stock & NOC carry‑forward
+            if (prevPosted.stockClosePetrol !== undefined) {
+                stockOpenPetrol = round2(prevPosted.stockClosePetrol);
+                document.getElementById('stockOpenPetrolInput').value = stockOpenPetrol;
+            }
+            if (prevPosted.stockCloseDiesel !== undefined) {
+                stockOpenDiesel = round2(prevPosted.stockCloseDiesel);
+                document.getElementById('stockOpenDieselInput').value = stockOpenDiesel;
+            }
+            if (prevPosted.nocCloseBal !== undefined) {
+                nocOpeningBal = round2(prevPosted.nocCloseBal);
+            }
+
+            // Reset out‑of‑nozzle litres for the new day
+            document.getElementById('outPetrolLtr').value = 0;
+            document.getElementById('outDieselLtr').value = 0;
+
+            renderFuelTable();
+        }
+    }
+
+    updateUIForLocked();
+    updateAll();
+}
     function initSearchableDropdown(inputId, listId, dataArray, amountFieldId) {
     const input = document.getElementById(inputId),
           list = document.getElementById(listId),
