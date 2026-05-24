@@ -416,7 +416,8 @@ function handleDateChange() {
             // If they don’t match, show a warning and correct them
             if (currentOpenCash !== prevCloseCash || currentOpenBank !== prevCloseBank) {
                 console.warn('Opening balances corrected to match previous day closing.');
-                          }
+                showToast('⚠️ Balances auto‑corrected from previous day');
+            }
 
             document.getElementById('openingCash').value = prevCloseCash;
             document.getElementById('openingBank').value = prevCloseBank;
@@ -451,7 +452,7 @@ function handleDateChange() {
         } else {
             // ===== VERY FIRST DAY (no previous posted day) =====
             if (today === minDate) {
-                document.getElementById('openingCash').value = "963179.96";
+                document.getElementById('openingCash').value = "9631793.96";
                 document.getElementById('openingBank').value = "1246117.63";
                 const prabhuEl = document.getElementById('prabhuOpeningBal');
                 if (prabhuEl) prabhuEl.value = "1246117.63";
